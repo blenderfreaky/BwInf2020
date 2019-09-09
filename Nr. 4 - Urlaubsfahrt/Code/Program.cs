@@ -23,7 +23,7 @@ namespace p
             Console.WriteLine("Insert path:");
             string path = Console.ReadLine();
             string[] FileValues = File.ReadAllText(path).Split('\n');
-            AllStations = new List<GasStation>();
+            AllStations = new List<GasStation> {Track.EmtyTrack};
             for(int i = 5; i < FileValues.Length; i++)
             {
                 float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x);
@@ -36,8 +36,16 @@ namespace p
                 {
                     throw new Exception();
                 }
-                Track t = PosssibleParts.M(x => x.Stops.Count);
-                TrackParts.Add(new Track(PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPrice())));
+                if(FuelLength >= AllStations[i].Position)
+                try
+                {
+                    Track t = new Track(PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(AllStations[i]), AllStations[i]));
+                    PosssibleParts.Add(t);
+                }
+                catch
+                {
+                    Console.WriteLine("No possible route!"); break;
+                }
             }
         }
     }
@@ -57,26 +65,39 @@ namespace p
     public class Track
     {
         public List<GasStation> Stops {get;}
-        float GetPrice(int pos)
+
+        public static Track EmtyTrack = new Track();
+
+        float GetPrice()
         {
             float value = 0;
             for(int i = 0; i < Stops.Count - 1; i++)
             {
                 value += (Stops[i+1].Position - Stops[i].Position) * Stops[i].PricePerVolumeInEuroPerLiter;
             }
-            value += (pos - Stops.Last().Position) * Stops.Last().PricePerVolumeInEuroPerLiter;
             return value;
         }
-        public Track(GasStation s)
+
+        float GetPriceTo(int pos)
         {
-            Stops = new List<GasStation> { s };
+            float value = GetPrice();
+            value += (pos - Stops.Last().Position) * Stops.Last().PricePerVolumeInEuroPerLiter;
         }
+
+        float GetPriceTo(GasStation s)
+        {
+            float value = GetPrice();
+            value += GetPriceTo(s.Position);
+        }
+        public Track(GasStation s) => Stops = new List<GasStation> { s };
         public Track (Track t, GasStation s)
         {
             Stops = new List<GasStation>();
             foreach (GasStation ss in t.Stops) Stops.Add(ss);
             Stops.Add(s);
         }
+
+        private Track() => Stops = new List<GasStation>();
     }
 
 }
