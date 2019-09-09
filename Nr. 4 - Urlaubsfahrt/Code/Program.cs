@@ -125,21 +125,30 @@ namespace Extensions
 {
     public static class Extensions
     {
-        IEnumerable<TSource> AllMins<TSource, TKey> (this IEnumerable<TSource> Source, Func<TSource, TKey> Comparer)
-        {
-            if (!typeof(IComparable).IsAssignableFrom(TKey)) throw new ArgumentException(nameof(TKey) + " must implement IComparable");
+        IList<TSource> AllMins<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, int capacity = 1)
+    where TKey : IComparable<TKey>
+{
+    var enumerator = source.GetEnumerator();
 
-            List<TSource> Values = new List<TSource>() { Source[0]};
-            TKey CurrentMin = Comparer(Source[0]);
-            for(int i = 1; i < Source.Count(); i++)
-            {
-                TKey CurrentValue = Comparer(Source[i]);
-                if (CurrentValue > CurrentMin) continue;
-                if (CurrentValue == CurrentMin) { Values.Add(Source[i]); continue; }
-                Values = new List<TSource>() { Source[i] };
-                CurrentMin = CurrentValue;
-            }
-            return Values;
+    if (!enumerator.MoveNext()) throw new ArgumentException(nameof(source) + " cant be emty");
+
+    TSource firstElement = enumerator.Current;
+    TKey min = selector(firstElement);
+    List<TSource> minima = new List<TSource>(capacity) { firstElement };
+
+    while (enumerator.MoveNext())
+    {
+        TSource element = enumerator.Current;
+        TKey key = selector(element);
+
+        if (key.CompareTo(min) < 0)
+        {
+            min = key;
+            minima.Clear();
         }
+
+        minima.Add(element);
+    }
+}
     }
 }
