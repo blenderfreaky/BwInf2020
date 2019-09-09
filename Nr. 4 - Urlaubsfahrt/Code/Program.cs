@@ -19,10 +19,18 @@ namespace p
 
         void Main()
         {
-            int FuelLength = 10; //Will be removed later, but its faster to use it right now
+            float TrackLength = 0;
+            float MaxFuel = 0;
+            float DasEnglischeWortFürVerbrauch = 0;
+            float StartFuel = 0;
             Console.WriteLine("Insert path:");
             string path = Console.ReadLine();
             string[] FileValues = File.ReadAllText(path).Split('\n');
+            DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
+            MaxFuel = int.Parse(FileValues[1]);
+            StartFuel = int.Parse(FileValues[2]);
+            TrackLength = int.Parse(FileValues[3]);
+            float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
             AllStations = new List<GasStation> {Track.EmtyTrack};
             for(int i = 5; i < FileValues.Length; i++)
             {
@@ -39,14 +47,25 @@ namespace p
                 if(FuelLength >= AllStations[i].Position)
                 try
                 {
-                    Track t = new Track(PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(AllStations[i]), AllStations[i]));
+                    Track t = new Track(PosssibleParts
+                    .Where(x => AllStations[i].Position - x.Stops.Last().Position > FuelLength)
+                    .AllMins(x => x.Stops.Count)
+                    .Min(x => x.GetPriceTo(AllStations[i]), AllStations[i]));
                     PosssibleParts.Add(t);
                 }
                 catch
                 {
-                    Console.WriteLine("No possible route!"); break;
+                    Console.WriteLine("No possible route! Just stay at home!"); goto NOWAY;
                 }
             }
+            Track BestWay = PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(TrackLength));
+            Console.WriteLine("The most efficent way is to stop at:");
+            foreach(GasStation s in BestWay.Stops)
+            {
+                Console.WriteLine($"- {s.Position.ToString()}");
+            }
+            NOWAY:
+            Console.ReadLine();
         }
     }
 
