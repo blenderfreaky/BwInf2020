@@ -9,53 +9,49 @@ namespace p
 {
     public class program
     {
-        int FuelSize;
-        float Usage;
-        int StartFuel;
-        float Trip;
-        List<GasStation> AllStations;
-
-        List<Track> TrackParts;
-
-        void Main()
+        public static void Main()
         {
-            float TrackLength = 0;
-            float MaxFuel = 0;
-            float DasEnglischeWortFürVerbrauch = 0;
-            float StartFuel = 0;
-            Console.WriteLine("Insert path:");
-            string path = Console.ReadLine();
-            string[] FileValues = File.ReadAllText(path).Split('\n');
-            DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
-            MaxFuel = int.Parse(FileValues[1]);
-            StartFuel = int.Parse(FileValues[2]);
-            TrackLength = int.Parse(FileValues[3]);
-            float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
-            AllStations = new List<GasStation> {Track.EmtyTrack};
-            for(int i = 5; i < FileValues.Length; i++)
+            #region Values
+            Tuple<float, float, float, float, float, List<GasStation>> DataFromMyNigga = DataNigga();
+            float TrackLength = DataFromMyNigga[0];
+            float MaxFuel = DataFromMyNigga[1];
+            float DasEnglischeWortFürVerbrauch = DataFromMyNigga[2];
+            float StartFuel = DataFromMyNigga[3];
+            float FuelLength = DataFromMyNigga[4];
+            List<GasStation> AllStations = DataFromMyNigga[5];
+            /*Debug.Assert(Allstations is sorted after position);*/ //TODO Implement
+            List<Track> TrackParts = new List<Track> {Track.EmptyTrack};
+            #endregion
+
+            #region Read data
+            
+            #endregion
+
+            for(int i = 0; i < AllStations.Count; i ++) //TODO use foreach for clarity (and since not arr maybe perf)
             {
-                float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x);
-                AllStations.Add(new GasStation(values[0], values[1]));
-            }
-            for(int i = 0; i < AllStations.Count; i ++)
-            {
-                List<Track> PosssibleParts = TrackParts.Where(x => AllStations[i].Position - x.Stops.Last().Position > FuelLength);
-                if(PosssibleParts.Count == 0 && FuelLength < AllStations[i].Position)
+               //Todo: Add Emty-Check and adder! Code won't work without! It's just one line, why am I writing this,
+                //I could have done it, in the time, I'm writing this! YEET
+                List<Track> PosssibleParts = TrackParts
+                .Where(x => AllStations[i].Position - x.Stops.Last().Position > FuelLength);
+                if(PosssibleParts.Count == 0 && AllStations[i].Position > FuelLength)
                 {
+                    //If there is no way to get to the destination
+                    //I dunno what exeption I should use, plz help me!
                     throw new Exception();
                 }
                 if(FuelLength >= AllStations[i].Position)
-                try
                 {
                     Track t = new Track(PosssibleParts
-                    .Where(x => AllStations[i].Position - x.Stops.Last().Position > FuelLength)
                     .AllMins(x => x.Stops.Count)
-                    .Min(x => x.GetPriceTo(AllStations[i]), AllStations[i]));
-                    PosssibleParts.Add(t);
+                    .Min(x => x.GetPriceTo(AllStations[i]),
+                    AllStations[i]));
+                    TrackParts.Add(t);
                 }
-                catch
+                else
                 {
-                    Console.WriteLine("No possible route! Just stay at home!"); goto NOWAY;
+                    //Come on dude, it's ugly af!
+                    Console.WriteLine("No possible route! Just stay at home!");
+                    throw;
                 }
             }
             Track BestWay = PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(TrackLength));
@@ -64,91 +60,33 @@ namespace p
             {
                 Console.WriteLine($"- {s.Position.ToString()}");
             }
-            NOWAY:
-            Console.ReadLine();
-        }
-    }
-
-    public class GasStation
-    {
-        public GasStation(float pricePerVolumeInEuroPerLiter, float position)
-        {
-            PricePerVolumeInEuroPerLiter = pricePerVolumeInEuroPerLiter;
-            Position = position;
         }
 
-        public float PricePerVolumeInEuroPerLiter {get;}
-        public float Position {get;}
-    }
-
-    public class Track
-    {
-        public List<GasStation> Stops {get;}
-
-        public static Track EmtyTrack = new Track();
-
-        float GetPrice()
+        Tuple<float, float, float, float, float, List<GasStation>> DataNigga()
         {
-            float value = 0;
-            for(int i = 0; i < Stops.Count - 1; i++)
+            Console.WriteLine("Insert path:");
+            string path = Console.ReadLine();
+            string[] FileValues = File.ReadAllText(path).Split('\n');
+
+            float DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
+            float MaxFuel = int.Parse(FileValues[1]);
+            float StartFuel = int.Parse(FileValues[2]);
+            float TrackLength = int.Parse(FileValues[3]);
+            float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
+            
+            List<GasStation> AllStations = new List<GasStation>();
+            for(int i = 5; i < FileValues.Length; i++)
             {
-                value += (Stops[i+1].Position - Stops[i].Position) * Stops[i].PricePerVolumeInEuroPerLiter;
+                float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x);
+                AllStations.Add(new GasStation(values[0], values[1]));
             }
-            return value;
+            return new Tuple<float, float, float, float, float, List<GasStation>>(DasEnglischeWortFürVerbrauch,
+            MaxFuel,
+            StartFuel,
+            TrackLength,
+            FuelLength,
+            AllStations
+            );
         }
-
-        float GetPriceTo(int pos)
-        {
-            float value = GetPrice();
-            value += (pos - Stops.Last().Position) * Stops.Last().PricePerVolumeInEuroPerLiter;
-        }
-
-        float GetPriceTo(GasStation s)
-        {
-            float value = GetPrice();
-            value += GetPriceTo(s.Position);
-        }
-        public Track(GasStation s) => Stops = new List<GasStation> { s };
-        public Track (Track t, GasStation s)
-        {
-            Stops = new List<GasStation>();
-            foreach (GasStation ss in t.Stops) Stops.Add(ss);
-            Stops.Add(s);
-        }
-
-        private Track() => Stops = new List<GasStation>();
-    }
-
-}
-
-namespace Extensions
-{
-    public static class Extensions
-    {
-        IList<TSource> AllMins<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, int capacity = 1)
-    where TKey : IComparable<TKey>
-{
-    var enumerator = source.GetEnumerator();
-
-    if (!enumerator.MoveNext()) throw new ArgumentException(nameof(source) + " cant be emty");
-
-    TSource firstElement = enumerator.Current;
-    TKey min = selector(firstElement);
-    List<TSource> minima = new List<TSource>(capacity) { firstElement };
-
-    while (enumerator.MoveNext())
-    {
-        TSource element = enumerator.Current;
-        TKey key = selector(element);
-
-        if (key.CompareTo(min) < 0)
-        {
-            min = key;
-            minima.Clear();
-        }
-
-        minima.Add(element);
-    }
-}
     }
 }
