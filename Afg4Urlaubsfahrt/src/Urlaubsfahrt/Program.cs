@@ -12,7 +12,7 @@ namespace Urlaubsfahrt
         public static void Main()
         {
             #region Values
-            Tuple<float, float, float, float, float, List<GasStation>> DataFromMyNigga = DataNigga();
+            Tuple<float, float, float, float, float, List<GasStation>> DataFromMyNigga = GetValues();
             float TrackLength = DataFromMyNigga[0];
             float MaxFuel = DataFromMyNigga[1];
             float DasEnglischeWortFürVerbrauch = DataFromMyNigga[2];
@@ -45,7 +45,7 @@ namespace Urlaubsfahrt
                 {
                     Track t = new Track(PosssibleParts
                         .AllMins(x => x.Stops.Count)
-                        .MinBy(x => x.GetPriceTo(AllStations[i])); //compiler error
+                        .MinBy(x => x.GetPriceTo(AllStations[i]))); //compiler error
                     TrackParts.Add(t);
                 }
                 else
@@ -54,8 +54,7 @@ namespace Urlaubsfahrt
                     Console.WriteLine("No possible route! Just stay at home!");
                 }
             }
-            // Le fuck? PossibleParts is out of scope
-            Track BestWay = PosssibleParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(TrackLength)); //compiler error
+            Track BestWay = TrackParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(TrackLength));
             Console.WriteLine("The most efficent way is to stop at:");
             foreach (GasStation s in BestWay.Stops)
             {
@@ -63,7 +62,7 @@ namespace Urlaubsfahrt
             }
         }
 
-        Tuple<float, float, float, float, float, List<GasStation>> DataNigga()
+        Tuple<float, float, float, float, float, List<GasStation>> GetValues()
         {
             Console.WriteLine("Insert path:");
             string path = Console.ReadLine();
