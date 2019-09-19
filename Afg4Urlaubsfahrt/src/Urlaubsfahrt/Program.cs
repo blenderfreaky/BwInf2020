@@ -12,13 +12,13 @@ namespace Urlaubsfahrt
         public static void Main()
         {
             #region Values
-            Tuple<float, float, float, float, float, List<GasStation>> DataFromMyNigga = GetValues();
-            float TrackLength = DataFromMyNigga[0];
-            float MaxFuel = DataFromMyNigga[1];
-            float DasEnglischeWortFürVerbrauch = DataFromMyNigga[2];
-            float StartFuel = DataFromMyNigga[3];
-            float FuelLength = DataFromMyNigga[4];
-            List<GasStation> AllStations = DataFromMyNigga[5];
+            Tuple<float, float, float, float, float, List<GasStation>> DataStore = GetValues();
+            float TrackLength = DataStore[0];
+            float MaxFuel = DataStore[1];
+            float DasEnglischeWortFürVerbrauch = DataStore[2];
+            float StartFuel = DataStore[3];
+            float FuelLength = DataStore[4];
+            List<GasStation> AllStations = DataStore[5];
             /*Debug.Assert(Allstations is sorted after position);*/ //TODO Implement
             List<Track> TrackParts = new List<Track> { Track.EmptyTrack };
             #endregion
@@ -64,29 +64,42 @@ namespace Urlaubsfahrt
 
         Tuple<float, float, float, float, float, List<GasStation>> GetValues()
         {
-            Console.WriteLine("Insert path:");
-            string path = Console.ReadLine();
-            string[] FileValues = File.ReadAllText(path).Split('\n');
+            try {
+                Console.WriteLine("Insert path:");
+                string path = Console.ReadLine();
+                try 
+                {
+                    string[] FileValues = File.ReadAllText(path).Split('\n');
+                }
+                catch
+                {
+                    throw new ArgumentException(nameof(path) + "doesn't exists");
+                }
 
-            float DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
-            float MaxFuel = int.Parse(FileValues[1]);
-            float StartFuel = int.Parse(FileValues[2]);
-            float TrackLength = int.Parse(FileValues[3]);
-            float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
+                float DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
+                float MaxFuel = int.Parse(FileValues[1]);
+                float StartFuel = int.Parse(FileValues[2]);
+                float TrackLength = int.Parse(FileValues[3]);
+                float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
 
-            List<GasStation> AllStations = new List<GasStation>();
-            for (int i = 5; i < FileValues.Length; i++)
-            {
-                float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x); //compiler error
-                AllStations.Add(new GasStation(values[0], values[1]));
+                List<GasStation> AllStations = new List<GasStation>();
+                for (int i = 5; i < FileValues.Length; i++)
+                {
+                    float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x); //compiler error
+                    AllStations.Add(new GasStation(values[0], values[1]));
+                }
+                return new Tuple<float, float, float, float, float, List<GasStation>>(DasEnglischeWortFürVerbrauch,
+                MaxFuel,
+                StartFuel,
+                TrackLength,
+                FuelLength,
+                AllStations
+                );
             }
-            return new Tuple<float, float, float, float, float, List<GasStation>>(DasEnglischeWortFürVerbrauch,
-            MaxFuel,
-            StartFuel,
-            TrackLength,
-            FuelLength,
-            AllStations
-            );
+            catch
+            {
+                throw new ArgumentException(nameof(path) + "contains wrong data");
+            }
         }
     }
 }
