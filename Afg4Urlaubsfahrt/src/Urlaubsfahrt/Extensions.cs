@@ -45,26 +45,24 @@ namespace Urlaubsfahrt.Extensions
             if (selector == null) throw new ArgumentNullException("selector");
             comparer = comparer ?? Comparer<TKey>.Default;
 
-            using (var sourceIterator = source.GetEnumerator())
+            using var sourceIterator = source.GetEnumerator();
+            if (!sourceIterator.MoveNext())
             {
-                if (!sourceIterator.MoveNext())
-                {
-                    throw new InvalidOperationException("Sequence contains no elements");
-                }
-                var min = sourceIterator.Current;
-                var minKey = selector(min);
-                while (sourceIterator.MoveNext())
-                {
-                    var candidate = sourceIterator.Current;
-                    var candidateProjected = selector(candidate);
-                    if (comparer.Compare(candidateProjected, minKey) < 0)
-                    {
-                        min = candidate;
-                        minKey = candidateProjected;
-                    }
-                }
-                return min;
+                throw new InvalidOperationException("Sequence contains no elements");
             }
+            var min = sourceIterator.Current;
+            var minKey = selector(min);
+            while (sourceIterator.MoveNext())
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (comparer.Compare(candidateProjected, minKey) < 0)
+                {
+                    min = candidate;
+                    minKey = candidateProjected;
+                }
+            }
+            return min;
         }
     }
 }

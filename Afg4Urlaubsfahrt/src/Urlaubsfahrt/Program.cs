@@ -1,4 +1,5 @@
-﻿//TODO: Make this a static utility class
+﻿using System.Data;
+//TODO: Make this a static utility class
 namespace Urlaubsfahrt
 {
     using System;
@@ -13,12 +14,12 @@ namespace Urlaubsfahrt
         {
             #region Values
             Tuple<float, float, float, float, float, List<GasStation>> DataStore = GetValues();
-            float TrackLength = DataStore[0];
-            float MaxFuel = DataStore[1];
-            float DasEnglischeWortFürVerbrauch = DataStore[2];
-            float StartFuel = DataStore[3];
-            float FuelLength = DataStore[4];
-            List<GasStation> AllStations = DataStore[5];
+            float TrackLength = DataStore.Item1;
+            float MaxFuel = DataStore.Item2;
+            float DasEnglischeWortFürVerbrauch = DataStore.Item3;
+            float StartFuel = DataStore.Item4;
+            float FuelLength = DataStore.Item5;
+            List<GasStation> AllStations = DataStore.Item6;
             /*Debug.Assert(Allstations is sorted after position);*/ //TODO Implement
             List<Track> TrackParts = new List<Track> { Track.EmptyTrack };
             #endregion
@@ -45,7 +46,7 @@ namespace Urlaubsfahrt
                 {
                     Track t = new Track(PosssibleParts
                         .AllMins(x => x.Stops.Count)
-                        .MinBy(x => x.GetPriceTo(AllStations[i]))); //compiler error
+                        .MinBy(x => x.GetPriceTo(AllStations[i])), AllStations[i]); //compiler error
                     TrackParts.Add(t);
                 }
                 else
@@ -54,7 +55,7 @@ namespace Urlaubsfahrt
                     Console.WriteLine("No possible route! Just stay at home!");
                 }
             }
-            Track BestWay = TrackParts.AllMins(x => x.Stops.Count).Min(x => x.GetPriceTo(TrackLength));
+            Track BestWay = TrackParts.AllMins(x => x.Stops.Count).MinBy(x => x.GetPriceTo(TrackLength));
             Console.WriteLine("The most efficent way is to stop at:");
             foreach (GasStation s in BestWay.Stops)
             {
@@ -62,44 +63,37 @@ namespace Urlaubsfahrt
             }
         }
 
-        Tuple<float, float, float, float, float, List<GasStation>> GetValues()
+        public static Tuple<float, float, float, float, float, List<GasStation>> GetValues()
         {
-            try {
-                Console.WriteLine("Insert path:");
-                string path = Console.ReadLine();
+            Console.WriteLine("Insert path:");
+            string path = Console.ReadLine();
                 try 
                 {
                     string[] FileValues = File.ReadAllText(path).Split('\n');
+                    float DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
+                    float MaxFuel = int.Parse(FileValues[1]);
+                    float StartFuel = int.Parse(FileValues[2]);
+                    float TrackLength = int.Parse(FileValues[3]);
+                    float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
+
+                    List<GasStation> AllStations = new List<GasStation>();
+                    for (int i = 5; i < FileValues.Length; i++)
+                    {
+                        float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => float.Parse(x)).ToArray(); //compiler error
+                        AllStations.Add(new GasStation(values[0], values[1]));
+                    }
+                    return new Tuple<float, float, float, float, float, List<GasStation>>(DasEnglischeWortFürVerbrauch,
+                    MaxFuel,
+                    StartFuel,
+                    TrackLength,
+                    FuelLength,
+                    AllStations
+                    );
                 }
                 catch
                 {
-                    throw new ArgumentException(nameof(path) + "doesn't exists");
+                    throw new ArgumentException($"{path} doesn't exists or contains wrong data.");
                 }
-
-                float DasEnglischeWortFürVerbrauch = int.Parse(FileValues[0]);
-                float MaxFuel = int.Parse(FileValues[1]);
-                float StartFuel = int.Parse(FileValues[2]);
-                float TrackLength = int.Parse(FileValues[3]);
-                float FuelLength = MaxFuel / DasEnglischeWortFürVerbrauch * 100; //Will be removed later, but its faster to use it right now
-
-                List<GasStation> AllStations = new List<GasStation>();
-                for (int i = 5; i < FileValues.Length; i++)
-                {
-                    float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmtys).Select(x => (float)x); //compiler error
-                    AllStations.Add(new GasStation(values[0], values[1]));
-                }
-                return new Tuple<float, float, float, float, float, List<GasStation>>(DasEnglischeWortFürVerbrauch,
-                MaxFuel,
-                StartFuel,
-                TrackLength,
-                FuelLength,
-                AllStations
-                );
-            }
-            catch
-            {
-                throw new ArgumentException(nameof(path) + "contains wrong data");
-            }
         }
     }
 }
