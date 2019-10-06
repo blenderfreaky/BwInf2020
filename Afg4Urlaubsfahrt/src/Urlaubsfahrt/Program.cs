@@ -17,35 +17,22 @@ namespace Urlaubsfahrt
             float fuelLength,
             List<GasStation> allStations)
         {
-            /*Debug.Assert(Allstations is sorted after position);*/ //TODO Implement
             List<Track> trackParts = new List<Track> { Track.EmptyTrack };
 
-            for (int i = 0; i < allStations.Count; i++) //TODO use foreach for clarity (and since not arr maybe perf)
+            foreach(GasStation station in allStations)
             {
-                //Todo: Add Emty-Check and adder! Code won't work without! It's just one line, why am I writing this,
-                //I could have done it, in the time, I'm writing this! YEET
-                trackParts.RemoveAll(x => allStations[i].Position- x.Stops.Last().Position < fuelLength);
+                trackParts.RemoveAll(x => station.Position- x.Stops.Last().Position < fuelLength && x != Track.EmptyTrack);
 
-                List<Track> possibleParts = trackParts
-                    .ToList();
+                List<Track> possibleParts = trackParts.Select(x => x).ToList();
 
-                if (possibleParts.Count == 0 && allStations[i].Position > fuelLength)
-                {
-                    //If there is no way to get to the destination
-                    //I dunno what exeption I should use, plz help me!
-                    throw new Exception();
-                }
-                if (fuelLength >= allStations[i].Position)
+                if (possibleParts.Count == 0)
+                    Console.WriteLine("No possible route! Just stay at home!");
+                else
                 {
                     Track t = new Track(possibleParts
                         .AllMins(x => x.Stops.Count)
-                        .MinBy(x => x.GetPriceTo(allStations[i])), allStations[i]); //compiler error
+                        .MinBy(x => x.GetPriceTo(station)), station);
                     trackParts.Add(t);
-                }
-                else
-                {
-                    //Come on dude, it's ugly af!
-                    Console.WriteLine("No possible route! Just stay at home!");
                 }
             }
             Track BestWay = trackParts.AllMins(x => x.Stops.Count).MinBy(x => x.GetPriceTo(trackLength));
