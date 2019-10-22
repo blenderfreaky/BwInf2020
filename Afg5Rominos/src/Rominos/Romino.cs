@@ -7,10 +7,11 @@
     using System.Linq;
     using System.Numerics;
     using System.Text;
+    using System.Threading.Tasks;
 
     public readonly struct Romino : IEquatable<Romino>
     {
-        public static Romino One = 
+        public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0), false);
 
         public readonly Vector2Int[] Blocks;
@@ -89,12 +90,13 @@
             yield return Rotate(3);
         }
 
-        public readonly IEnumerable<Romino> GetPermutations() => GetRotations().SelectMany(x => new[]
-        {
-            x,
-            x.Mirror(Axis.X),
-            x.Mirror(Axis.X)
-        });
+        public readonly IEnumerable<Romino> GetPermutations() => GetRotations()
+            .SelectMany(x => new[]
+            {
+                x,
+                x.Mirror(Axis.X),
+                x.Mirror(Axis.X)
+            });
 
         public readonly Romino Mirror(Axis axis) => axis switch
         {
@@ -135,17 +137,19 @@
             // Remove duplicates and already occupied positions, as well as exclude positions blocked by the diagonal
             var newBlocks = corners.Distinct().Except(Blocks).Except(DiagonalRootBlockade);
 
-            foreach (var newBlock in newBlocks)
-            {
-                yield return new Romino(AppendOne(Blocks, newBlock), DiagonalRoot).Orient();
-            }
+            // Copy these to locals for use in lambdas
+            var blocks = Blocks;
+            var diagonalRoot = DiagonalRoot;
+
+            return newBlocks
+                .Select(newBlock => new Romino(AppendOne(blocks, newBlock), diagonalRoot).Orient());
         }
 
         private readonly bool[,] GetBlock2DArray()
         {
             var blocks = new bool[Blocks.Max(x => x.X) + 1, Blocks.Max(x => x.Y) + 1];
 
-            foreach (var block in Blocks) blocks[block.X, block.Y] = true;
+            Parallel.ForEach(Blocks, block => blocks[block.X, block.Y] = true);
             return blocks;
         }
 
@@ -170,7 +174,7 @@
 
         public static bool operator !=(Romino left, Romino right) => !(left == right);
 
-        public string ToAsciiArt()
+        public IEnumerable<string> ToAsciiArt()
         {
             bool[,] blocks = GetBlock2DArray();
 
@@ -182,28 +186,33 @@
                 {
                     buffer.Append(blocks[i, j] ? '█' : ' ');
                 }
-                buffer.AppendLine();
-            }
 
-            return buffer.ToString();
+                yield return buffer.ToString();
+
+                buffer.Clear();
+            }
         }
 
-        public static Dictionary<int, Romino[]> GetRominosUntilSize(int size)
+        public static IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSize(int size)
         {
             if (size < 2) throw new ArgumentOutOfRangeException(nameof(size));
 
-            var dict = new Dictionary<int, Romino[]>
-            {
-                [2] = new[] { One }
-            };
+            return GetRominosUntilSizeInternal();
 
-            for (int i = 3; i < size; i++)
+            IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSizeInternal()
             {
-                var newRominos = dict[i - 1].SelectMany(x => x.AddOneNotUnique());
-                dict[i] = newRominos.Distinct().ToArray();
+                Romino[] lastRominos = new[] { One };
+
+                yield return (2, lastRominos);
+
+                for (int i = 3; i <= size; i++)
+                {
+                    var newRominos = lastRominos
+                        .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
+                    lastRominos = newRominos;
+                    yield return (i, newRominos);
+                }
             }
-
-            return dict;
         }
     }
 }

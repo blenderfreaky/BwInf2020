@@ -4,13 +4,17 @@
     using Rominos;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
     public class Options
     {
-        [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-        public bool Verbose { get; set; }
+        [Option('s', "size", Required = true, HelpText = "The highest number of blocks to generate rominos for.")]
+        public int Size { get; set; }
+
+        [Option('t', "targetFile", Required = false, HelpText = "Path of the file to write outputs to. If not set the console is used.")]
+        public string? TargetFilePath { get; set; }
     }
 
     public static class Program
@@ -18,50 +22,93 @@
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(o =>
+                .WithParsed(RunWithOptions);
+        }
+
+        public static void RunWithOptions(Options options)
+        {
+            TextWriter consoleOut = Console.Out;
+
+            if (options.TargetFilePath != null)
+            {
+                using var fileStream = new FileStream(options.TargetFilePath, FileMode.OpenOrCreate);
+                using var fileStreamWriter = new StreamWriter(fileStream);
+
+                Console.SetOut(fileStreamWriter);
+            }
+            else
+            {
+                Console.WriteLine("Target file path not set; Defaulting to console");
+            }
+
+            Task worker = Task.Run(() => { });
+
+            foreach (var rominoSizeClass in Romino.GetRominosUntilSize(options.Size))
+            {
+                worker.ContinueWith(_ =>
                 {
-                    // Execute IO in parallel
-                    Parallel.ForEach(Romino.GetRominosUntilSize(int.MaxValue), rominoSizeClass =>
+                    Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks \n\tLoading...");
+
+                    if (options.TargetFilePath != null)
                     {
-                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks \n\tLoading...");
+                        ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size}");
+                    }
 
-                        string[][] text = rominoSizeClass.Rominos
-                            .Select(x => x.ToAsciiArt().ToArray()).ToArray();
+                    string[][] text = rominoSizeClass.Rominos
+                        .Select(x => x.ToAsciiArt().ToArray()).ToArray();
 
-                        Console.SetCursorPosition(0, Console.CursorTop - 1);
-                        Console.WriteLine(new string(' ', Console.BufferWidth));
-                        Console.WriteLine();
+                    Console.SetCursorPosition(0, Console.CursorTop - 1);
+                    Console.WriteLine(new string(' ', Console.BufferWidth));
+                    Console.WriteLine();
 
-                        for (int i = 0; i < text.Length;)
+                    for (int i = 0; i < text.Length;)
+                    {
+                        int length = 0;
+                        int k = i;
+
+                        for (int j = 0; j < rominoSizeClass.Size; j++)
                         {
-                            int length = 0;
-                            int k = i;
-
-                            for (int j = 0; j < rominoSizeClass.Size; j++)
+                            for (k = i; k < text.Length; k++)
                             {
-                                for (k = i; k < text.Length; k++)
-                                {
-                                    var lines = text[k];
+                                var lines = text[k];
 
-                                    if (Console.BufferWidth - Console.CursorLeft < lines[0].Length + 3) break;
+                                if (Console.BufferWidth - Console.CursorLeft < lines[0].Length + 3) break;
 
-                                    if (k != i) Console.Write(" │ ");
-                                    Console.Write(lines.Length > j ? lines[j] : new string(' ', lines[0].Length));
-                                }
-
-                                length = Console.CursorLeft;
-
-                                Console.WriteLine();
+                                if (k != i) Console.Write(" │ ");
+                                Console.Write(lines.Length > j ? lines[j] : new string(' ', lines[0].Length));
                             }
 
-                            i = k;
+                            length = Console.CursorLeft;
 
-                            if (i < text.Length) Console.WriteLine(new string('─', length));
+                            Console.WriteLine();
                         }
 
-                        Console.WriteLine();
-                    });
+                        i = k;
+
+                        if (i < text.Length) Console.WriteLine(new string('─', length));
+                    }
+
+                    Console.WriteLine();
                 });
+            }
+
+            Console.SetOut(consoleOut);
+        }
+
+        private static readonly object _padlock = new object();
+
+        private static void ConsoleWriteTo(TextWriter writer, string text)
+        {
+            // Make sure this only runs in one thread at a time
+            lock (_padlock)
+            {
+                var previousOut = Console.Out;
+
+                Console.SetOut(writer);
+                Console.WriteLine(text);
+
+                Console.SetOut(previousOut);
+            }
         }
     }
 }
