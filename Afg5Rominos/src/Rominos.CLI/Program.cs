@@ -1,7 +1,10 @@
 ﻿namespace Nummernmerker.CLI
 {
     using CommandLine;
+    using Rominos;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class Options
     {
@@ -14,19 +17,13 @@
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
-                   .WithParsed(o =>
-                   {
-                       if (o.Verbose)
-                       {
-                           Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example! App is in Verbose mode!");
-                       }
-                       else
-                       {
-                           Console.WriteLine($"Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example!");
-                       }
-                   });
+                .WithParsed(o =>
+                {
+                    Dictionary<int, Romino[]> rominos = Romino.GetRominosUntilSize(10);
+                    IEnumerable<string> asciiArt = rominos
+                        .Select(x => $"{x.Key}: {Environment.NewLine}{string.Join(", ", x.Value.Select(x => x.ToAsciiArt() + Environment.NewLine))}");
+                    Console.WriteLine(string.Join(Environment.NewLine, asciiArt));
+                });
         }
     }
 }
