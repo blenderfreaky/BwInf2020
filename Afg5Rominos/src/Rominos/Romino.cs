@@ -139,7 +139,7 @@
             var diagonalRoot = DiagonalRoot;
 
             // Remove duplicates and already occupied positions, as well as exclude positions blocked by the diagonal
-            return corners.AsParallel()
+            return corners
                 .Distinct().Except(blocks.AsParallel()).Except(DiagonalRootBlockade.AsParallel())
                 .Select(newBlock => new Romino(AppendOne(blocks, newBlock), diagonalRoot).Orient());
         }
