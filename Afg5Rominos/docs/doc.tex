@@ -1,0 +1,178 @@
+\documentclass[12pt]{article}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\cellsize}{0.5}
+\newcommand{\circlesize}{0.35}
+
+\newcommand{\printwhitecell}[2][]{\node[draw=gray, semithick, fill=white, minimum width=\cellsize cm, minimum height=\cellsize cm] at #2 {#1};} 
+\newcommand{\printblackcell}[1]{\node[draw=gray, semithick, fill=black, minimum width=\cellsize cm, minimum height=\cellsize cm] at #1 {};} 
+\newcommand{\printcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/2);} 
+
+\newcommand{\printcell}[2]{%
+    \if#1w%
+        \printwhitecell{#2}%
+    \else%
+        \if#1b%
+            \printblackcell{#2}%
+        \else%
+            \if#1c%
+                \printwhitecell{#2}%
+                \printcircle{#2}%
+            \else%
+                \if#1C%
+                    \printblackcell{#2}%
+                    \printcircle{#2}%
+                \else
+                    \printwhitecell[#1]{#2}%
+                \fi%
+            \fi%
+        \fi%
+    \fi%
+}
+
+\newcommand{\printmatrix}[2]{
+    \begin{tikzpicture}
+    \foreach \line[count=\i] in #2 {
+        \foreach \cell[count=\j] in \line {
+            \printcell{\cell}{(\j*\cellsize,-\i*\cellsize)}
+        }
+        \xdef\width{\j}
+    }
+    \node at ({0.5*(\width+1)*\cellsize}, {(-\i -1)*\cellsize}) {#1};
+    \end{tikzpicture}   
+}
+
+\begin{document}
+
+\title{Aufgabe 5 - Rominos}
+
+\section{Lösungsidee}
+
+\subsection{Kernidee}
+
+Rominos mit n Blöcken können gefunden werden, in dem zu Rominos mit (n-1) Blöcken ein Block angefügt wird. Hierbei  muss beachtet werden das der Rominostein zusammenhängend bleiben muss, und dass mindestens eine Diagonale bleiben muss.
+
+Um alle möglichen Rominos mit n Blöcken zu finden, muss man also alle Rominos mit (n-1) Blöcken finden, und für diese alle Rominos die durch hinzufügen eines weiteren Blocks enstehen können ermitteln. Dabei wird es Duplikate geben. Eliminiert man diese hat man alle möglichen n-Rominos eindeutig gefunden.
+
+\subsubsection{Beispiel}
+
+Nehme man beispielsweise das 2er-Romino, kann man zum finden aller 3 (= 2 + 1) - Rominos wie folgt Blöcke anfügen:
+
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,b,w,c},
+    {c,w,b,c},
+    {w,c,c,c}%
+}}
+
+Somit ergeben sich folgende 3-Rominos:
+
+\begin{center}
+
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {b,w,w,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,b,w,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,b,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {b,b,w,w},
+    {w,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,b},
+    {w,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {b,w,b,w},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {w,w,b,b},
+    {w,w,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,b,w,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,w,b,w}%
+}}
+\end{minipage}
+\begin{minipage}{0.18\textwidth}
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {w,w,b,w},
+    {w,w,w,b}%
+}}
+\end{minipage}
+
+\end{center}
+
+\newpage
+
+Da Rominos mindestens zwei Steine haben müssen um eine Diagonale zu besitzen, ist der Rominostein mit den wenigsten Blöcken einer 2er Diagonale.
+\begin{center}
+\printmatrix{Kleinster Rominostein}{{
+    {b,w},
+    {w,b}%
+}}
+\end{center}
+
+Um alle n-Rominos für ein beliebiges n zu finden, würde man den obigen Algorithmus verwenden um aus dem 2er-Romino alle 3-Rominos zu folgern, dann aus diesen alle 4-Rominos etc. bis man alle n-Rominos errechnet hat.
+
+\subsection{Hinzufügen von Blöcken}
+
+%TODO
+
+\subsection{Eliminierung von Duplikaten}
+
+%TODO
+
+\end{document}
