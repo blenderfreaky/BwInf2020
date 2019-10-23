@@ -134,14 +134,13 @@
                 new Vector2Int(x.X-1, x.Y+1),
             });
 
-            // Remove duplicates and already occupied positions, as well as exclude positions blocked by the diagonal
-            var newBlocks = corners.Distinct().Except(Blocks).Except(DiagonalRootBlockade);
-
             // Copy these to locals for use in lambdas
             var blocks = Blocks;
             var diagonalRoot = DiagonalRoot;
 
-            return newBlocks
+            // Remove duplicates and already occupied positions, as well as exclude positions blocked by the diagonal
+            return corners.AsParallel()
+                .Distinct().Except(blocks.AsParallel()).Except(DiagonalRootBlockade.AsParallel())
                 .Select(newBlock => new Romino(AppendOne(blocks, newBlock), diagonalRoot).Orient());
         }
 
@@ -207,7 +206,7 @@
 
                 for (int i = 3; i <= size; i++)
                 {
-                    var newRominos = lastRominos
+                    var newRominos = lastRominos.AsParallel()
                         .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
                     lastRominos = newRominos;
                     yield return (i, newRominos);

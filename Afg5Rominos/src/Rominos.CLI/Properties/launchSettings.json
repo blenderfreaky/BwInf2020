@@ -2,7 +2,7 @@
   "profiles": {
     "Rominos.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--size 500"
+      "commandLineArgs": "--size 20"
     }
   }
 }
