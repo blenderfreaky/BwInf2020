@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urlaubsfahrt", "Urlaubsfahr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Urlaubsfahrt.CLI", "Urlaubsfahrt.CLI\Urlaubsfahrt.CLI.csproj", "{C23130B1-F5D3-4A37-BB9F-7B805FAD80C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{B3D34CD1-ADAC-4188-A3EA-6F0323911B43}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{0D12AAFC-325A-44DF-8DCD-1A1DB706F37B}"
 EndProject
 Global
