@@ -169,7 +169,47 @@ Um alle n-Rominos für ein beliebiges n zu finden, würde man den obigen Algorit
 
 \subsection{Hinzufügen von Blöcken}
 
-%TODO
+Um Blöcke hinzuzufügen, werden zuerst die Stellen ermittelt, wo Blöcke angefügt werden können, sodass das Romino zusammenhängend bleibt. Hierfür werden die Nachbarn jedes Blocks des Rominos ermittelt, daraufhin werden Duplikate und bereits belegte Blöcke eliminiert.
+
+\subsubsection{Beispiel}
+
+Nehme man beispielsweise wieder das 2er-Romino, würden die Nachbarn aller Blöcke wie folgt ermittelt werden:
+
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,C,c,w},
+    {c,c,C,w},
+    {w,w,w,w}%
+}}
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,C,c,c},
+    {c,c,C,c},
+    {w,c,c,c}%
+}}
+
+Entfernen bereits existierender Blöcke
+
+
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,b,c,c},
+    {c,c,b,c},
+    {w,c,c,c}%
+}}
+
+Es lässt sich hier erkennen, das die Existenz einer echten Diagonale nicht zwingend aufrecht erhalten wird;
+
+\printmatrix{}{{
+    {w,w,w,w},
+    {w,b,w,w},
+    {w,b,b,w},
+    {w,w,w,w}%
+}}
+
+Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt
+
+
 
 \subsection{Eliminierung von Duplikaten}
 
