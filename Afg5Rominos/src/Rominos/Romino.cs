@@ -154,7 +154,9 @@
 
         private static T[] AppendOne<T>(T[] arr, T elem)
         {
-            T[] newArr = new T[arr.Length + 1];
+            int length = arr.Length;
+
+            T[] newArr = new T[length + 1];
 
             Array.Copy(arr, 0, newArr, 0, arr.Length);
 
