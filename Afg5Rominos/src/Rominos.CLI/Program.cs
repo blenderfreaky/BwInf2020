@@ -1,4 +1,6 @@
-﻿namespace Nummernmerker.CLI
+﻿#define PerfOpt
+
+namespace Nummernmerker.CLI
 {
     using CommandLine;
     using Rominos;
@@ -16,6 +18,9 @@
 
         [Option('t', "targetFile", Required = false, HelpText = "Path of the file to write outputs to. If not set the console is used.")]
         public string? TargetFilePath { get; set; }
+
+        [Option('h', "highlightDiagonalBlockade", Required = false, HelpText = "Whether to visually mark where the diagonal blockade is in every Romino.")]
+        public bool HighlightDiagonalBlockade { get; set; }
     }
 
     public static class Program
@@ -30,6 +35,7 @@
 
         public static void RunWithOptions(Options options)
         {
+#if PerfOpt
             Console.WriteLine("Starting");
 
             Stopwatch stopwatch = new Stopwatch();
@@ -39,6 +45,7 @@
             Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
 
             return;
+#endif
 
             TextWriter consoleOut = Console.Out;
 
@@ -74,7 +81,7 @@
                         }
 
                         string[][] text = rominoSizeClass.Rominos
-                            .Select(x => x.ToAsciiArt().ToArray()).ToArray();
+                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade).ToArray()).ToArray();
 
                         if (options.TargetFilePath == null)
                         {

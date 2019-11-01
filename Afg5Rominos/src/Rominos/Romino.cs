@@ -1,5 +1,7 @@
 ﻿namespace Rominos
 {
+    using JM.LinqFaster;
+    using JM.LinqFaster.Parallel;
     using MoreLinq;
     using System;
     using System.Buffers;
@@ -10,7 +12,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public readonly struct Romino : IEquatable<Romino>
+    public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0), false);
@@ -28,7 +30,7 @@
             DiagonalRoot + new Vector2Int(1, 1)
         };
 
-        public readonly BigInteger UniqueCode;
+        private readonly BitBuffer512 _uniqueCode;
 
         public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, bool check = true)
         {
@@ -36,96 +38,56 @@
             {
                 DiagonalRoot = diagonalRoot;
                 Blocks = blocks;
-                UniqueCode = GetUniqueCode();
+                _uniqueCode = CalculateUniqueCode(blocks);
                 return;
             }
 
-            Vector2Int offset = -new Vector2Int(blocks.Min(x => x.X), blocks.Min(x => x.Y));
+            Vector2Int offset = -new Vector2Int(blocks.MinF(x => x.X), blocks.MinF(x => x.Y));
 
-            Blocks = blocks.Select(x => x + offset).ToArray();
+            Blocks = blocks;
+            Blocks.SelectInPlaceF(x => x + offset);
             DiagonalRoot = diagonalRoot + offset;
 
-            UniqueCode = GetUniqueCode();
+            _uniqueCode = CalculateUniqueCode(blocks);
         }
 
-        public Romino(IEnumerable<Vector2Int> blocks, Vector2Int diagonalRoot, bool check = true)
+        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks)
         {
-            if (!check)
+            static int GetWeight(int x, int y, int size) => (y * size) + x;
+
+            var bits = new BitBuffer512();
+
+            int length = blocks.Length;
+
+            foreach (var block in blocks)
             {
-                DiagonalRoot = diagonalRoot;
-                Blocks = blocks.ToArray();
-                UniqueCode = GetUniqueCode();
-                return;
+                bits[GetWeight(block.X, block.Y, length)] = true;
             }
 
-            Vector2Int offset = -new Vector2Int(blocks.Min(x => x.X), blocks.Min(x => x.Y));
-
-            Blocks = blocks.Select(x => x + offset).ToArray();
-            DiagonalRoot = diagonalRoot + offset;
-
-            UniqueCode = GetUniqueCode();
+            return bits;
         }
 
-        private static BigInteger GetWeight(int x, int y, int size) =>
-            BigInteger.One << ((y * size) + x);
+        public readonly Romino Orient() => GetPermutations().MinBy(x => x._uniqueCode).First();
 
-        private readonly BigInteger GetUniqueCode()
+        public readonly Romino[] GetPermutations() => new[]
         {
-            int blockCount = Blocks.Length;
+            this,
+            ProjectVoxels(x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
+            ProjectVoxels(x => new Vector2Int(x.X, -x.Y), x => new Vector2Int(x.X, -1 - x.Y)),
+            ProjectVoxels(x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(-1 - x.X, -1 - x.Y)),
 
-            BigInteger accumulator = 0;
-
-            foreach (var block in Blocks)
-            {
-                accumulator += GetWeight(block.X, block.Y, blockCount);
-            }
-
-            return accumulator;
-        }
-
-        public readonly Romino Orient() => GetPermutations().MinBy(x => x.UniqueCode).First();
-
-        public readonly IEnumerable<Romino> GetRotations()
-        {
-            yield return Rotate(0);
-            yield return Rotate(1);
-            yield return Rotate(2);
-            yield return Rotate(3);
-        }
-
-        public readonly IEnumerable<Romino> GetPermutations() => GetRotations()
-            .SelectMany(x => new[]
-            {
-                x,
-                x.Mirror(Axis.X),
-                x.Mirror(Axis.X)
-            });
-
-        public readonly Romino Mirror(Axis axis) => axis switch
-        {
-            Axis.X => ProjectVoxels(x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
-            Axis.Y => ProjectVoxels(x => new Vector2Int(x.X, -x.Y), x => new Vector2Int(x.X, -1 - x.Y)),
-            _ => throw new ArgumentException(nameof(axis)),
-        };
-
-        //public Romino Rotate(int clockwiseTurns) => Rotate((uint)(clockwiseTurns < 0 ? 4 + (clockwiseTurns % 4) : clockwiseTurns));
-        public readonly Romino Rotate(uint clockwiseTurns) => (clockwiseTurns % 4) switch
-        {
-            0 => this,
-            1 => ProjectVoxels(x => new Vector2Int(-x.Y, x.X), x => new Vector2Int(-1 - x.Y, x.X)),
-            2 => ProjectVoxels(x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(-1 - x.X, -1 - x.Y)),
-            3 => ProjectVoxels(x => new Vector2Int(x.Y, -x.X), x => new Vector2Int(x.Y, -1 - x.X)),
-            _ => throw new ArithmeticException("Modulo with 4 was equal or greater than 4"),
+            ProjectVoxels(x => new Vector2Int(x.Y, x.X), x => new Vector2Int(x.Y, x.X)),
+            ProjectVoxels(x => new Vector2Int(-x.Y, x.X), x => new Vector2Int(-1 - x.Y, x.X)),
+            ProjectVoxels(x => new Vector2Int(x.Y, -x.X), x => new Vector2Int(x.Y, -1 - x.X)),
+            ProjectVoxels(x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(-1 - x.Y, -1 - x.X)),
         };
 
         private readonly Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc) =>
-            new Romino(Blocks.Select(func), diagonalRootFunc(DiagonalRoot));
-
-        //public readonly IEnumerable<Romino> AddOne() => AddOneNotUnique().Distinct();
+            new Romino(Blocks.SelectF(func), diagonalRootFunc(DiagonalRoot));
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
-            var corners = Blocks.SelectMany(x => new[]
+            var corners = Blocks.SelectManyF(x => new[]
             {
                 new Vector2Int(x.X, x.Y-1),
                 new Vector2Int(x.X, x.Y+1),
@@ -149,7 +111,7 @@
 
         private readonly bool[,] GetBlock2DArray()
         {
-            var blocks = new bool[Blocks.Max(x => x.X) + 1, Blocks.Max(x => x.Y) + 1];
+            var blocks = new bool[Blocks.MaxF(x => x.X) + 1, Blocks.MaxF(x => x.Y) + 1];
 
             Parallel.ForEach(Blocks, block => blocks[block.X, block.Y] = true);
             return blocks;
@@ -170,9 +132,11 @@
 
         public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
 
-        public override readonly int GetHashCode() => UniqueCode.GetHashCode();
+        public override readonly int GetHashCode() => _uniqueCode.GetHashCode();
 
-        public readonly bool Equals(Romino romino) => UniqueCode == romino.UniqueCode;
+        public readonly bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
+
+        public int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
 
         public static bool operator ==(Romino left, Romino right) => left.Equals(right);
 
@@ -206,16 +170,18 @@
 
             IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSizeInternal()
             {
-                Romino[] lastRominos = new[] { One };
+                var lastRominos = new List<Romino> { One };
+                var newRominos = new List<Romino>();
 
-                yield return (2, lastRominos);
+                yield return (2, lastRominos.ToArray());
 
                 for (int i = 3; i <= size; i++)
                 {
-                    var newRominos = lastRominos.AsParallel()
-                        .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
-                    lastRominos = newRominos;
-                    yield return (i, newRominos);
+                    newRominos.Clear();
+                    foreach (var romino in lastRominos) newRominos.AddRange(romino.AddOneNotUnique());
+                    newRominos.DistinctInPlaceF();
+                    yield return (i, newRominos.ToArray());
+                    (newRominos, lastRominos) = (lastRominos, newRominos);
                 }
             }
         }
