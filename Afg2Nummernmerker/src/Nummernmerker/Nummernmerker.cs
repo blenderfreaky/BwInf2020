@@ -30,14 +30,14 @@
         {
             if (MerkedNummers.TryGetValue(merkedNummer, out var optimalDistribution)) return optimalDistribution;
 
-            int nextGenerationSize = Math.Min(merkedNummer.Zeros.Length, merkedNummer.MaxSequenceLength) - merkedNummer.MinSequenceLength + 1;
-
             if (merkedNummer.Zeros.Length < merkedNummer.MinSequenceLength)
             {
                 return MerkedNummers[merkedNummer] = new NummerMerkingSummary(Array.Empty<int>(), int.MaxValue - 1);
             }
 
-            if (nextGenerationSize == 0)
+            int nextGenerationSize = Math.Max(Math.Min(merkedNummer.Zeros.Length, merkedNummer.MaxSequenceLength + 1) - merkedNummer.MinSequenceLength, 0);
+
+            if (nextGenerationSize <= 0)
             {
                 return MerkedNummers[merkedNummer] = new NummerMerkingSummary(Array.Empty<int>(), 0);
             }
@@ -47,9 +47,14 @@
             for (int i = 0; i < nextGenerationSize; i++)
             {
                 var summary =
-                    MerkNummern(merkedNummer.Zeros.Skip(i + merkedNummer.MinSequenceLength).ToArray(), merkedNummer.MinSequenceLength, merkedNummer.MaxSequenceLength);
-                nextGeneration[i] =
-                    new NummerMerkingSummary(summary.Distribution.PrecedeOne(i + merkedNummer.MinSequenceLength), summary.LeadingZerosHit + (merkedNummer.Zeros[0] ? 1 : 0));
+                    MerkNummern(
+                        merkedNummer.Zeros.Skip(i + merkedNummer.MinSequenceLength).ToArray(),
+                        merkedNummer.MinSequenceLength,
+                        merkedNummer.MaxSequenceLength);
+
+                nextGeneration[i] = new NummerMerkingSummary(
+                    summary.Distribution.PrecedeOne(i + merkedNummer.MinSequenceLength),
+                    summary.LeadingZerosHit + (merkedNummer.Zeros[0] ? 1 : 0));
             }
 
             var elements = nextGeneration
