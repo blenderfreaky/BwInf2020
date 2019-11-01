@@ -2,6 +2,7 @@
 {
     using MoreLinq;
     using System;
+    using System.Buffers;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -17,6 +18,8 @@
         public readonly Vector2Int[] Blocks;
         public readonly Vector2Int DiagonalRoot;
 
+        private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
+
         public IEnumerable<Vector2Int> DiagonalRootBlockade => new[]
         {
             DiagonalRoot + new Vector2Int(0, 0),
@@ -29,10 +32,9 @@
 
         public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, bool check = true)
         {
-            DiagonalRoot = diagonalRoot;
-
             if (!check)
             {
+                DiagonalRoot = diagonalRoot;
                 Blocks = blocks;
                 UniqueCode = GetUniqueCode();
                 return;
@@ -41,16 +43,16 @@
             Vector2Int offset = -new Vector2Int(blocks.Min(x => x.X), blocks.Min(x => x.Y));
 
             Blocks = blocks.Select(x => x + offset).ToArray();
+            DiagonalRoot = diagonalRoot + offset;
 
             UniqueCode = GetUniqueCode();
         }
 
         public Romino(IEnumerable<Vector2Int> blocks, Vector2Int diagonalRoot, bool check = true)
         {
-            DiagonalRoot = diagonalRoot;
-
             if (!check)
             {
+                DiagonalRoot = diagonalRoot;
                 Blocks = blocks.ToArray();
                 UniqueCode = GetUniqueCode();
                 return;
@@ -59,6 +61,7 @@
             Vector2Int offset = -new Vector2Int(blocks.Min(x => x.X), blocks.Min(x => x.Y));
 
             Blocks = blocks.Select(x => x + offset).ToArray();
+            DiagonalRoot = diagonalRoot + offset;
 
             UniqueCode = GetUniqueCode();
         }
@@ -175,7 +178,7 @@
 
         public static bool operator !=(Romino left, Romino right) => !(left == right);
 
-        public IEnumerable<string> ToAsciiArt()
+        public IEnumerable<string> ToAsciiArt(bool highlightDiagonalBlockade = false)
         {
             bool[,] blocks = GetBlock2DArray();
 
@@ -185,7 +188,8 @@
             {
                 for (int j = 0; j < blocks.GetLength(1); j++)
                 {
-                    buffer.Append(blocks[i, j] ? '█' : ' ');
+                    bool diagonalBlock = highlightDiagonalBlockade && DiagonalRootBlockade.Contains(new Vector2Int(i, j));
+                    buffer.Append(blocks[i, j] ? (diagonalBlock ? '▓' : '█') : (diagonalBlock ? '·' : ' '));
                 }
 
                 yield return buffer.ToString();

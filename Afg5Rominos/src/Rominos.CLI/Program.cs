@@ -4,6 +4,7 @@
     using Rominos;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -29,6 +30,16 @@
 
         public static void RunWithOptions(Options options)
         {
+            Console.WriteLine("Starting");
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            foreach (var rom in Romino.GetRominosUntilSize(10)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
+            stopwatch.Stop();
+            Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
+
+            return;
+
             TextWriter consoleOut = Console.Out;
 
             FileStream? fileStream = null;
@@ -54,11 +65,12 @@
                 {
                     lock (_padlockRunWithOptions)
                     {
-                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks \n" + (options.TargetFilePath == null ? "\tLoading..." : string.Empty));
+                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks ({rominoSizeClass.Rominos.Length}) \n"
+                            + (options.TargetFilePath == null ? "\tLoading..." : string.Empty));
 
                         if (options.TargetFilePath != null)
                         {
-                            ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size}");
+                            ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size} ({rominoSizeClass.Rominos.Length})");
                         }
 
                         string[][] text = rominoSizeClass.Rominos
