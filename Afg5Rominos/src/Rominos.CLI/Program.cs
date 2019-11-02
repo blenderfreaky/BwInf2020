@@ -19,8 +19,11 @@ namespace Nummernmerker.CLI
         [Option('t', "targetFile", Required = false, HelpText = "Path of the file to write outputs to. If not set the console is used.")]
         public string? TargetFilePath { get; set; }
 
-        [Option('h', "highlightDiagonalBlockade", Required = false, HelpText = "Whether to visually mark where the diagonal blockade is in every Romino.")]
+        [Option('d', "highlightDiagonalBlockade", Required = false, HelpText = "Whether to visually mark where the diagonal blockade is in every Romino.")]
         public bool HighlightDiagonalBlockade { get; set; }
+
+        [Option('e', "highlightPossibleExtensions", Required = false, HelpText = "Whether to visually mark where new blocks can be appended in every Romino.")]
+        public bool HighlightPossibleExtensions { get; set; }
     }
 
     public static class Program
@@ -81,7 +84,7 @@ namespace Nummernmerker.CLI
                         }
 
                         string[][] text = rominoSizeClass.Rominos
-                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade).ToArray()).ToArray();
+                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade, options.HighlightPossibleExtensions).ToArray()).ToArray();
 
                         if (options.TargetFilePath == null)
                         {
@@ -96,7 +99,7 @@ namespace Nummernmerker.CLI
                             int length = 0;
                             int k = i;
 
-                            for (int j = 0; j < rominoSizeClass.Size; j++)
+                            for (int j = 0; j < rominoSizeClass.Size+2; j++)
                             {
                                 for (k = i; k < text.Length; k++)
                                 {

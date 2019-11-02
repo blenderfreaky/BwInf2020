@@ -15,14 +15,22 @@
     public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
-            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0), false);
+            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
+                // These are hardcoded in by hand, because this array is only populated lazily by appending, rather than computed once. 
+                // As this first romino can not be computed like other rominos, this wont be populated using normal methods.
+                new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
+                        new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
+                        new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
+                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
 
         public readonly Vector2Int[] Blocks;
         public readonly Vector2Int DiagonalRoot;
 
+        public readonly Vector2Int[] PossibleExtensions;
+
         private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
 
-        public IEnumerable<Vector2Int> DiagonalRootBlockade => new[]
+        public Vector2Int[] DiagonalRootBlockade => new[]
         {
             DiagonalRoot + new Vector2Int(0, 0),
             DiagonalRoot + new Vector2Int(0, 1),
@@ -32,21 +40,15 @@
 
         private readonly BitBuffer512 _uniqueCode;
 
-        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, bool check = true)
+        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
         {
-            if (!check)
-            {
-                DiagonalRoot = diagonalRoot;
-                Blocks = blocks;
-                _uniqueCode = CalculateUniqueCode(blocks);
-                return;
-            }
-
             Vector2Int offset = -new Vector2Int(blocks.MinF(x => x.X), blocks.MinF(x => x.Y));
 
             Blocks = blocks;
             Blocks.SelectInPlaceF(x => x + offset);
             DiagonalRoot = diagonalRoot + offset;
+            PossibleExtensions = possibleExtensions;
+            PossibleExtensions.SelectInPlaceF(x => x + offset);
 
             _uniqueCode = CalculateUniqueCode(blocks);
         }
@@ -83,30 +85,38 @@
         };
 
         private readonly Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc) =>
-            new Romino(Blocks.SelectF(func), diagonalRootFunc(DiagonalRoot));
+            new Romino(Blocks.SelectF(func), diagonalRootFunc(DiagonalRoot), PossibleExtensions.SelectF(func));
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
-            var corners = Blocks.SelectManyF(x => new[]
-            {
-                new Vector2Int(x.X, x.Y-1),
-                new Vector2Int(x.X, x.Y+1),
-                new Vector2Int(x.X+1, x.Y),
-                new Vector2Int(x.X+1, x.Y-1),
-                new Vector2Int(x.X+1, x.Y+1),
-                new Vector2Int(x.X-1, x.Y),
-                new Vector2Int(x.X-1, x.Y-1),
-                new Vector2Int(x.X-1, x.Y+1),
-            });
-
             // Copy these to locals for use in lambdas
             var blocks = Blocks;
             var diagonalRoot = DiagonalRoot;
+            var diagonalRootBlockade = DiagonalRootBlockade;
+            var possibleExtensions = PossibleExtensions;
 
-            // Remove duplicates and already occupied positions, as well as exclude positions blocked by the diagonal
-            return corners
-                .Distinct().Except(blocks.AsParallel()).Except(DiagonalRootBlockade.AsParallel())
-                .Select(newBlock => new Romino(AppendOne(blocks, newBlock), diagonalRoot).Orient());
+            return PossibleExtensions
+                .SelectF(newBlock =>
+                {
+                    var extensionsFromNewBlock = (new[]
+                    {
+                        newBlock + new Vector2Int(0, -1),
+                        newBlock + new Vector2Int(0, 1),
+                        newBlock + new Vector2Int(1, 0),
+                        newBlock + new Vector2Int(1, -1),
+                        newBlock + new Vector2Int(1, 1),
+                        newBlock + new Vector2Int(-1, 0),
+                        newBlock + new Vector2Int(-1, -1),
+                        newBlock + new Vector2Int(-1, 1),
+                    })
+                    // Remove already occupied positions, as well as exclude positions blocked by the diagonal
+                    .Except(blocks).Except(diagonalRootBlockade);
+
+                    // Remove the added block and add the new, now appendable positions
+                    var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
+
+                    return new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions).Orient();
+                });
         }
 
         private readonly bool[,] GetBlock2DArray()
@@ -142,18 +152,33 @@
 
         public static bool operator !=(Romino left, Romino right) => !(left == right);
 
-        public IEnumerable<string> ToAsciiArt(bool highlightDiagonalBlockade = false)
+        private static readonly Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char> AsciiArtChars = new Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char>
+        {
+            [(false, false, false)] = ' ',
+            [(false, false, true)] = '·',
+            [(false, true, false)] = '░',
+            [(true, false, false)] = '█',
+            [(true, true, false)] = '▓',
+        };
+
+        public IEnumerable<string> ToAsciiArt(bool highlightDiagonalBlockade = false, bool highlightPossibleExtensions = false)
         {
             bool[,] blocks = GetBlock2DArray();
 
             var buffer = new StringBuilder();
 
-            for (int i = 0; i < blocks.GetLength(0); i++)
+            for (int i = -1; i <= blocks.GetLength(0); i++)
             {
-                for (int j = 0; j < blocks.GetLength(1); j++)
+                for (int j = -1; j <= blocks.GetLength(1); j++)
                 {
-                    bool diagonalBlock = highlightDiagonalBlockade && DiagonalRootBlockade.Contains(new Vector2Int(i, j));
-                    buffer.Append(blocks[i, j] ? (diagonalBlock ? '▓' : '█') : (diagonalBlock ? '·' : ' '));
+                    Vector2Int vec = new Vector2Int(i, j);
+
+                    bool block = i >= 0 && j >= 0 && i < blocks.GetLength(0) && j < blocks.GetLength(1) && blocks[i, j];
+
+                    bool diagonalBlockade = highlightDiagonalBlockade && DiagonalRootBlockade.Contains(vec);
+                    bool possibleExtension = highlightPossibleExtensions && PossibleExtensions.Contains(vec);
+
+                    buffer.Append(AsciiArtChars[(block, diagonalBlockade, possibleExtension)]);
                 }
 
                 yield return buffer.ToString();
@@ -170,18 +195,16 @@
 
             IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSizeInternal()
             {
-                var lastRominos = new List<Romino> { One };
-                var newRominos = new List<Romino>();
+                Romino[] lastRominos = new[] { One };
 
-                yield return (2, lastRominos.ToArray());
+                yield return (2, lastRominos);
 
                 for (int i = 3; i <= size; i++)
                 {
-                    newRominos.Clear();
-                    foreach (var romino in lastRominos) newRominos.AddRange(romino.AddOneNotUnique());
-                    newRominos.DistinctInPlaceF();
-                    yield return (i, newRominos.ToArray());
-                    (newRominos, lastRominos) = (lastRominos, newRominos);
+                    var newRominos = lastRominos.AsParallel()
+                        .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
+                    lastRominos = newRominos;
+                    yield return (i, newRominos);
                 }
             }
         }

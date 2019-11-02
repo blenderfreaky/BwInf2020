@@ -17,7 +17,7 @@
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
-                    long number = 00321003003102030312;
+                    string number = "011000000011000100111111101011";
 
                     Console.WriteLine(string.Join(' ', Nummernmerker.MerkNummernToText(number, 2, 4)));
                 });

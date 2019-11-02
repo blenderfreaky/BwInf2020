@@ -35,5 +35,7 @@ namespace Rominos
 
         public static Vector2Int operator -(Vector2Int vec)
             => new Vector2Int(-vec.X, -vec.Y);
+
+        public override readonly string ToString() => $"X:{X}, Y:{Y}";
     }
 }
