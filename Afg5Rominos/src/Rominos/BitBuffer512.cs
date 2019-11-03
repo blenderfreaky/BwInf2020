@@ -10,48 +10,48 @@ using System.Text;
 
 namespace Rominos
 {
-    [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 64)]
+    [StructLayout(LayoutKind.Explicit)]//, Pack = 1, Size = 512)]
     internal struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         #region Fields
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(0)] private ulong _h;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(8)] private ulong _g;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(16)] private ulong _f;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(32)] private ulong _e;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(64)] private ulong _d;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(128)] private ulong _c;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(256)] private ulong _b;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(512)] private ulong _a;

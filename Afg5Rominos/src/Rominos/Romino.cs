@@ -15,7 +15,7 @@
     public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
-            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
+            new Romino(2, new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
                 // These are hardcoded in by hand, because this array is only populated lazily by appending, rather than computed once. 
                 // As this first romino can not be computed like other rominos, this wont be populated using normal methods.
                 new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
@@ -23,12 +23,13 @@
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
 
+        public readonly int BlockCount;
         public readonly Vector2Int[] Blocks;
         public readonly Vector2Int DiagonalRoot;
 
         public readonly Vector2Int[] PossibleExtensions;
 
-        private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
+        internal static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared;
 
         public Vector2Int[] DiagonalRootBlockade => new[]
         {
@@ -40,38 +41,64 @@
 
         private readonly BitBuffer512 _uniqueCode;
 
-        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
+        public Romino(int blockCount, Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
         {
-            Vector2Int offset = -new Vector2Int(blocks.MinF(x => x.X), blocks.MinF(x => x.Y));
+            int minX = int.MaxValue, minY = int.MaxValue;
+            for (int i = 0; i < blockCount; i++)
+            {
+                if (blocks[i].X < minX) minX = blocks[i].X;
+                if (blocks[i].Y < minY) minY = blocks[i].Y;
+            }
+
+            Vector2Int offset = -new Vector2Int(minX, minY);
+
+            BlockCount = blockCount;
+            DiagonalRoot = diagonalRoot + offset;
 
             Blocks = blocks;
-            Blocks.SelectInPlaceF(x => x + offset);
-            DiagonalRoot = diagonalRoot + offset;
             PossibleExtensions = possibleExtensions;
-            PossibleExtensions.SelectInPlaceF(x => x + offset);
+            for (int i = 0; i < blockCount; i++) // LINQ would enumerate longer than blockCount if the array was longer, so do it manually
+            {
+                Blocks[i] += offset;
+                PossibleExtensions[i] += offset;
+            }
 
-            _uniqueCode = CalculateUniqueCode(blocks);
+            _uniqueCode = CalculateUniqueCode(BlockCount, Blocks);
         }
 
-        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks)
+        private static BitBuffer512 CalculateUniqueCode(int blockCount, Vector2Int[] blocks)
         {
-            static int GetWeight(int x, int y, int size) => (y * size) + x;
-
             var bits = new BitBuffer512();
 
-            int length = blocks.Length;
-
-            foreach (var block in blocks)
+            for (int i = 0; i < blockCount; i++)
             {
-                bits[GetWeight(block.X, block.Y, length)] = true;
+                bits[blocks[i].X + (blocks[i].Y * blockCount)] = true;
             }
 
             return bits;
         }
 
-        public readonly Romino Orient() => GetPermutations().MinBy(x => x._uniqueCode).First();
+        public readonly Romino Orient()
+        {
+            Romino max = this;
 
-        public readonly Romino[] GetPermutations() => new[]
+            foreach (var permutation in Permutations)
+            {
+                if (permutation._uniqueCode > max._uniqueCode)
+                {
+                    ArrayPool.Return(max.Blocks);
+                    max = permutation;
+                }
+                else
+                {
+                    ArrayPool.Return(permutation.Blocks);
+                }
+            }
+
+            return max;
+        }
+
+        public readonly Romino[] Permutations => new[]
         {
             this,
             ProjectVoxels(x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
@@ -85,11 +112,12 @@
         };
 
         private readonly Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc) =>
-            new Romino(Blocks.SelectF(func), diagonalRootFunc(DiagonalRoot), PossibleExtensions.SelectF(func));
+            new Romino(BlockCount, Blocks.Select(BlockCount, func), diagonalRootFunc(DiagonalRoot), PossibleExtensions.SelectF(func));
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
             // Copy these to locals for use in lambdas
+            var blockCount = BlockCount;
             var blocks = Blocks;
             var diagonalRoot = DiagonalRoot;
             var diagonalRootBlockade = DiagonalRootBlockade;
@@ -110,28 +138,36 @@
                         newBlock + new Vector2Int(-1, 1),
                     })
                     // Remove already occupied positions, as well as exclude positions blocked by the diagonal
-                    .Except(blocks).Except(diagonalRootBlockade);
+                    .Except(blocks.Concat(diagonalRootBlockade));
 
                     // Remove the added block and add the new, now appendable positions
                     var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
 
-                    return new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions).Orient();
+                    return new Romino(blockCount + 1, AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions).Orient();
                 });
         }
 
         private readonly bool[,] GetBlock2DArray()
         {
-            var blocks = new bool[Blocks.MaxF(x => x.X) + 1, Blocks.MaxF(x => x.Y) + 1];
+            int maxX = 0, maxY = 0;
+            for (int i = 0; i < BlockCount; i++)
+            {
+                if (Blocks[i].X > maxX) maxX = Blocks[i].X;
+                if (Blocks[i].Y > maxY) maxY = Blocks[i].Y;
+            }
 
-            Parallel.ForEach(Blocks, block => blocks[block.X, block.Y] = true);
+            var blocks = new bool[maxX + 1, maxY + 1];
+
+            for (int i = 0; i < BlockCount; i++) blocks[Blocks[i].X, Blocks[i].Y] = true;
+
             return blocks;
         }
 
-        private static T[] AppendOne<T>(T[] arr, T elem)
+        private static Vector2Int[] AppendOne(Vector2Int[] arr, Vector2Int elem)
         {
             int length = arr.Length;
 
-            T[] newArr = new T[length + 1];
+            Vector2Int[] newArr = ArrayPool.Rent(length + 1);
 
             Array.Copy(arr, 0, newArr, 0, arr.Length);
 
@@ -157,7 +193,9 @@
             [(false, false, false)] = ' ',
             [(false, false, true)] = '·',
             [(false, true, false)] = '░',
+            [(false, true, true)] = 'e', // Common error, output instead of crash
             [(true, false, false)] = '█',
+            [(true, false, true)] = 'E', // Common error, output instead of crash
             [(true, true, false)] = '▓',
         };
 
@@ -202,11 +240,45 @@
                 for (int i = 3; i <= size; i++)
                 {
                     var newRominos = lastRominos.AsParallel()
-                        .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
-                    lastRominos = newRominos;
-                    yield return (i, newRominos);
+                        .SelectMany(x => x.AddOneNotUnique())
+                        .OrderBy(x => x._uniqueCode).ToList();
+
+                    Romino currentRomino = newRominos[0];
+                    int pos = 1;
+                    for (int j = 1; j < newRominos.Count; j++)
+                    {
+                        var newRomino = newRominos[pos] = newRominos[j];
+
+                        if (currentRomino == newRomino)
+                        {
+                            ArrayPool.Return(newRomino.Blocks);
+                            pos++;
+                        }
+                        else
+                        {
+                            currentRomino = newRomino;
+                        }
+                    }
+                    newRominos.RemoveRange(pos, newRominos.Count - pos);
+
+                    var newRominosArray = newRominos.ToArray();
+                    lastRominos = newRominosArray;
+                    yield return (i, newRominosArray);
                 }
             }
+        }
+    }
+
+    internal static class Linq
+    {
+        public static Vector2Int[] Select(this Vector2Int[] source, int length, Func<Vector2Int, Vector2Int> func)
+        {
+            var target = Romino.ArrayPool.Rent(length);
+            for (int i = 0; i < length; i++)
+            {
+                target[i] = func(source[i]);
+            }
+            return target;
         }
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Rominos
 {
+    [StructLayout(LayoutKind.Auto, Pack = 1)]
     public readonly struct Vector2Int : IEquatable<Vector2Int>
     {
-        public readonly int X, Y;
+        public readonly int X;
+        public readonly int Y;
 
         public Vector2Int(int x, int y)
         {
