@@ -15,10 +15,10 @@
     public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
-            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
+            new Romino(new List<Vector2Int> { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
                 // These are hardcoded in by hand, because this array is only populated lazily by appending, rather than computed once. 
                 // As this first romino can not be computed like other rominos, this wont be populated using normal methods.
-                new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
+                new List<Vector2Int> { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
@@ -28,9 +28,9 @@
 
         public readonly List<Vector2Int> PossibleExtensions;
 
-        private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
+        //private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
 
-        public Vector2Int[] DiagonalRootBlockade => new[]
+        public readonly Vector2Int[] DiagonalRootBlockade => new[]
         {
             DiagonalRoot + new Vector2Int(0, 0),
             DiagonalRoot + new Vector2Int(0, 1),
@@ -38,7 +38,7 @@
             DiagonalRoot + new Vector2Int(1, 1)
         };
 
-        private readonly BitBuffer512 _uniqueCode;
+        private BitBuffer512 _uniqueCode;
 
         public Romino(List<Vector2Int> blocks, Vector2Int diagonalRoot, List<Vector2Int> possibleExtensions)
         {
@@ -59,7 +59,7 @@
 
             var bits = new BitBuffer512();
 
-            int length = blocks.Length;
+            int length = blocks.Count;
 
             foreach (var block in blocks)
             {
@@ -69,24 +69,63 @@
             return bits;
         }
 
-        public readonly Romino Orient()
+        private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
         {
-            this,
-            ProjectVoxels(x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
-            ProjectVoxels(x => new Vector2Int(x.X, -x.Y), x => new Vector2Int(x.X, -1 - x.Y)),
-            ProjectVoxels(x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(-1 - x.X, -1 - x.Y)),
+            (x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
+            (x => new Vector2Int(x.X, -x.Y), x => new Vector2Int(x.X, -1 - x.Y)),
+            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(-1 - x.X, -1 - x.Y)),
 
-            ProjectVoxels(x => new Vector2Int(x.Y, x.X), x => new Vector2Int(x.Y, x.X)),
-            ProjectVoxels(x => new Vector2Int(-x.Y, x.X), x => new Vector2Int(-1 - x.Y, x.X)),
-            ProjectVoxels(x => new Vector2Int(x.Y, -x.X), x => new Vector2Int(x.Y, -1 - x.X)),
-            ProjectVoxels(x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(-1 - x.Y, -1 - x.X)),
+            (x => new Vector2Int(x.Y, x.X), x => new Vector2Int(x.Y, x.X)),
+            (x => new Vector2Int(-x.Y, x.X), x => new Vector2Int(-1 - x.Y, x.X)),
+            (x => new Vector2Int(x.Y, -x.X), x => new Vector2Int(x.Y, -1 - x.X)),
+            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(-1 - x.Y, -1 - x.X)),
+        };
+
+        public Romino Orient()
+        {
+            int minIndex = -1;
+            BitBuffer512 min = _uniqueCode;
+
+            for (int i = 0; i < Maps.Length; i++)
+            {
+                ProjectVoxels(Maps[i].BlockMap, Maps[i].DiagonalRootMap);
+                FixDisplacement();
+                if (_uniqueCode < min)
+                {
+                    minIndex = 1;
+                    min = _uniqueCode;
+                }
+                // TODO: Optimize this away
+                ProjectVoxels(Maps[i].BlockMap, Maps[i].DiagonalRootMap);
+                FixDisplacement();
+            }
+
+            if (minIndex == -1)
+            {
+                return this;
+            }
+            else
+            {
+                ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
+                FixDisplacement();
+                return this;
+            }
         }
 
-        private Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
+        private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
             Blocks.SelectInPlaceF(func);
             DiagonalRoot = diagonalRootFunc(DiagonalRoot);
-            PossibleExtensions.SelectInPlaceF(func));
+            PossibleExtensions.SelectInPlaceF(func);
+        }
+
+        private void FixDisplacement()
+        {
+            Vector2Int offset = -new Vector2Int(Blocks.MinF(x => x.X), Blocks.MinF(x => x.Y));
+
+            Blocks.SelectInPlaceF(x => x + offset);
+            DiagonalRoot += offset;
+            PossibleExtensions.SelectInPlaceF(x => x + offset);
         }
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
@@ -100,7 +139,7 @@
             return PossibleExtensions
                 .SelectF(newBlock =>
                 {
-                    var extensionsFromNewBlock = (new[]
+                    IEnumerable<Vector2Int> extensionsFromNewBlock = (new[]
                     {
                         newBlock + new Vector2Int(0, -1),
                         newBlock + new Vector2Int(0, 1),
@@ -115,9 +154,14 @@
                     .Except(blocks).Except(diagonalRootBlockade);
 
                     // Remove the added block and add the new, now appendable positions
-                    var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
+                    List<Vector2Int> newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToList();
 
-                    return new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions).Orient();
+                    List<Vector2Int> newBlocks = new List<Vector2Int>(blocks)
+                    {
+                        newBlock
+                    };
+
+                    return new Romino(newBlocks, diagonalRoot, newPossibleExtensions).Orient();
                 });
         }
 
@@ -127,19 +171,6 @@
 
             Parallel.ForEach(Blocks, block => blocks[block.X, block.Y] = true);
             return blocks;
-        }
-
-        private static T[] AppendOne<T>(T[] arr, T elem)
-        {
-            int length = arr.Length;
-
-            T[] newArr = new T[length + 1];
-
-            Array.Copy(arr, 0, newArr, 0, arr.Length);
-
-            newArr[arr.Length] = elem;
-
-            return newArr;
         }
 
         public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);

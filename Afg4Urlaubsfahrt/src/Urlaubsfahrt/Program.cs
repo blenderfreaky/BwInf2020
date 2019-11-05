@@ -11,11 +11,12 @@ namespace Urlaubsfahrt
     {
         public static Track GetTrack(
             float trackLength,
-            float startFuel,
+            float startFuelLength,
             float fuelLength,
             List<GasStation> allStations)
         {
             Track.FuelLength = fuelLength;
+            Track.StartFuelLength = startFuelLength;
 
             List<Track> trackParts = new List<Track> { Track.EmptyTrack };
 
@@ -30,10 +31,19 @@ namespace Urlaubsfahrt
                     Console.WriteLine("No possible route! Just stay at home!");
                 else
                 {
+                    #if false
                     Track t = new Track(possibleParts
                         .AllMins(x => x.Stops.Count)
                         .MinBy(x => x.GetPriceTo(station)), station);
                     trackParts.Add(t);
+                    #else
+                    List<Track> BestTracks = possibleParts
+                        .AllMins(x => x.Stops.Count)
+                        .AllMins(x => x.GetPriceTo(station))
+                        .ToList();
+                    BestTracks.ForEach(x => possibleParts.Add(new Track(x, station)));
+                    #endif
+                    
                 }
             }
             return trackParts.Last();

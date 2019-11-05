@@ -33,7 +33,7 @@
                 AllStations.Add(new Urlaubsfahrt.GasStation(values[0], values[1]));
             }
 
-            Urlaubsfahrt.Track Way = Urlaubsfahrt.Program.GetTrack(TrackLength, MaxFuel, StartFuel, FuelLength, AllStations);
+            Urlaubsfahrt.Track Way = Urlaubsfahrt.Program.GetTrack(TrackLength, StartFuel / Usage * 100, FuelLength, AllStations);
             Console.WriteLine(Way.ToString());
             #else
             Parser.Default.ParseArguments<Options>(args)
