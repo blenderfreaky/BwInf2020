@@ -9,6 +9,8 @@
 \newcommand{\printwhitecell}[2][]{\node[draw=gray, semithick, fill=white, minimum width=\cellsize cm, minimum height=\cellsize cm] at #2 {#1};} 
 \newcommand{\printblackcell}[1]{\node[draw=gray, semithick, fill=black, minimum width=\cellsize cm, minimum height=\cellsize cm] at #1 {};} 
 \newcommand{\printcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/2);} 
+\newcommand{\printblackcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
+\newcommand{\printwhitecircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
 
 \newcommand{\printcell}[2]{%
     \if#1w%
@@ -190,7 +192,6 @@ Nehme man beispielsweise wieder das 2er-Romino, würden die Nachbarn aller Blöc
 
 Entfernen bereits existierender Blöcke
 
-
 \printmatrix{}{{
     {c,c,c,w},
     {c,b,c,c},
@@ -207,12 +208,53 @@ Es lässt sich hier erkennen, das die Existenz einer echten Diagonale nicht zwin
     {w,w,w,w}%
 }}
 
-Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt
+Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt. 
+Bei den Mööglichen Block-additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Block-additionsmöglichkeiten entfernt:
 
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,b,w,c},
+    {c,w,b,c},
+    {w,c,c,c}%
+}}
 
+Diese 4 beschützten Blöcke werden auch bei Spiegelungen, Verschiebungen und Rotationen mitverfolgt, sodass diese eine Diagonale immer besteht.
 
 \subsection{Eliminierung von Duplikaten}
 
-%TODO
+Zur Eliminierung von Duplikaten werden die Rominos zuerst eindeutig orientiert, um Vergleiche zwischen gleichen, aber transformierten Rominos zu erleichtern.
+
+\subsubsection{Verschiebung}
+
+Die Verschiebung wird eliminiert durch Verschiebung des Rominos in die linke obere Ecke des Gitters; also wird der Block mit der geringsten x-Koordinate auf x=0 verschoben, und der Block mit der geringsten y-Koordinate auf y=0.
+
+\subsubsection{Rotation und Spiegelung}
+
+Um Rotation und Spiegelung eines Rominos zu eliminieren, werden zuerst alle seine Permutationen (also alle Kombinationen von Rotation und Spiegelung) ermittelt, und denen wird ein eindeutiger Wert zugewiesen. Daraufhin wird das Romino mit dem niedrigstem eindeutigem Wert ausgewählt. Die Bestimmung dieses eindeutigen Werts habe ich einen trivialen Algorithmus verwendet wie folgt:
+
+\begin{enumerate}
+\item Nehme einen Block b aus der Permutation des Rominos
+\item Seien die Koordinaten (x, y) die Koordinaten des Blocks b, wobei die minimale x-Koordinate und die minimale y-Koordinate aus allen Blöcken der Permutation 0 ist.
+\item Man weise dem Block b den Wert \(2^{(y * \text{<Anzahl an Blöcken>)} + x}\) zu
+\item Addiere die Werte aller Blöcke der Permutation, sei dies der Wert der Permutation
+\end{enumerate}
+
+Dabei ist zwar noch viel Raum für Optimierung, aber dieser Algorithmus ist ausreichend und O(n).
+
+\subsubsection{Endgültige Duplikat-Eliminierung}
+
+Zum endgültigen eliminieren der Duplikate, werden zuerst alle Rominos wie oben beschrieben
+
+\subsubsection{Beispiel}
+
+
+\section{Umsetzung}
+
+Zur Umsetzung habe ich den obigen Algorithmus in C# 8.0 mit .NET Core 3.0 implementiert.
+
+Zur Darstellung von Rominos habe ich ein struct definiert, welches eine Array von den Koordinaten der Blöcke, ein Array von den Koordinaten möglicher Block-Additionen, den eindeutigen Wert, und die linken-oberen Koordinaten der 4 geschützten Positionen der geschützten Diagonale.
+
+
+%TODO IN CODE: Dont instantiate permutations, make them lazy
 
 \end{document}
