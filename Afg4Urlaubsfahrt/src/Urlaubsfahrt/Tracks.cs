@@ -8,7 +8,8 @@ namespace Urlaubsfahrt
 
     public class Track
     {
-        public static float FuelLength {get; set;}
+        public static float FuelLength { get; set; }
+        public static float StartFuelLength { get; set; }
 
         public List<GasStation> Stops { get; }
 
@@ -20,8 +21,11 @@ namespace Urlaubsfahrt
             List<GasStation>allStations = Stops.OrderBy(x => x.PricePerVolumeInEuroPerLiter).ToList();
 
             List<Tuple<float, float>> FullBois = new List<Tuple<float, float>>();
+            List<float> possslos = new List<float>{pos, StartFuelLength};
+            FullBois.Add(new Tuple<float, float>(0, possslos.Min()));
             foreach(GasStation s in allStations)
             {
+                //TODO: If all covered => break
                 Tuple<Tuple<float, float>, int> UnderBorderTupleIndexTuple = null;
                 try
                 {

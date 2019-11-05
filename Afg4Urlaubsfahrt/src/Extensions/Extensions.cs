@@ -5,7 +5,8 @@ namespace Urlaubsfahrt
 {
     public static class ExtensionsCollection
     {
-        public static IList<TSource> AllMins<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, int capacity = 1)
+        public static IList<TSource> AllMins<TSource, TKey>
+            (this IEnumerable<TSource> source, Func<TSource, TKey> selector, int capacity = 1)
             where TKey : IComparable<TKey>
         {
             var enumerator = source.GetEnumerator();
@@ -32,14 +33,14 @@ namespace Urlaubsfahrt
             return minima;
         }
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector)
+        public static TSource MinBy<TSource, TKey>
+        (this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
             return source.MinBy(selector, null);
         }
 
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source,
-            Func<TSource, TKey> selector, IComparer<TKey> comparer)
+        public static TSource MinBy<TSource, TKey>
+        (this IEnumerable<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (selector == null) throw new ArgumentNullException(nameof(selector));
