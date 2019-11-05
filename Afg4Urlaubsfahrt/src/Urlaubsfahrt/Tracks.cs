@@ -9,7 +9,6 @@ namespace Urlaubsfahrt
     public class Track
     {
         public static float FuelLength {get; set;}
-        public static float TrackLength {get; set;}
 
         public List<GasStation> Stops { get; }
 
@@ -89,10 +88,7 @@ namespace Urlaubsfahrt
             return Wai.Select(x => x.Item1.PricePerVolumeInEuroPerLiter * x.Item2).Sum();
         }
 
-        public float GetPriceTo(GasStation s)
-        {
-            return GetPriceTo(s.Position);
-        }
+        public float GetPriceTo(GasStation s) => GetPriceTo(s.Position);
 
         public Track(GasStation s) => Stops = new List<GasStation> { s };
 
