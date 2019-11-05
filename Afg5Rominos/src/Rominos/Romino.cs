@@ -15,18 +15,18 @@
     public class Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
-            new Romino(new List<Vector2Int> { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
+            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
                 // These are hardcoded in by hand, because this list is only populated lazily by appending, rather than computed once. 
                 // As this first romino can not be computed like other rominos, this won't be populated using normal methods.
-                new List<Vector2Int> { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
+                new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
 
-        public readonly List<Vector2Int> Blocks;
+        public readonly Vector2Int[] Blocks;
         public Vector2Int DiagonalRoot;
 
-        public readonly List<Vector2Int> PossibleExtensions;
+        public readonly Vector2Int[] PossibleExtensions;
 
         public Vector2Int[] DiagonalRootBlockade => new[]
         {
@@ -38,7 +38,7 @@
 
         private BitBuffer512 _uniqueCode;
 
-        public Romino(List<Vector2Int> blocks, Vector2Int diagonalRoot, List<Vector2Int> possibleExtensions)
+        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
         {
             Blocks = blocks;
             DiagonalRoot = diagonalRoot;
@@ -99,26 +99,50 @@
                     .Except(blocks).Except(diagonalRootBlockade);
 
                     // Remove the added block and add the new, now appendable positions
-                    List<Vector2Int> newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToList();
+                    var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
 
-                    List<Vector2Int> newBlocks = new List<Vector2Int>(blocks)
-                    {
-                        newBlock
-                    };
-
-                    var romino = new Romino(newBlocks, diagonalRoot, newPossibleExtensions);
+                    var romino = new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions);
                     romino.Orient();
                     return romino;
                 });
         }
 
-        private static BitBuffer512 CalculateUniqueCode(List<Vector2Int> blocks)
+        //private static T[] AppendOne<T>(T[] arr, T elem)
+        //{
+        //    int length = arr.Length;
+
+        //    T[] newArr = new T[length + 1];
+
+        //    Array.Copy(arr, 0, newArr, 0, arr.Length);
+
+        //    newArr[arr.Length] = elem;
+
+        //    return newArr;
+        //}
+
+        private static T[] AppendOne<T>(T[] arr, T elem)
+        {
+            int length = arr.Length;
+
+            T[] newArr = new T[length + 1];
+
+            for (int i = 0; i < length; i++)
+            {
+                newArr[i] = arr[i];
+            }
+
+            newArr[arr.Length] = elem;
+
+            return newArr;
+        }
+
+        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks)
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
             var bits = new BitBuffer512();
 
-            int length = blocks.Count;
+            int length = blocks.Length;
 
             foreach (var block in blocks)
             {
