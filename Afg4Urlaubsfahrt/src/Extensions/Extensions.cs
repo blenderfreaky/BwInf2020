@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Extensions
+namespace Urlaubsfahrt
 {
     public static class ExtensionsCollection
     {
@@ -63,6 +63,26 @@ namespace Extensions
                 }
             }
             return min;
+        }
+        public static Tuple<T, int> IndexMinWhere<T>
+            (this IEnumerable<T> value, Func<T, bool> check)
+            where T : IComparable
+        {
+            int index = -1;
+            int MinIndex = -1;
+            T Min = default;
+            var Enumerator = value.GetEnumerator();
+            while(Enumerator.MoveNext())
+            {
+                index++;
+                if(check(Enumerator.Current) && Min.CompareTo(Enumerator.Current) == 1)
+                {
+                    MinIndex = index;
+                    Min = Enumerator.Current;
+                }
+            }
+            if (MinIndex == -1) throw new ArgumentException(nameof(value));
+            return new Tuple<T, int>(Min, index);
         }
     }
 }
