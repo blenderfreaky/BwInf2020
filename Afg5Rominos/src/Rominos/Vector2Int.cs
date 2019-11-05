@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Rominos
 {
+    [DebuggerStepThrough]
+    [DebuggerDisplay("X:{X}, Y:{Y}")]
     public readonly struct Vector2Int : IEquatable<Vector2Int>
     {
         public readonly int X, Y;

@@ -102,8 +102,12 @@
                     var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
 
                     var romino = new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions);
-                    romino.Orient();
-                    return romino;
+                    //romino.Orient();
+
+                    var opt = Maps.SelectF(x => (romino, x));
+                    opt.ForEach(x => x.romino.ProjectVoxels(x.x.BlockMap, x.x.DiagonalRootMap));
+                    opt.ForEach(x => x.romino.FixDisplacement());
+                    return opt.Min(x => x.romino);
                 });
         }
 
@@ -152,48 +156,75 @@
             return bits;
         }
 
+        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks, Func<Vector2Int, Vector2Int> map)
+        {
+            static int GetWeight(int x, int y, int size) => (y * size) + x;
+
+            var bits = new BitBuffer512();
+
+            int length = blocks.Length;
+
+            foreach (var block in blocks)
+            {
+                var mapped = map(block); // TODO: Fix displacement
+                bits[GetWeight(mapped.X, mapped.Y, length)] = true;
+            }
+
+            return bits;
+        }
+
+        // Map  Step
+        // +x+y +x-y
+        // +x-y -x-y
+        // -x+y +x-y
+        // -x-y -y-x
+        // +y+x +x-y
+        // +y-x -x-y
+        // -y+x +x-y
+        // -y-x -y-x
+
         private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Steps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
-        {                                                                       // Map  Step
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)), // +x+y +x-y
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)), // +x-y -x-y
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)), // -x+y +x-y
-            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)), // -x-y -y-x
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)), // +y+x +x-y
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)), // +y-x -x-y
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)), // -y+x +x-y
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)), // -y-x -y-x
+        {
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
         };
 
         private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
-        {                                                                       // Map  Step
-            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)), // +x+y +x-y
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)), // +x-y -x-y
-            (x => new Vector2Int(-x.X, +x.Y), x => new Vector2Int(~x.X, +x.Y)), // -x+y +x-y
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)), // -x-y -y-x
-            (x => new Vector2Int(+x.Y, +x.X), x => new Vector2Int(+x.Y, +x.X)), // +y+x +x-y
-            (x => new Vector2Int(+x.Y, -x.X), x => new Vector2Int(+x.Y, ~x.X)), // +y-x -x-y
-            (x => new Vector2Int(-x.Y, +x.X), x => new Vector2Int(~x.Y, +x.X)), // -y+x +x-y
-            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)), // -y-x -y-x
+        {
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.X, +x.Y), x => new Vector2Int(~x.X, +x.Y)),
+            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
+            (x => new Vector2Int(+x.Y, +x.X), x => new Vector2Int(+x.Y, +x.X)),
+            (x => new Vector2Int(+x.Y, -x.X), x => new Vector2Int(+x.Y, ~x.X)),
+            (x => new Vector2Int(-x.Y, +x.X), x => new Vector2Int(~x.Y, +x.X)),
+            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
+            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)),
         };
 
         public void Orient()
         {
-            int minIndex = -1;
-            BitBuffer512 min = default;
+            int minIndex = 7;
+            BitBuffer512 min = _uniqueCode;
 
             for (int i = 0; i < Steps.Length; i++)
             {
                 ProjectVoxels(Steps[i].BlockMap, Steps[i].DiagonalRootMap);
                 FixDisplacement();
-                _uniqueCode = CalculateUniqueCode(Blocks);
-                if (_uniqueCode < min)
+                var uniqueCode = CalculateUniqueCode(Blocks);
+                if (min > uniqueCode)
                 {
-                    minIndex = 1;
-                    min = _uniqueCode;
+                    minIndex = i;
+                    min = uniqueCode;
                 }
             }
 
-            ProjectVoxels(Maps[(minIndex + 7) % 8].BlockMap, Maps[(minIndex + 7) % 8].DiagonalRootMap);
+            ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
             FixDisplacement();
             _uniqueCode = CalculateUniqueCode(Blocks);
         }
