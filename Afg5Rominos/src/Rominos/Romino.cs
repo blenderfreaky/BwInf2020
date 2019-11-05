@@ -12,7 +12,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
+    public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
@@ -23,10 +23,10 @@
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
 
-        public readonly Vector2Int[] Blocks;
-        public readonly Vector2Int DiagonalRoot;
+        public readonly List<Vector2Int> Blocks;
+        public Vector2Int DiagonalRoot;
 
-        public readonly Vector2Int[] PossibleExtensions;
+        public readonly List<Vector2Int> PossibleExtensions;
 
         private static readonly ArrayPool<Vector2Int> ArrayPool = ArrayPool<Vector2Int>.Shared; // TODO: Use this
 
@@ -40,7 +40,7 @@
 
         private readonly BitBuffer512 _uniqueCode;
 
-        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
+        public Romino(List<Vector2Int> blocks, Vector2Int diagonalRoot, List<Vector2Int> possibleExtensions)
         {
             Vector2Int offset = -new Vector2Int(blocks.MinF(x => x.X), blocks.MinF(x => x.Y));
 
@@ -53,7 +53,7 @@
             _uniqueCode = CalculateUniqueCode(blocks);
         }
 
-        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks)
+        private static BitBuffer512 CalculateUniqueCode(List<Vector2Int> blocks)
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
@@ -69,9 +69,7 @@
             return bits;
         }
 
-        public readonly Romino Orient() => GetPermutations().MinBy(x => x._uniqueCode).First();
-
-        public readonly Romino[] GetPermutations() => new[]
+        public readonly Romino Orient()
         {
             this,
             ProjectVoxels(x => new Vector2Int(-x.X, x.Y), x => new Vector2Int(-1 - x.X, x.Y)),
@@ -82,10 +80,14 @@
             ProjectVoxels(x => new Vector2Int(-x.Y, x.X), x => new Vector2Int(-1 - x.Y, x.X)),
             ProjectVoxels(x => new Vector2Int(x.Y, -x.X), x => new Vector2Int(x.Y, -1 - x.X)),
             ProjectVoxels(x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(-1 - x.Y, -1 - x.X)),
-        };
+        }
 
-        private readonly Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc) =>
-            new Romino(Blocks.SelectF(func), diagonalRootFunc(DiagonalRoot), PossibleExtensions.SelectF(func));
+        private Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
+        {
+            Blocks.SelectInPlaceF(func);
+            DiagonalRoot = diagonalRootFunc(DiagonalRoot);
+            PossibleExtensions.SelectInPlaceF(func));
+        }
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
