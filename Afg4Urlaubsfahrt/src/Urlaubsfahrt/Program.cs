@@ -34,7 +34,7 @@ namespace Urlaubsfahrt
                         .MinBy(x => x.GetPriceTo(station)), station);
                     trackParts.Add(t);
 #else
-                    List<Tuple<Track, float?>> BestTrackTuples = new System.Collections.Generic.List<Tuple<Track, float?>>();
+                    List<Tuple<Track, float?>> BestTrackTuples = new List<Tuple<Track, float?>>();
                     possibleParts
                         .AllMins(x => x.Stops.Count)
                         .ToList()

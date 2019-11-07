@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Urlaubsfahrt
+﻿namespace Urlaubsfahrt
 {
+    using System;
+    using System.Collections.Generic;
+
     public static class ExtensionsCollection
     {
         public static IList<TSource> AllMins<TSource, TKey>
