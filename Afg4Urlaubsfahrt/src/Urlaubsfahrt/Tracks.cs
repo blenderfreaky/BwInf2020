@@ -15,7 +15,7 @@ namespace Urlaubsfahrt
 
         public static Track EmptyTrack => new Track();
 
-        public float GetPriceTo(float pos)
+        public float? GetPriceTo(float pos)
         {
             List<Tuple<GasStation, float>> Wai = new List<Tuple<GasStation, float>>();
             List<GasStation>allStations = Stops.OrderBy(x => x.PricePerVolumeInEuroPerLiter).ToList();
@@ -88,11 +88,15 @@ namespace Urlaubsfahrt
                              posslos.Min()));
                     Wai.Add(new Tuple<GasStation, float>(s, posslos.Min() - UnderBorderTuple.Item2));
                 }
-            } 
-            return Wai.Select(x => x.Item1.PricePerVolumeInEuroPerLiter * x.Item2).Sum();
+                if(FullBois[0].Item1 == 0 && FullBois[0].Item2 == pos)
+                {
+                    return Wai.Select(x => x.Item1.PricePerVolumeInEuroPerLiter * x.Item2).Sum();
+                }
+            }
+            return null;
         }
 
-        public float GetPriceTo(GasStation s) => GetPriceTo(s.Position);
+        public float? GetPriceTo(GasStation s) => GetPriceTo(s.Position);
 
         public Track(GasStation s) => Stops = new List<GasStation> { s };
 
