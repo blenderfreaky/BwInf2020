@@ -13,7 +13,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Romino : IEquatable<Romino>, IComparable<Romino>
+    public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
@@ -26,8 +26,8 @@
                 new Vector2Int(1, 1));
 
         public readonly Vector2Int[] Blocks;
-        public Vector2Int DiagonalRoot;
-        public Vector2Int Max;
+        public readonly Vector2Int DiagonalRoot;
+        public readonly Vector2Int Max;
 
         public readonly Vector2Int[] PossibleExtensions;
 
@@ -51,7 +51,8 @@
             PossibleExtensions = possibleExtensions;
             Max = max;
 
-            _uniqueCode = CalculateUniqueCode(x => x);
+            _uniqueCode = default; // Needs to be assigned before instance methods can be called, so just assign default before calling the method computing it
+            _uniqueCode = CalculateUniqueCode();
         }
 
         public static IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSize(int size)
@@ -68,7 +69,7 @@
 
                 for (int i = 3; i <= size; i++)
                 {
-                    var newRominos = lastRominos//.AsParallel()
+                    var newRominos = lastRominos.AsParallel()
                         .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
                     lastRominos = newRominos;
                     yield return (i, newRominos);
@@ -83,6 +84,7 @@
             var diagonalRoot = DiagonalRoot;
             var diagonalRootBlockade = DiagonalRootBlockade;
             var possibleExtensions = PossibleExtensions;
+            var max = Max;
 
             return PossibleExtensions
                 .SelectF(newBlock =>
@@ -101,45 +103,16 @@
                     // Remove already occupied positions, as well as exclude positions blocked by the diagonal
                     .Except(blocks).Except(diagonalRootBlockade);
 
-                    // Remove the added block and add the new, now appendable positions
-                    var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
-
                     var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
-                    var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
+                    var newSize = new Vector2Int(Math.Max(newBlock.X, max.X), Math.Max(newBlock.Y, max.Y)) + offset;
+
+                    // Remove the added block and add the new, now appendable positions
+                    var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToArray();
 
                     var romino = new Romino(AppendOneAndSelectInPlace(blocks, newBlock, x => x + offset), diagonalRoot, newPossibleExtensions, newSize);
-                    romino.Orient();
-                    return romino;
+
+                    return romino.Orient();
                 });
-        }
-
-        //private static T[] AppendOne<T>(T[] arr, T elem)
-        //{
-        //    int length = arr.Length;
-
-        //    T[] newArr = new T[length + 1];
-
-        //    Array.Copy(arr, 0, newArr, 0, arr.Length);
-
-        //    newArr[arr.Length] = elem;
-
-        //    return newArr;
-        //}
-
-        private static T[] AppendOne<T>(T[] arr, T elem)
-        {
-            int length = arr.Length;
-
-            T[] newArr = new T[length + 1];
-
-            for (int i = 0; i < length; i++)
-            {
-                newArr[i] = arr[i];
-            }
-
-            newArr[arr.Length] = elem;
-
-            return newArr;
         }
 
         private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func)
@@ -164,7 +137,7 @@
 
             var bits = new BitBuffer512();
 
-            int length = Blocks.Length;//Math.Max(Max.X, Max.Y) + 1;
+            int length = Blocks.Length;
 
             foreach (var block in Blocks)
             {
@@ -180,32 +153,26 @@
 
             var bits = new BitBuffer512();
 
-            int length = Blocks.Length;//Math.Max(Max.X, Max.Y) + 1;
+            int length = Blocks.Length;
+
+            var actualMap = MapPositionWithinSize(map);
 
             foreach (var block in Blocks)
             {
-                var pma = map(block);
-                var mapped = MapPositionWithinSize(block, map);
+                var mapped = actualMap(block);
                 bits[GetWeight(mapped.X, mapped.Y, length)] = true;
             }
 
             return bits;
         }
 
-        private Vector2Int MapPositionWithinSize(Vector2Int position, Func<Vector2Int, Vector2Int> map)
+        private Func<Vector2Int, Vector2Int> MapPositionWithinSize(Func<Vector2Int, Vector2Int> map)
         {
             var mappedSize = map(Max);
+            var offset = new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
 
-            return map(position) + new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
+            return position => map(position) + offset;
         }
-
-        //        |X               
-        //        |                
-        //        |                
-        // -------DDDD----           
-        //        DDDD              
-        //        |                
-
 
         // Map  Step
         // +x+y +x-y
@@ -229,7 +196,7 @@
             (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
         };
 
-        public void Orient()
+        public Romino Orient()
         {
             int minIndex = 0;
             BitBuffer512 min = _uniqueCode;
@@ -244,17 +211,21 @@
                 }
             }
 
-            ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
-
-            _uniqueCode = CalculateUniqueCode();
+            return ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
         }
 
-        private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
+        private Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
-            Blocks.SelectInPlaceF(x => MapPositionWithinSize(x, func));
-            PossibleExtensions.SelectInPlaceF(x => MapPositionWithinSize(x, func));
-            DiagonalRoot = MapPositionWithinSize(DiagonalRoot, diagonalRootFunc);
-            Max = MapPositionWithinSize(Max, func);
+            var actualMap = MapPositionWithinSize(func);
+
+            var blocks = Blocks.SelectF(actualMap);
+            var possibleExtensions = PossibleExtensions.SelectF(actualMap);
+            var diagonalRoot = MapPositionWithinSize(diagonalRootFunc)(DiagonalRoot);
+
+            var mappedMax = func(Max);
+            var max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
+
+            return new Romino(blocks, diagonalRoot, possibleExtensions, max);
         }
 
         private bool[,] GetBlock2DArray()
@@ -265,11 +236,21 @@
             return blocks;
         }
 
+
+        // <inheritdoc/>
+#pragma warning disable RCS1139 // Add summary element to documentation comment.
+                               /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public override bool Equals(object obj) => obj is Romino romino && Equals(romino);
+#pragma warning restore RCS1139 // Add summary element to documentation comment.
 
         public override int GetHashCode() => _uniqueCode.GetHashCode();
 
+
+        // <inheritdoc/>
+#pragma warning disable RCS1139 // Add summary element to documentation comment.
+                               /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
+#pragma warning restore RCS1139 // Add summary element to documentation comment.
 
         public int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
 
@@ -310,26 +291,6 @@
 
                 buffer.Clear();
             }
-        }
-
-        public static bool operator <(Romino left, Romino right)
-        {
-            return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
-        }
-
-        public static bool operator <=(Romino left, Romino right)
-        {
-            return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
-        }
-
-        public static bool operator >(Romino left, Romino right)
-        {
-            return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
-        }
-
-        public static bool operator >=(Romino left, Romino right)
-        {
-            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
         }
     }
 }

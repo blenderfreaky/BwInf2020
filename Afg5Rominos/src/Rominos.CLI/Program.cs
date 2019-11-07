@@ -1,4 +1,4 @@
-﻿//#define PerfOpt
+﻿#define PerfOpt
 
 namespace Nummernmerker.CLI
 {
@@ -71,7 +71,7 @@ namespace Nummernmerker.CLI
 
             foreach (var rominoSizeClass in Romino.GetRominosUntilSize(options.Size))
             {
-                worker.ContinueWith(_ =>
+                //worker.ContinueWith(_ =>
                 {
                     lock (_padlockRunWithOptions)
                     {
@@ -123,7 +123,7 @@ namespace Nummernmerker.CLI
 
                         Console.WriteLine();
                     }
-                });
+                }//);
             }
 
             worker.Wait();
