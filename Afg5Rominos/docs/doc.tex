@@ -9,8 +9,8 @@
 \newcommand{\printwhitecell}[2][]{\node[draw=gray, semithick, fill=white, minimum width=\cellsize cm, minimum height=\cellsize cm] at #2 {#1};} 
 \newcommand{\printblackcell}[1]{\node[draw=gray, semithick, fill=black, minimum width=\cellsize cm, minimum height=\cellsize cm] at #1 {};} 
 \newcommand{\printcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/2);} 
-\newcommand{\printblackcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
-\newcommand{\printwhitecircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
+\newcommand{\printblackcircle}[1]{\draw[black, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
+\newcommand{\printwhitecircle}[1]{\draw[white, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
 
 \newcommand{\printcell}[2]{%
     \if#1w%
@@ -27,7 +27,10 @@
                     \printblackcell{#2}%
                     \printcircle{#2}%
                 \else
+                	\if#1d%
+                	\else
                     \printwhitecell[#1]{#2}%
+                    \fi%
                 \fi%
             \fi%
         \fi%
