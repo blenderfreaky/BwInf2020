@@ -155,23 +155,21 @@
 
             int length = Blocks.Length;
 
-            var actualMap = MapPositionWithinSize(map);
-
             foreach (var block in Blocks)
             {
-                var mapped = actualMap(block);
+                var mapped = MapPositionWithinSize(block, map);
                 bits[GetWeight(mapped.X, mapped.Y, length)] = true;
             }
 
             return bits;
         }
 
-        private Func<Vector2Int, Vector2Int> MapPositionWithinSize(Func<Vector2Int, Vector2Int> map)
+        private Vector2Int MapPositionWithinSize(Vector2Int position, Func<Vector2Int, Vector2Int> map)
         {
             var mappedSize = map(Max);
             var offset = new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
 
-            return position => map(position) + offset;
+            return map(position) + offset;
         }
 
         // Map  Step
@@ -216,11 +214,12 @@
 
         private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
-            var actualMap = MapPositionWithinSize(func);
+            var _this = this;
+            Func<Vector2Int, Vector2Int> actualMap = x => _this.MapPositionWithinSize(x, func);
 
             Blocks.SelectInPlaceF(actualMap);
             PossibleExtensions.SelectInPlaceF(actualMap);
-            DiagonalRoot = MapPositionWithinSize(diagonalRootFunc)(DiagonalRoot);
+            DiagonalRoot = MapPositionWithinSize(DiagonalRoot, diagonalRootFunc);
 
             var mappedMax = func(Max);
             Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
