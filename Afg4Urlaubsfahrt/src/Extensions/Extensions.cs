@@ -34,13 +34,11 @@ namespace Urlaubsfahrt
         }
 
         public static TSource MinBy<TSource, TKey>
-        (this IEnumerable<TSource> source, Func<TSource, TKey> selector)
-        {
-            return source.MinBy(selector, null);
-        }
+            (this IEnumerable<TSource> source, Func<TSource, TKey> selector) =>
+            source.MinBy(selector, null);
 
         public static TSource MinBy<TSource, TKey>
-        (this IEnumerable<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
+            (this IEnumerable<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (selector == null) throw new ArgumentNullException(nameof(selector));
@@ -65,25 +63,25 @@ namespace Urlaubsfahrt
             }
             return min;
         }
-        public static Tuple<T, int> IndexMinWhere<T>
+
+        public static (T Element, int Index)? IndexMinWhere<T>
             (this IEnumerable<T> value, Func<T, bool> check)
-            where T : IComparable
         {
             int index = -1;
-            int MinIndex = -1;
-            T Min = default;
-            var Enumerator = value.GetEnumerator();
-            while(Enumerator.MoveNext())
+            int minIndex = -1;
+            T min = default;
+            var enumerator = value.GetEnumerator();
+            while (enumerator.MoveNext())
             {
                 index++;
-                if(check(Enumerator.Current) && Min.CompareTo(Enumerator.Current) == 1)
+                if (check(enumerator.Current) && Comparer<T>.Default.Compare(min, enumerator.Current) > 0)
                 {
-                    MinIndex = index;
-                    Min = Enumerator.Current;
+                    minIndex = index;
+                    min = enumerator.Current;
                 }
             }
-            if (MinIndex == -1) throw new ArgumentException(nameof(value));
-            return new Tuple<T, int>(Min, index);
+            if (minIndex == -1) return null;
+            return (min, index);
         }
     }
 }

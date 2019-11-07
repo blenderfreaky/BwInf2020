@@ -3,8 +3,8 @@
     using CommandLine;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.IO;
+    using System.Linq;
 
     public class Options
     {
@@ -16,7 +16,7 @@
     {
         public static void Main()
         {
-            #if true
+#if true
             Console.WriteLine("Insert path:");
             string path = Console.ReadLine();
 
@@ -35,7 +35,7 @@
 
             Urlaubsfahrt.Track Way = Urlaubsfahrt.Program.GetTrack(TrackLength, StartFuel / Usage * 100, FuelLength, AllStations);
             Console.WriteLine(Way.ToString());
-            #else
+#else
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
@@ -50,7 +50,7 @@
                         Console.WriteLine("Quick Start Example!");
                     }
                 });
-            #endif
+#endif
         }
     }
 }
