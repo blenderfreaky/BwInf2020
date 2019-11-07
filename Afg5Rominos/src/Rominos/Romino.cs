@@ -190,22 +190,19 @@
             int minIndex = 0;
             BitBuffer512 min = _uniqueCode;
 
-            BitBuffer512[] bitBuffers = new BitBuffer512[Maps.Length];
-            bitBuffers[0] = _uniqueCode; // Maps[0] doesn't contain make any changes to its input
-
             for (int i = 1; i < Maps.Length; i++)
             {
-                bitBuffers[i] = CalculateUniqueCode(Maps[i].BlockMap);
-                if (min > bitBuffers[i])
+                var uniqueCode = CalculateUniqueCode(Maps[i].BlockMap);
+                if (min > uniqueCode)
                 {
                     minIndex = i;
-                    min = bitBuffers[i];
+                    min = uniqueCode;
                 }
             }
 
             ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
 
-            _uniqueCode = bitBuffers[minIndex];
+            _uniqueCode = CalculateUniqueCode();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
