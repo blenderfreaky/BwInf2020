@@ -25,11 +25,11 @@
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
                 new Vector2Int(1, 1));
 
-        public readonly Vector2Int[] Blocks;
-        public readonly Vector2Int DiagonalRoot;
-        public readonly Vector2Int Max;
+        public Vector2Int[] Blocks;
+        public Vector2Int DiagonalRoot;
+        public Vector2Int Max;
 
-        public readonly Vector2Int[] PossibleExtensions;
+        public Vector2Int[] PossibleExtensions;
 
         public IEnumerable<Vector2Int> DiagonalRootBlockade
         {
@@ -110,8 +110,8 @@
                     var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToArray();
 
                     var romino = new Romino(AppendOneAndSelectInPlace(blocks, newBlock, x => x + offset), diagonalRoot, newPossibleExtensions, newSize);
-
-                    return romino.Orient();
+                    romino.Orient();
+                    return romino;
                 });
         }
 
@@ -196,7 +196,7 @@
             (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
         };
 
-        public Romino Orient()
+        public void Orient()
         {
             int minIndex = 0;
             BitBuffer512 min = _uniqueCode;
@@ -211,21 +211,19 @@
                 }
             }
 
-            return ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
+            ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
         }
 
-        private Romino ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
+        private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
             var actualMap = MapPositionWithinSize(func);
 
-            var blocks = Blocks.SelectF(actualMap);
-            var possibleExtensions = PossibleExtensions.SelectF(actualMap);
-            var diagonalRoot = MapPositionWithinSize(diagonalRootFunc)(DiagonalRoot);
+            Blocks.SelectInPlaceF(actualMap);
+            PossibleExtensions.SelectInPlaceF(actualMap);
+            DiagonalRoot = MapPositionWithinSize(diagonalRootFunc)(DiagonalRoot);
 
             var mappedMax = func(Max);
-            var max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
-
-            return new Romino(blocks, diagonalRoot, possibleExtensions, max);
+            Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
         }
 
         private bool[,] GetBlock2DArray()
