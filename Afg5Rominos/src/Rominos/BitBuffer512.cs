@@ -1,17 +1,12 @@
 ﻿//#define DEBUG_BitBuffer512
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-
 namespace Rominos
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 64)]
-    internal struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
+    public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         #region Fields
 #pragma warning disable RCS1169 // Make field read-only.

@@ -1,4 +1,4 @@
-﻿#define PerfOpt
+﻿//#define PerfOpt
 
 namespace Nummernmerker.CLI
 {
