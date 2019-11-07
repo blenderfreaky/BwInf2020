@@ -5,7 +5,6 @@ namespace Nummernmerker.CLI
     using CommandLine;
     using Rominos;
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -99,7 +98,7 @@ namespace Nummernmerker.CLI
                             int length = 0;
                             int k = i;
 
-                            for (int j = 0; j < rominoSizeClass.Size+2; j++)
+                            for (int j = 0; j < rominoSizeClass.Size + 2; j++)
                             {
                                 for (k = i; k < text.Length; k++)
                                 {

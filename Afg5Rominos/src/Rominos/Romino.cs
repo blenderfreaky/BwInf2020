@@ -1,24 +1,16 @@
 ﻿namespace Rominos
 {
     using JM.LinqFaster;
-    using JM.LinqFaster.Parallel;
-    using MoreLinq;
     using System;
-    using System.Buffers;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
-    using System.Numerics;
-    using System.Runtime.CompilerServices;
     using System.Text;
-    using System.Threading.Tasks;
 
     public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
-                // These are hardcoded in by hand, because this list is only populated lazily by appending, rather than computed once. 
+                // These are hardcoded in by hand, because this list is only populated lazily by appending, rather than computed once.
                 // As this first romino can not be computed like other rominos, this won't be populated using normal methods.
                 new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
@@ -26,15 +18,15 @@
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
                 new Vector2Int(1, 1));
 
-        public readonly Vector2Int[] Blocks;
+        public readonly Vector2Int[] Blocks; // NOTE: The values inside the array are very much not readonly, and get changed
+        public readonly Vector2Int[] PossibleExtensions; // NOTE: The values inside the array are very much not readonly, and get changed
         public Vector2Int DiagonalRoot;
         public Vector2Int Max;
 
-        public readonly Vector2Int[] PossibleExtensions;
+        private BitBuffer512 _uniqueCode;
 
         public readonly IEnumerable<Vector2Int> DiagonalRootBlockade
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 yield return DiagonalRoot + new Vector2Int(0, 0);
@@ -44,9 +36,6 @@
             }
         }
 
-        private BitBuffer512 _uniqueCode;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions, Vector2Int max)
         {
             Blocks = blocks;
@@ -80,22 +69,21 @@
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
             foreach (var newBlock in PossibleExtensions)
             {
                 IEnumerable<Vector2Int> extensionsFromNewBlock = (new[]
                 {
-                        newBlock + new Vector2Int(0, -1),
-                        newBlock + new Vector2Int(0, 1),
-                        newBlock + new Vector2Int(1, 0),
-                        newBlock + new Vector2Int(1, -1),
-                        newBlock + new Vector2Int(1, 1),
-                        newBlock + new Vector2Int(-1, 0),
-                        newBlock + new Vector2Int(-1, -1),
-                        newBlock + new Vector2Int(-1, 1),
-                    })
+                    newBlock + new Vector2Int(0, -1),
+                    newBlock + new Vector2Int(0, 1),
+                    newBlock + new Vector2Int(1, 0),
+                    newBlock + new Vector2Int(1, -1),
+                    newBlock + new Vector2Int(1, 1),
+                    newBlock + new Vector2Int(-1, 0),
+                    newBlock + new Vector2Int(-1, -1),
+                    newBlock + new Vector2Int(-1, 1),
+                })
                 // Remove already occupied positions, as well as exclude positions blocked by the diagonal
                 .Except(Blocks).Except(DiagonalRootBlockade);
 
@@ -111,7 +99,6 @@
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func)
         {
             int length = arr.Length;
@@ -128,7 +115,6 @@
             return newArr;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly BitBuffer512 CalculateUniqueCode()
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
@@ -145,7 +131,6 @@
             return bits;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly BitBuffer512 CalculateUniqueCode(Func<Vector2Int, Vector2Int> func)
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
@@ -165,7 +150,6 @@
             return bits;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly Vector2Int CalculateOffset(Func<Vector2Int, Vector2Int> map)
         {
             var mappedSize = map(Max);
@@ -184,7 +168,6 @@
             (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
         };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Orient()
         {
             int minIndex = 0;
@@ -205,7 +188,6 @@
             _uniqueCode = CalculateUniqueCode();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
             var offset = CalculateOffset(func);
@@ -226,28 +208,6 @@
             foreach (var block in Blocks) blocks[block.X, block.Y] = true;
             return blocks;
         }
-
-        // <inheritdoc/>
-#pragma warning disable RCS1139 // Add summary element to documentation comment.
-        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
-#pragma warning restore RCS1139 // Add summary element to documentation comment.
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode() => _uniqueCode.GetHashCode();
-
-
-        // <inheritdoc/>
-#pragma warning disable RCS1139 // Add summary element to documentation comment.
-        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
-#pragma warning restore RCS1139 // Add summary element to documentation comment.
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
-
 
         private static readonly Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char> AsciiArtChars = new Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char>
         {
@@ -283,6 +243,56 @@
 
                 buffer.Clear();
             }
+        }
+
+        // <inheritdoc/>
+#pragma warning disable RCS1139 // Add summary element to documentation comment.
+        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
+
+        public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
+
+#pragma warning restore RCS1139 // Add summary element to documentation comment.
+
+        public override readonly int GetHashCode() => _uniqueCode.GetHashCode();
+
+        // <inheritdoc/>
+#pragma warning disable RCS1139 // Add summary element to documentation comment.
+        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
+
+        public readonly bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
+
+#pragma warning restore RCS1139 // Add summary element to documentation comment.
+
+        public readonly int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
+
+        public static bool operator ==(Romino left, Romino right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Romino left, Romino right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator <(Romino left, Romino right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        public static bool operator <=(Romino left, Romino right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        public static bool operator >(Romino left, Romino right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        public static bool operator >=(Romino left, Romino right)
+        {
+            return left.CompareTo(right) >= 0;
         }
     }
 }
