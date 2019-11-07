@@ -103,8 +103,7 @@
                 var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
 
                 // Remove the added block and add the new, now appendable positions
-                Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
-                newPossibleExtensions.SelectInPlaceF(x => x + offset);
+                Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToArray();
 
                 var romino = new Romino(AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset), DiagonalRoot + offset, newPossibleExtensions, newSize);
                 romino.Orient();
@@ -214,8 +213,9 @@
         {
             var offset = CalculateOffset(func);
 
-            Blocks.SelectInPlaceF(x => func(x) + offset);
-            PossibleExtensions.SelectInPlaceF(x => func(x) + offset);
+            for (int i = 0; i < Blocks.Length; i++) Blocks[i] = func(Blocks[i]) + offset;
+            for (int i = 0; i < PossibleExtensions.Length; i++) PossibleExtensions[i] = func(PossibleExtensions[i]) + offset;
+
             DiagonalRoot = diagonalRootFunc(DiagonalRoot) + offset;
 
             var mappedMax = func(Max);
@@ -226,7 +226,7 @@
         {
             var blocks = new bool[Max.X + 1, Max.Y + 1];
 
-            Parallel.ForEach(Blocks, block => blocks[block.X, block.Y] = true);
+            foreach (var block in Blocks) blocks[block.X, block.Y] = true;
             return blocks;
         }
 
