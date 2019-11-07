@@ -10,10 +10,11 @@
     using System.Data;
     using System.Linq;
     using System.Numerics;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Romino : IEquatable<Romino>, IComparable<Romino>
+    public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
@@ -25,14 +26,15 @@
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
                 new Vector2Int(1, 1));
 
-        public Vector2Int[] Blocks;
+        public readonly Vector2Int[] Blocks;
         public Vector2Int DiagonalRoot;
         public Vector2Int Max;
 
-        public Vector2Int[] PossibleExtensions;
+        public readonly Vector2Int[] PossibleExtensions;
 
-        public IEnumerable<Vector2Int> DiagonalRootBlockade
+        public readonly IEnumerable<Vector2Int> DiagonalRootBlockade
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 yield return DiagonalRoot + new Vector2Int(0, 0);
@@ -44,6 +46,7 @@
 
         private BitBuffer512 _uniqueCode;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions, Vector2Int max)
         {
             Blocks = blocks;
@@ -51,7 +54,7 @@
             PossibleExtensions = possibleExtensions;
             Max = max;
 
-            //_uniqueCode = default; // Needs to be assigned before instance methods can be called, so just assign default before calling the method computing it
+            _uniqueCode = default; // Needs to be assigned before instance methods can be called, so just assign default before calling the method computing it
             _uniqueCode = CalculateUniqueCode();
         }
 
@@ -77,13 +80,13 @@
             }
         }
 
-        public IEnumerable<Romino> AddOneNotUnique()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly IEnumerable<Romino> AddOneNotUnique()
         {
-            return PossibleExtensions
-                .SelectF(newBlock =>
+            foreach (var newBlock in PossibleExtensions)
+            {
+                IEnumerable<Vector2Int> extensionsFromNewBlock = (new[]
                 {
-                    IEnumerable<Vector2Int> extensionsFromNewBlock = (new[]
-                    {
                         newBlock + new Vector2Int(0, -1),
                         newBlock + new Vector2Int(0, 1),
                         newBlock + new Vector2Int(1, 0),
@@ -93,22 +96,23 @@
                         newBlock + new Vector2Int(-1, -1),
                         newBlock + new Vector2Int(-1, 1),
                     })
-                    // Remove already occupied positions, as well as exclude positions blocked by the diagonal
-                    .Except(Blocks).Except(DiagonalRootBlockade);
+                // Remove already occupied positions, as well as exclude positions blocked by the diagonal
+                .Except(Blocks).Except(DiagonalRootBlockade);
 
-                    var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
-                    var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
+                var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
+                var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
 
-                    // Remove the added block and add the new, now appendable positions
-                    Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
-                    newPossibleExtensions.SelectInPlaceF(x => x + offset);
+                // Remove the added block and add the new, now appendable positions
+                Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
+                newPossibleExtensions.SelectInPlaceF(x => x + offset);
 
-                    var romino = new Romino(AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset), DiagonalRoot + offset, newPossibleExtensions, newSize);
-                    romino.Orient();
-                    return romino;
-                });
+                var romino = new Romino(AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset), DiagonalRoot + offset, newPossibleExtensions, newSize);
+                romino.Orient();
+                yield return romino;
+            }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func)
         {
             int length = arr.Length;
@@ -125,7 +129,8 @@
             return newArr;
         }
 
-        private BitBuffer512 CalculateUniqueCode()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private readonly BitBuffer512 CalculateUniqueCode()
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
@@ -141,7 +146,8 @@
             return bits;
         }
 
-        private BitBuffer512 CalculateUniqueCode(Func<Vector2Int, Vector2Int> func)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private readonly BitBuffer512 CalculateUniqueCode(Func<Vector2Int, Vector2Int> func)
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
@@ -160,15 +166,8 @@
             return bits;
         }
 
-        private Func<Vector2Int, Vector2Int> MapPositionWithinSize(Func<Vector2Int, Vector2Int> map)
-        {
-            var mappedSize = map(Max);
-            var offset = new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
-
-            return position => map(position) + offset;
-        }
-
-        private Vector2Int CalculateOffset(Func<Vector2Int, Vector2Int> map)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private readonly Vector2Int CalculateOffset(Func<Vector2Int, Vector2Int> map)
         {
             var mappedSize = map(Max);
             return new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
@@ -186,6 +185,7 @@
             (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Orient()
         {
             int minIndex = 0;
@@ -209,6 +209,7 @@
             _uniqueCode = bitBuffers[minIndex];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
             var offset = CalculateOffset(func);
@@ -221,7 +222,7 @@
             Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
         }
 
-        private bool[,] GetBlock2DArray()
+        private readonly bool[,] GetBlock2DArray()
         {
             var blocks = new bool[Max.X + 1, Max.Y + 1];
 
@@ -231,24 +232,25 @@
 
         // <inheritdoc/>
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
-                               /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
-        public override bool Equals(object obj) => obj is Romino romino && Equals(romino);
+        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
 #pragma warning restore RCS1139 // Add summary element to documentation comment.
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() => _uniqueCode.GetHashCode();
 
 
         // <inheritdoc/>
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
-                               /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
+        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
 #pragma warning restore RCS1139 // Add summary element to documentation comment.
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
 
-        public static bool operator ==(Romino left, Romino right) => left.Equals(right);
-
-        public static bool operator !=(Romino left, Romino right) => !(left == right);
 
         private static readonly Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char> AsciiArtChars = new Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char>
         {
@@ -260,7 +262,7 @@
             [(true, true, false)] = '▓',
         };
 
-        public IEnumerable<string> ToAsciiArt(bool highlightDiagonalBlockade = false, bool highlightPossibleExtensions = false)
+        public readonly IEnumerable<string> ToAsciiArt(bool highlightDiagonalBlockade = false, bool highlightPossibleExtensions = false)
         {
             bool[,] blocks = GetBlock2DArray();
 
