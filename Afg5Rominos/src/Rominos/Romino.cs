@@ -7,6 +7,7 @@
     using System.Buffers;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using System.Numerics;
     using System.Text;
@@ -21,34 +22,36 @@
                 new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
-                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), });
+                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
+                new Vector2Int(1, 1));
 
         public readonly Vector2Int[] Blocks;
         public Vector2Int DiagonalRoot;
+        public Vector2Int Max;
 
         public readonly Vector2Int[] PossibleExtensions;
 
-        public Vector2Int[] DiagonalRootBlockade => new[]
+        public IEnumerable<Vector2Int> DiagonalRootBlockade
         {
-            DiagonalRoot + new Vector2Int(0, 0),
-            DiagonalRoot + new Vector2Int(0, 1),
-            DiagonalRoot + new Vector2Int(1, 0),
-            DiagonalRoot + new Vector2Int(1, 1)
-        };
+            get
+            {
+                yield return DiagonalRoot + new Vector2Int(0, 0);
+                yield return DiagonalRoot + new Vector2Int(0, 1);
+                yield return DiagonalRoot + new Vector2Int(1, 0);
+                yield return DiagonalRoot + new Vector2Int(1, 1);
+            }
+        }
 
         private BitBuffer512 _uniqueCode;
 
-        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions)
+        public Romino(Vector2Int[] blocks, Vector2Int diagonalRoot, Vector2Int[] possibleExtensions, Vector2Int max)
         {
             Blocks = blocks;
             DiagonalRoot = diagonalRoot;
             PossibleExtensions = possibleExtensions;
+            Max = max;
 
-            _uniqueCode = default;
-
-            FixDisplacement();
-
-            _uniqueCode = CalculateUniqueCode(Blocks);
+            _uniqueCode = CalculateUniqueCode(x => x);
         }
 
         public static IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSize(int size)
@@ -65,7 +68,7 @@
 
                 for (int i = 3; i <= size; i++)
                 {
-                    var newRominos = lastRominos.AsParallel()
+                    var newRominos = lastRominos//.AsParallel()
                         .SelectMany(x => x.AddOneNotUnique()).Distinct().ToArray();
                     lastRominos = newRominos;
                     yield return (i, newRominos);
@@ -101,13 +104,12 @@
                     // Remove the added block and add the new, now appendable positions
                     var newPossibleExtensions = possibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).ToArray();
 
-                    var romino = new Romino(AppendOne(blocks, newBlock), diagonalRoot, newPossibleExtensions);
-                    //romino.Orient();
+                    var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
+                    var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
 
-                    var opt = Maps.SelectF(x => (romino, x));
-                    opt.ForEach(x => x.romino.ProjectVoxels(x.x.BlockMap, x.x.DiagonalRootMap));
-                    opt.ForEach(x => x.romino.FixDisplacement());
-                    return opt.Min(x => x.romino);
+                    var romino = new Romino(AppendOneAndSelectInPlace(blocks, newBlock, x => x + offset), diagonalRoot, newPossibleExtensions, newSize);
+                    romino.Orient();
+                    return romino;
                 });
         }
 
@@ -140,15 +142,31 @@
             return newArr;
         }
 
-        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks)
+        private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func)
+        {
+            int length = arr.Length;
+
+            T[] newArr = new T[length + 1];
+
+            for (int i = 0; i < length; i++)
+            {
+                newArr[i] = func(arr[i]);
+            }
+
+            newArr[arr.Length] = func(elem);
+
+            return newArr;
+        }
+
+        private BitBuffer512 CalculateUniqueCode()
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
             var bits = new BitBuffer512();
 
-            int length = blocks.Length;
+            int length = Blocks.Length;//Math.Max(Max.X, Max.Y) + 1;
 
-            foreach (var block in blocks)
+            foreach (var block in Blocks)
             {
                 bits[GetWeight(block.X, block.Y, length)] = true;
             }
@@ -156,22 +174,38 @@
             return bits;
         }
 
-        private static BitBuffer512 CalculateUniqueCode(Vector2Int[] blocks, Func<Vector2Int, Vector2Int> map)
+        private BitBuffer512 CalculateUniqueCode(Func<Vector2Int, Vector2Int> map)
         {
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
             var bits = new BitBuffer512();
 
-            int length = blocks.Length;
+            int length = Blocks.Length;//Math.Max(Max.X, Max.Y) + 1;
 
-            foreach (var block in blocks)
+            foreach (var block in Blocks)
             {
-                var mapped = map(block); // TODO: Fix displacement
+                var pma = map(block);
+                var mapped = MapPositionWithinSize(block, map);
                 bits[GetWeight(mapped.X, mapped.Y, length)] = true;
             }
 
             return bits;
         }
+
+        private Vector2Int MapPositionWithinSize(Vector2Int position, Func<Vector2Int, Vector2Int> map)
+        {
+            var mappedSize = map(Max);
+
+            return map(position) + new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
+        }
+
+        //        |X               
+        //        |                
+        //        |                
+        // -------DDDD----           
+        //        DDDD              
+        //        |                
+
 
         // Map  Step
         // +x+y +x-y
@@ -183,20 +217,9 @@
         // -y+x +x-y
         // -y-x -y-x
 
-        private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Steps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
-        {
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
-            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
-            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
-        };
-
         private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
         {
+            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)),
             (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
             (x => new Vector2Int(-x.X, +x.Y), x => new Vector2Int(~x.X, +x.Y)),
             (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
@@ -204,19 +227,16 @@
             (x => new Vector2Int(+x.Y, -x.X), x => new Vector2Int(+x.Y, ~x.X)),
             (x => new Vector2Int(-x.Y, +x.X), x => new Vector2Int(~x.Y, +x.X)),
             (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
-            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)),
         };
 
         public void Orient()
         {
-            int minIndex = 7;
+            int minIndex = 0;
             BitBuffer512 min = _uniqueCode;
 
-            for (int i = 0; i < Steps.Length; i++)
+            for (int i = 1; i < Maps.Length; i++)
             {
-                ProjectVoxels(Steps[i].BlockMap, Steps[i].DiagonalRootMap);
-                FixDisplacement();
-                var uniqueCode = CalculateUniqueCode(Blocks);
+                var uniqueCode = CalculateUniqueCode(Maps[i].BlockMap);
                 if (min > uniqueCode)
                 {
                     minIndex = i;
@@ -225,24 +245,16 @@
             }
 
             ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
-            FixDisplacement();
-            _uniqueCode = CalculateUniqueCode(Blocks);
+
+            _uniqueCode = CalculateUniqueCode();
         }
 
         private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
         {
-            Blocks.SelectInPlaceF(func);
-            PossibleExtensions.SelectInPlaceF(func);
-            DiagonalRoot = diagonalRootFunc(DiagonalRoot);
-        }
-
-        private void FixDisplacement()
-        {
-            Vector2Int offset = -new Vector2Int(Blocks.MinF(x => x.X), Blocks.MinF(x => x.Y));
-
-            Blocks.SelectInPlaceF(x => x + offset);
-            DiagonalRoot += offset;
-            PossibleExtensions.SelectInPlaceF(x => x + offset);
+            Blocks.SelectInPlaceF(x => MapPositionWithinSize(x, func));
+            PossibleExtensions.SelectInPlaceF(x => MapPositionWithinSize(x, func));
+            DiagonalRoot = MapPositionWithinSize(DiagonalRoot, diagonalRootFunc);
+            Max = MapPositionWithinSize(Max, func);
         }
 
         private bool[,] GetBlock2DArray()
