@@ -1,6 +1,4 @@
-﻿#define PerfOpt
-
-namespace Nummernmerker.CLI
+﻿namespace Nummernmerker.CLI
 {
     using CommandLine;
     using Rominos;
@@ -23,6 +21,9 @@ namespace Nummernmerker.CLI
 
         [Option('e', "highlightPossibleExtensions", Required = false, HelpText = "Whether to visually mark where new blocks can be appended in every Romino.")]
         public bool HighlightPossibleExtensions { get; set; }
+
+        [Option('s', "stopwatch", Required = false, HelpText = "Whether to supress output other than number of rominos found in order to measure calculation time.")]
+        public bool Stopwatch { get; set; }
     }
 
     public static class Program
@@ -37,17 +38,18 @@ namespace Nummernmerker.CLI
 
         public static void RunWithOptions(Options options)
         {
-#if PerfOpt
-            Console.WriteLine("Starting");
+            if (options.Stopwatch)
+            {
+                Console.WriteLine("Starting");
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            foreach (var rom in Romino.GetRominosUntilSize(10)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
-            stopwatch.Stop();
-            Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                foreach (var rom in Romino.GetRominosUntilSize(10)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
+                stopwatch.Stop();
+                Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
 
-            return;
-#endif
+                return;
+            }
 
             TextWriter consoleOut = Console.Out;
 
