@@ -1,13 +1,11 @@
-﻿using System.Data;
-//TODO: Make this a static utility class
+﻿//TODO: Make this a static utility class
 namespace Urlaubsfahrt
 {
     using System;
-    using System.IO;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class Program
+    public static class Program
     {
         public static Track GetTrack(
             float trackLength,
@@ -20,24 +18,23 @@ namespace Urlaubsfahrt
 
             List<Track> trackParts = new List<Track> { Track.EmptyTrack };
 
-            foreach(GasStation station in allStations)
+            foreach (GasStation station in allStations)
             {
-                trackParts.RemoveAll(x => station.Position - x.Stops.Last().Position < fuelLength && 
+                trackParts.RemoveAll(x => station.Position - x.Stops.Last().Position < fuelLength &&
                     x != Track.EmptyTrack);
 
                 List<Track> possibleParts = trackParts.ToList();
 
-                if (possibleParts.Count == 0)
-                    throw new Exception();
+                if (possibleParts.Count == 0) throw new InvalidOperationException("No solutions found");
                 else
                 {
-                    #if false
+#if false
                     Track t = new Track(possibleParts
                         .AllMins(x => x.Stops.Count)
                         .MinBy(x => x.GetPriceTo(station)), station);
                     trackParts.Add(t);
-                    #else
-                    List<Tuple<Track, float?>> BestTrackTuples = new System.Collections.Generic.List<Tuple<Track, float?>>();
+#else
+                    List<Tuple<Track, float?>> BestTrackTuples = new List<Tuple<Track, float?>>();
                     possibleParts
                         .AllMins(x => x.Stops.Count)
                         .ToList()
@@ -46,8 +43,7 @@ namespace Urlaubsfahrt
                             .Add(new Tuple<Track, float?>(x, x.GetPriceTo(station))));
                     BestTrackTuples.RemoveAll(x => x.Item2 == null);
                     BestTrackTuples.Select(x => x.Item1).ToList().ForEach(x => possibleParts.Add(new Track(x, station)));
-                    #endif
-                    
+#endif
                 }
             }
             return trackParts.Last();

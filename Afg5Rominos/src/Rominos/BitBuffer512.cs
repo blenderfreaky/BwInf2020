@@ -9,6 +9,7 @@ namespace Rominos
     public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         #region Fields
+
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
 #if DEBUG_BitBuffer512
@@ -52,7 +53,8 @@ namespace Rominos
         [FieldOffset(512)] private ulong _a;
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore RCS1169 // Make field read-only.
-#endregion
+
+        #endregion Fields
 
         public bool this[int bitIndex]
         {
@@ -61,7 +63,9 @@ namespace Rominos
         }
 
         #region Bits
+
         private static bool GetBit(ref BitBuffer512 bitBuffer, int bitIndex) => GetBit(GetUlongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64);
+
         private static void SetBit(ref BitBuffer512 bitBuffer, int bitIndex, bool bit) => SetBit(ref GetUlongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64, bit);
 
         // Extension method due to defensive copies etc. (see https://stackoverflow.com/questions/50490143/why-cant-a-c-sharp-struct-method-return-a-reference-to-a-field-but-a-non-membe)
@@ -88,9 +92,11 @@ namespace Rominos
             if (!bit) val &= ~(1ul << bitIndex);
             else val |= (1ul << bitIndex);
         }
-        #endregion
+
+        #endregion Bits
 
         #region Overrides and Interface Implementations
+
         public override readonly int GetHashCode()
         {
             var hashCode = -553793028;
@@ -118,9 +124,11 @@ namespace Rominos
             && _a == other._a;
 
         public readonly int CompareTo(BitBuffer512 other) => this < other ? -1 : this > other ? 1 : 0;
-        #endregion
+
+        #endregion Overrides and Interface Implementations
 
         #region Operators
+
         public static bool operator <(BitBuffer512 lhs, BitBuffer512 rhs)
         {
             if (lhs._h < rhs._h) return true;
@@ -156,6 +164,7 @@ namespace Rominos
         public static bool operator ==(BitBuffer512 lhs, BitBuffer512 rhs) => lhs.Equals(rhs);
 
         public static bool operator !=(BitBuffer512 lhs, BitBuffer512 rhs) => !(lhs == rhs);
-        #endregion
+
+        #endregion Operators
     }
 }

@@ -16,6 +16,7 @@ namespace Rominos
         }
 
         public readonly bool Equals(Vector2Int vector) => X == vector.X && Y == vector.Y;
+
         public override readonly bool Equals(object obj) => obj is Vector2Int vector && Equals(vector);
 
         public override readonly int GetHashCode()
