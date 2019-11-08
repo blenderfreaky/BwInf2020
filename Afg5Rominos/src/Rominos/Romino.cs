@@ -8,6 +8,18 @@
 
     public struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
+        private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
+        {
+            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)),
+            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
+            (x => new Vector2Int(-x.X, +x.Y), x => new Vector2Int(~x.X, +x.Y)),
+            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
+            (x => new Vector2Int(+x.Y, +x.X), x => new Vector2Int(+x.Y, +x.X)),
+            (x => new Vector2Int(+x.Y, -x.X), x => new Vector2Int(+x.Y, ~x.X)),
+            (x => new Vector2Int(-x.Y, +x.X), x => new Vector2Int(~x.Y, +x.X)),
+            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
+        };
+
         public static Romino One =
             new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) }, new Vector2Int(0, 0),
                 // These are hardcoded in by hand, because this list is only populated lazily by appending, rather than computed once.
@@ -18,12 +30,12 @@
                                                 new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
                 new Vector2Int(1, 1));
 
-        public readonly Vector2Int[] Blocks; // NOTE: The values inside the array are very much not readonly, and get changed
-        public readonly Vector2Int[] PossibleExtensions; // NOTE: The values inside the array are very much not readonly, and get changed
-        public Vector2Int DiagonalRoot;
-        public Vector2Int Max;
+        public readonly Vector2Int[] Blocks;
+        public readonly Vector2Int[] PossibleExtensions;
+        public readonly Vector2Int DiagonalRoot;
+        public readonly Vector2Int Max;
 
-        private BitBuffer512 _uniqueCode;
+        private readonly BitBuffer512 _uniqueCode;
 
         public readonly IEnumerable<Vector2Int> DiagonalRootBlockade
         {
@@ -43,8 +55,40 @@
             PossibleExtensions = possibleExtensions;
             Max = max;
 
-            _uniqueCode = default; // Needs to be assigned before instance methods can be called, so just assign default before calling the method computing it
+            _uniqueCode = default;
             _uniqueCode = CalculateUniqueCode();
+
+            {
+                int minIndex = 0;
+                BitBuffer512 minCode = _uniqueCode;
+
+                for (int i = 1; i < Maps.Length; i++)
+                {
+                    var uniqueCode = CalculateUniqueCode(Maps[i].BlockMap);
+                    if (minCode > uniqueCode)
+                    {
+                        minIndex = i;
+                        minCode = uniqueCode;
+                    }
+                }
+
+                if (minIndex == 0) return;
+
+                {
+                    var offset = CalculateOffset(Maps[minIndex].BlockMap);
+
+                    for (int i = 0; i < Blocks.Length; i++) Blocks[i] = Maps[minIndex].BlockMap(Blocks[i]) + offset;
+                    for (int i = 0; i < PossibleExtensions.Length; i++) PossibleExtensions[i] = Maps[minIndex].BlockMap(PossibleExtensions[i]) + offset;
+
+                    DiagonalRoot = Maps[minIndex].DiagonalRootMap(DiagonalRoot) + offset;
+
+                    var mappedMax = Maps[minIndex].BlockMap(Max);
+                    Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
+                }
+
+                _uniqueCode = CalculateUniqueCode();
+            }
+
         }
 
         public static IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSize(int size)
@@ -93,8 +137,12 @@
                 // Remove the added block and add the new, now appendable positions
                 Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToArray();
 
-                var romino = new Romino(AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset), DiagonalRoot + offset, newPossibleExtensions, newSize);
-                romino.Orient();
+                var romino = new Romino(
+                    AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset),
+                    DiagonalRoot + offset,
+                    newPossibleExtensions,
+                    newSize);
+
                 yield return romino;
             }
         }
@@ -156,51 +204,7 @@
             return new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
         }
 
-        private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
-        {
-            (x => new Vector2Int(+x.X, +x.Y), x => new Vector2Int(+x.X, +x.Y)),
-            (x => new Vector2Int(+x.X, -x.Y), x => new Vector2Int(+x.X, ~x.Y)),
-            (x => new Vector2Int(-x.X, +x.Y), x => new Vector2Int(~x.X, +x.Y)),
-            (x => new Vector2Int(-x.X, -x.Y), x => new Vector2Int(~x.X, ~x.Y)),
-            (x => new Vector2Int(+x.Y, +x.X), x => new Vector2Int(+x.Y, +x.X)),
-            (x => new Vector2Int(+x.Y, -x.X), x => new Vector2Int(+x.Y, ~x.X)),
-            (x => new Vector2Int(-x.Y, +x.X), x => new Vector2Int(~x.Y, +x.X)),
-            (x => new Vector2Int(-x.Y, -x.X), x => new Vector2Int(~x.Y, ~x.X)),
-        };
-
-        public void Orient()
-        {
-            int minIndex = 0;
-            BitBuffer512 min = _uniqueCode;
-
-            for (int i = 1; i < Maps.Length; i++)
-            {
-                var uniqueCode = CalculateUniqueCode(Maps[i].BlockMap);
-                if (min > uniqueCode)
-                {
-                    minIndex = i;
-                    min = uniqueCode;
-                }
-            }
-
-            ProjectVoxels(Maps[minIndex].BlockMap, Maps[minIndex].DiagonalRootMap);
-
-            _uniqueCode = CalculateUniqueCode();
-        }
-
-        private void ProjectVoxels(Func<Vector2Int, Vector2Int> func, Func<Vector2Int, Vector2Int> diagonalRootFunc)
-        {
-            var offset = CalculateOffset(func);
-
-            for (int i = 0; i < Blocks.Length; i++) Blocks[i] = func(Blocks[i]) + offset;
-            for (int i = 0; i < PossibleExtensions.Length; i++) PossibleExtensions[i] = func(PossibleExtensions[i]) + offset;
-
-            DiagonalRoot = diagonalRootFunc(DiagonalRoot) + offset;
-
-            var mappedMax = func(Max);
-            Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
-        }
-
+        #region Visualization
         private readonly bool[,] GetBlock2DArray()
         {
             var blocks = new bool[Max.X + 1, Max.Y + 1];
@@ -244,7 +248,9 @@
                 buffer.Clear();
             }
         }
+        #endregion
 
+        #region Overrides and Interface Implementations
         // <inheritdoc/>
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
         /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
@@ -294,5 +300,6 @@
         {
             return left.CompareTo(right) >= 0;
         }
+        #endregion
     }
 }
