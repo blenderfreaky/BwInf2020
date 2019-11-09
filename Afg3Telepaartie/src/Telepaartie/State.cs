@@ -14,12 +14,9 @@ namespace Telepaartie
         public List<State> Childos { get; private set; } = null;
         public List<int> Bucks {get;}
 
-        public State(int cupCount)
+        public State(List<int> end)
         {
-            Bucks = new List<int>();
-            for (int i = 0; i < cupCount; i++)
-                Bucks.Add(0);
-
+            Bucks = end.ToList();
             Daddy = null;
         }
 
@@ -39,6 +36,13 @@ namespace Telepaartie
                 for(int u = 0; u < Bucks.Count; u++)
                     if (Bucks[i]%2 == 0 && Bucks[i] > 0 && i != u) Childos.Add(new State(this, new Tuple<int, int>(i, u)));
             return Childos;
+        }
+
+        public List<State>GetChildosDeeper(int y)
+        {
+            if (y < 0) throw new Exception("Bruh u want me and my brothers, my parents or other stupid people");
+            if (y == 0) return new List<State> {this};
+            return Childos.SelectMany(x => x.GetChildosDeeper(y - 1)).ToList();
         }
 
         private void ApplyOperation(Tuple<int, int> mover)
