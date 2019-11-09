@@ -37,15 +37,14 @@ namespace Telepaartie
             Childos = new List<State>();
             for(int i = 0; i < Bucks.Count; i++)
                 for(int u = 0; u < Bucks.Count; u++)
-                    if (u != i && i <= u) Childos.Add(new State(this, new Tuple<int, int>(i, u)));
+                    if (Bucks[i]%2 == 0 && Bucks[i] > 0 && i != u) Childos.Add(new State(this, new Tuple<int, int>(i, u)));
             return Childos;
         }
 
         private void ApplyOperation(Tuple<int, int> mover)
         {
-            int val = Bucks[mover.Item1];
-            Bucks[mover.Item1] *= 2;
-            Bucks[mover.Item2] -= val;
+            Bucks[mover.Item1] /= 2;
+            Bucks[mover.Item2] += Bucks[mover.Item1];
         }
 
         private void HelpMeIDontWannaGetAdopted(State NewDaddy)
