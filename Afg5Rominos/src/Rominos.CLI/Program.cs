@@ -85,12 +85,16 @@
                         }
 
                         string[][] text = rominoSizeClass.Rominos
-                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade, options.HighlightPossibleExtensions).ToArray()).ToArray();
+                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade, options.HighlightPossibleExtensions).ToArray())
+                            .Take(50)
+                            .ToArray();
+
+                        int bufferWidth = Math.Min(Console.BufferWidth, 200);
 
                         if (options.TargetFilePath == null)
                         {
                             Console.SetCursorPosition(0, Console.CursorTop - 1);
-                            Console.WriteLine(new string(' ', Console.BufferWidth));
+                            Console.WriteLine(new string(' ', bufferWidth));
                         }
 
                         Console.WriteLine();
@@ -106,7 +110,7 @@
                                 {
                                     var lines = text[k];
 
-                                    if (Console.BufferWidth - Console.CursorLeft < lines[0].Length + 3) break;
+                                    if (bufferWidth - Console.CursorLeft < lines[0].Length + 3) break;
 
                                     if (k != i) Console.Write(" │ ");
                                     Console.Write(lines.Length > j ? lines[j] : new string(' ', lines[0].Length));
