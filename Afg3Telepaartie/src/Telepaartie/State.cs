@@ -9,14 +9,15 @@ namespace Telepaartie
     public class State
     {
         public int Iterations { get => ((Daddy == null) ? (0) : (Daddy.Iterations + 1)); }
-
         public State Daddy { get; private set; }
         public List<State> Childos { get; private set; } = null;
         public List<int> Bucks {get;}
 
+
         public State(List<int> end)
         {
             Bucks = end.ToList();
+            Bucks.Sort();
             Daddy = null;
         }
 
@@ -28,6 +29,7 @@ namespace Telepaartie
             Daddy = origin;
         }
 
+
         public List<State> GetNextGen()
         {
             if (Childos != null) throw new Exception("I am a father, I don't want more kids");
@@ -36,6 +38,26 @@ namespace Telepaartie
                 for(int u = 0; u < Bucks.Count; u++)
                     if (Bucks[i]%2 == 0 && Bucks[i] > 0 && i != u) Childos.Add(new State(this, new Tuple<int, int>(i, u)));
             return Childos;
+        }
+
+        public bool IsEqual(List<int> test)
+        {
+            if(test.Count != Bucks.Count) throw new ArgumentException();
+            for(int i = 0; i < test.Count; i++)
+            {
+                if(test[i] != Bucks[i]) return false;
+            }
+            return true;
+        }
+
+        public bool IsEqual(State test)
+        {
+            if(test.Bucks.Count != Bucks.Count) throw new ArgumentException();
+            for(int i = 0; i < Bucks.Count; i++)
+            {
+                if(test.Bucks[i] != Bucks[i]) return false;
+            }
+            return true;
         }
 
         public List<State>GetChildosDeeper(int y)
@@ -49,7 +71,10 @@ namespace Telepaartie
         {
             Bucks[mover.Item1] /= 2;
             Bucks[mover.Item2] += Bucks[mover.Item1];
+            Bucks.Sort();
         }
+
+        private void KillMe() => Daddy.Childos.Remove(this);
 
         private void HelpMeIDontWannaGetAdopted(State NewDaddy)
         {

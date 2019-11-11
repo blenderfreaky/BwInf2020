@@ -7,10 +7,10 @@ namespace Telepaartie
 {
     class MainFrame
     {
-        private List<int> Goal { get; set; }
+        private List<List<int>> Goal { get; set; }
         private List<List<int>> PossibleEndings { get; set; }
 
-        public MainFrame(List<int> goal, List<List<int>> possibleEndings)
+        public MainFrame(List<List<int>> goal, List<List<int>> possibleEndings)
         {
             Goal = goal;
             PossibleEndings = possibleEndings;
@@ -27,6 +27,10 @@ namespace Telepaartie
                     .ToList();
 
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
+                foreach(State s in NewChildos)
+                {
+                    Goal.RemoveAll(x => s.IsEqual(x));
+                }
             }
         }
     }
