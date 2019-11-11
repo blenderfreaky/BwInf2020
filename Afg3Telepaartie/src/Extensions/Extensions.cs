@@ -22,10 +22,19 @@ namespace Extensions
                     {
                         if(!(!ReturnDuplicates && Dubblos.Contains(t)))
                             Dubblos.Add(t);
+                            continue;
                     }
+                    if(ReturnDuplicates == true || !Dubblos.Contains(t)) Dubblos.Add(t);
                 }
             }
             return Dubblos;
+        }
+
+        public static bool B<T>(this List<T> tested, T test, Func<T,T,bool>tester)
+        {
+            foreach(T t in tested)
+                if(tester(t, test)) return true;
+            return false;
         }
     }
 }
