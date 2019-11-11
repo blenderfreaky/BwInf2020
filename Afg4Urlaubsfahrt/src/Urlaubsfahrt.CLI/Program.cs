@@ -16,7 +16,6 @@
     {
         public static void Main()
         {
-#if true
             Console.WriteLine("Insert path:");
             string path = Console.ReadLine();
 
@@ -35,22 +34,6 @@
 
             Track Way = Urlaubsfahrt.Program.GetTrack(TrackLength, StartFuel / Usage * 100, FuelLength, AllStations);
             Console.WriteLine(Way.ToString());
-#else
-            Parser.Default.ParseArguments<Options>(args)
-                .WithParsed(o =>
-                {
-                    if (o.Verbose)
-                    {
-                        Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                        Console.WriteLine("Quick Start Example! App is in Verbose mode!");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Current Arguments: -v {o.Verbose}");
-                        Console.WriteLine("Quick Start Example!");
-                    }
-                });
-#endif
         }
     }
 }
