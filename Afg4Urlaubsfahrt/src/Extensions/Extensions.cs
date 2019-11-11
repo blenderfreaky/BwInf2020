@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     public static class ExtensionsCollection
     {
@@ -11,7 +12,7 @@
         {
             var enumerator = source.GetEnumerator();
 
-            if (!enumerator.MoveNext()) throw new ArgumentException(nameof(source) + " cant be emty");
+            if (!enumerator.MoveNext()) throw new InvalidOperationException("Sequence contains no elements");
 
             TSource firstElement = enumerator.Current;
             TKey min = selector(firstElement);
@@ -32,10 +33,6 @@
             }
             return minima;
         }
-
-        public static TSource MinBy<TSource, TKey>
-            (this IEnumerable<TSource> source, Func<TSource, TKey> selector) =>
-            source.MinBy(selector, null);
 
         public static TSource MinBy<TSource, TKey>
             (this IEnumerable<TSource> source, Func<TSource, TKey> selector, IComparer<TKey> comparer)
@@ -64,6 +61,7 @@
             return min;
         }
 
+        [Obsolete("Use " + nameof(TryIndexMinWhere) + " instead")]
         public static (T Element, int Index)? IndexMinWhere<T>
             (this IEnumerable<T> value, Func<T, bool> check)
         {
@@ -82,6 +80,35 @@
             }
             if (minIndex == -1) return null;
             return (min, index);
+        }
+
+        public static bool TryIndexMinWhere<T> // TODO: Better name
+            (this IEnumerable<T> enumerable, Predicate<T> filter, [NotNullWhen(true)]out T element, [NotNullWhen(true)]out int index)
+        {
+            int i = -1;
+            int minIndex = -1;
+            T min = default;
+
+            foreach (var elem in enumerable)
+            {
+                i++;
+                if (filter(elem) && Comparer<T>.Default.Compare(min, elem) > 0)
+                {
+                    minIndex = i;
+                    min = elem;
+                }
+            }
+
+            if (minIndex == -1)
+            {
+                element = default;
+                index = default;
+                return false;
+            }
+
+            element = min;
+            index = i;
+            return true;
         }
     }
 }

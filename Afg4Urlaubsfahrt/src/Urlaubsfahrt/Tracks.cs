@@ -2,6 +2,7 @@ namespace Urlaubsfahrt
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     public class Track
@@ -15,75 +16,96 @@ namespace Urlaubsfahrt
 
         public static Track EmptyTrack => new Track();
 
+        private readonly struct Range : IEquatable<Range>
+        {
+            public readonly float Start, End;
+
+            public Range(float start, float end)
+            {
+                Start = start;
+                End = end;
+            }
+
+            public override bool Equals(object obj) => obj is Range range && Equals(range);
+            public bool Equals([AllowNull] Range other) => Start == other.Start && End == other.End;
+            public override int GetHashCode() => HashCode.Combine(Start, End);
+        }
+
         public float? GetPriceTo(float pos)
         {
-            List<Tuple<GasStation, float>> Wai = new List<Tuple<GasStation, float>>();
+            List<(GasStation Station, float Distance)> path = new List<(GasStation Station, float Distance)>();
             List<GasStation> allStations = Stops.OrderBy(x => x.PricePerVolumeInEuroPerLiter).ToList();
 
-            List<Tuple<float, float>> FullBois = new List<Tuple<float, float>>();
-            List<float> possslos = new List<float> { pos, StartFuelLength };
-            FullBois.Add(new Tuple<float, float>(0, possslos.Min()));
+            List<Range> fullBois = new List<Range>();
+            List<float> possiblePaths = new List<float> { pos, StartFuelLength };
+
+            fullBois.Add(new Range(0, possiblePaths.Min()));
+
             foreach (GasStation s in allStations)
             {
                 //TODO: If all covered => break
-                (Tuple<float, float> Element, int Index)? temp0 = FullBois.IndexMinWhere(x => x.Item2 > s.Position);
+                (Range Element, int Index)? temp0 = fullBois.IndexMinWhere(x => x.End > s.Position);
                 if (!temp0.HasValue)
                 {
                     List<float> posslos = new List<float>() { s.Position + FuelLength, pos };
-                    Tuple<float, float> part = new Tuple<float, float>(
+                    Range part = new Range(
                             s.Position,
                             posslos.Min());
 
-                    FullBois.Add(part);
-                    Wai.Add(new Tuple<GasStation, float>(s, part.Item2 - part.Item1));
+                    fullBois.Add(part);
+                    path.Add((s, part.End - part.Start));
                 }
-                (Tuple<float, float> Element, int Index) UnderBorderTupleIndexTuple
+#warning This will throw a null-ref exception if the !temp0.HasValue branch was visited, as it does not assign a new value
+                (Range Element, int Index) underBorderIndexTuple
                     = temp0.Value;
 
-                Tuple<float, float> UnderBorderTuple = UnderBorderTupleIndexTuple.Item1;
-                if (UnderBorderTuple.Item1 <= s.Position && UnderBorderTuple.Item2 >= s.Position + FuelLength)
+                Range underBorder = underBorderIndexTuple.Element;
+                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + FuelLength)
                 {
                     continue;
                 }
-                if (UnderBorderTuple.Item1 > s.Position)
+                if (underBorder.Start > s.Position)
                 {
-                    FullBois.RemoveAt(UnderBorderTupleIndexTuple.Item2);
+                    fullBois.RemoveAt(underBorderIndexTuple.Index);
 
-                    FullBois.Add(
-                        new Tuple<float, float>(s.Position,
-                        UnderBorderTuple.Item2));
-                    Wai.Add(new Tuple<GasStation, float>(s, UnderBorderTuple.Item1 - s.Position));
+                    fullBois.Add(
+                        new Range(s.Position,
+                        underBorder.End));
+                    path.Add((s, underBorder.Start - s.Position));
                 }
                 else
                 {
-                    FullBois.RemoveAt(UnderBorderTupleIndexTuple.Item2);
-                    (Tuple<float, float> Element, int Index)? temp1 = FullBois.IndexMinWhere(x => x.Item1 > UnderBorderTuple.Item2);
-                    if (!temp1.HasValue) goto Next;
-                    (Tuple<float, float> Element, int Index) UpperBorderTupleIndexTuple
-                        = temp1.Value;
+                    fullBois.RemoveAt(underBorderIndexTuple.Index);
 
-                    if (UpperBorderTupleIndexTuple.Element.Item1 <= s.Position + FuelLength)
+                    (Range Element, int Index)? temp1 = fullBois.IndexMinWhere(x => x.Start > underBorder.End);
+
+                    if (temp1.HasValue)
                     {
-                        FullBois.RemoveAt(UpperBorderTupleIndexTuple.Index);
-                        FullBois.Add(
-                            new Tuple<float, float>(
-                                UnderBorderTuple.Item1,
-                                UnderBorderTupleIndexTuple.Item1.Item2));
-                        Wai.Add(new Tuple<GasStation, float>(s, UpperBorderTupleIndexTuple.Element.Item1 - UnderBorderTuple.Item2));
+                        (Range Element, int Index) UpperBorderTupleIndexTuple
+                            = temp1.Value;
+
+                        if (UpperBorderTupleIndexTuple.Element.Start <= s.Position + FuelLength)
+                        {
+                            fullBois.RemoveAt(UpperBorderTupleIndexTuple.Index);
+                            fullBois.Add(
+                                new Range(
+                                    underBorder.Start,
+                                    underBorderIndexTuple.Element.End));
+                            path.Add((s, UpperBorderTupleIndexTuple.Element.Start - underBorder.End));
+                        }
+                        continue;
                     }
-                    continue;
-                    Next:
 
                     List<float> posslos = new List<float>() { s.Position + FuelLength, pos };
-                    FullBois.Add(
-                        new Tuple<float, float>(
-                            UnderBorderTuple.Item1,
+                    fullBois.Add(
+                        new Range(
+                            underBorder.Start,
                             posslos.Min()));
-                    Wai.Add(new Tuple<GasStation, float>(s, posslos.Min() - UnderBorderTuple.Item2));
+                    path.Add((s, posslos.Min() - underBorder.End));
                 }
-                if (FullBois[0].Item1 == 0 && FullBois[0].Item2 == pos)
+                if (fullBois[0].Start == 0 && fullBois[0].End == pos)
                 {
-                    return Wai.Select(x => x.Item1.PricePerVolumeInEuroPerLiter * x.Item2).Sum();
+                    return path.Select(x => x.Station.PricePerVolumeInEuroPerLiter * x.Distance).Sum();
                 }
             }
             return null;

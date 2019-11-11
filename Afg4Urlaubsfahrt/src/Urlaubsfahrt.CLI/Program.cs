@@ -8,32 +8,39 @@
 
     public class Options
     {
-        [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-        public bool Verbose { get; set; }
+        [Option('f', "file", Required = false, HelpText = "The input file to evaluate.")]
+        public string File { get; set; }
     }
 
     public static class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
+        {
+            Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(RunWithOptions);
+        }
+
+        public static void RunWithOptions(Options o)
         {
             Console.WriteLine("Insert path:");
-            string path = Console.ReadLine();
 
-            string[] FileValues = File.ReadAllText(path).Split('\n');
-            float Usage = int.Parse(FileValues[0]);
-            float MaxFuel = int.Parse(FileValues[1]);
-            float StartFuel = int.Parse(FileValues[2]);
-            float TrackLength = int.Parse(FileValues[3]);
-            float FuelLength = MaxFuel / Usage * 100;
-            List<GasStation> AllStations = new List<GasStation>();
-            for (int i = 5; i < FileValues.Length; i++)
+            string[] lines = File.ReadAllLines(o.File);
+            float usage = int.Parse(lines[0]);
+            float maxFuel = int.Parse(lines[1]);
+            float startFuel = int.Parse(lines[2]);
+            float trackLength = int.Parse(lines[3]);
+            float fuelLength = maxFuel / usage * 100;
+
+            List<GasStation> allStations = new List<GasStation>();
+            for (int i = 5; i < lines.Length; i++)
             {
-                float[] values = FileValues[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => float.Parse(x)).ToArray(); //compiler error
-                AllStations.Add(new GasStation(values[0], values[1]));
+                float[] values = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => float.Parse(x)).ToArray(); //compiler error
+                allStations.Add(new GasStation(values[0], values[1]));
             }
 
-            Track Way = Urlaubsfahrt.Program.GetTrack(TrackLength, StartFuel / Usage * 100, FuelLength, AllStations);
-            Console.WriteLine(Way.ToString());
+            Track track = Urlaubsfahrt.GetTrack(trackLength, startFuel / usage * 100, fuelLength, allStations);
+
+            Console.WriteLine(track.ToString());
         }
     }
 }
