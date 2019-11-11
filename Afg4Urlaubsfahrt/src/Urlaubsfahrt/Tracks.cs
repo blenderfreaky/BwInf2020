@@ -8,7 +8,7 @@ namespace Urlaubsfahrt
     public class Track
     {
 #warning Global state is really bad
-        public static float FuelLength { get; set; } 
+        public static float FuelLength { get; set; }
 #warning Global state is really bad
         public static float StartFuelLength { get; set; }
 
@@ -27,7 +27,9 @@ namespace Urlaubsfahrt
             }
 
             public override bool Equals(object obj) => obj is Range range && Equals(range);
+
             public bool Equals([AllowNull] Range other) => Start == other.Start && End == other.End;
+
             public override int GetHashCode() => HashCode.Combine(Start, End);
         }
 
