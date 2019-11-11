@@ -6,7 +6,9 @@ namespace Urlaubsfahrt
 
     public class Track
     {
-        public static float FuelLength { get; set; }
+#warning Global state is really bad
+        public static float FuelLength { get; set; } 
+#warning Global state is really bad
         public static float StartFuelLength { get; set; }
 
         public List<GasStation> Stops { get; }
