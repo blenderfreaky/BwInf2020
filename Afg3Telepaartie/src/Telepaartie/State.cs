@@ -6,7 +6,7 @@ using Extensions;
 
 namespace Telepaartie
 {
-    public class State
+    public class State : IEquatable<State>
     {
         public int Iterations { get => ((Daddy == null) ? (0) : (Daddy.Iterations + 1)); }
         public State Daddy { get; private set; }
@@ -50,16 +50,17 @@ namespace Telepaartie
             return true;
         }
 
-        public bool IsEqual(State test)
+        public bool Equals(State Test)
         {
-            if(test.Bucks.Count != Bucks.Count) throw new ArgumentException();
+            if(Test.Bucks.Count != Bucks.Count) throw new ArgumentException();
             for(int i = 0; i < Bucks.Count; i++)
             {
-                if(test.Bucks[i] != Bucks[i]) return false;
+                if(Test.Bucks[i] != Bucks[i]) return false;
             }
             return true;
         }
 
+        public override bool Equals(Object Test) => Equals(Test as State);
         public List<State>GetChildosDeeper(int y)
         {
             if (y < 0) throw new Exception("Bruh u want me and my brothers, my parents or other stupid people");
@@ -74,7 +75,7 @@ namespace Telepaartie
             Bucks.Sort();
         }
 
-        private void KillMe() => Daddy.Childos.Remove(this);
+        public void KillMe() => Daddy.Childos.Remove(this);
 
         private void HelpMeIDontWannaGetAdopted(State NewDaddy)
         {
