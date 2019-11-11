@@ -1,12 +1,17 @@
-﻿namespace Nummernmerker.CLI
+﻿using Telepaartie;
+
+namespace Nummernmerker.CLI
 {
     using CommandLine;
     using System;
 
     public class Options
     {
-        [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-        public bool Verbose { get; set; }
+        [Option('n', Required = false, Default = 3, HelpText = "The total sum of elements distributed over the buckets.")]
+        public int N { get; set; }
+
+        [Option('b', "buckets", Required = false, Default = 3, HelpText = "The number of buckets to use. (Default: 3)")]
+        public int Buckets { get; set; }
     }
 
     public static class Program
@@ -14,19 +19,13 @@
         public static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
-                   .WithParsed(o =>
-                   {
-                       if (o.Verbose)
-                       {
-                           Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example! App is in Verbose mode!");
-                       }
-                       else
-                       {
-                           Console.WriteLine($"Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example!");
-                       }
-                   });
+                   .WithParsed(RunWithOptions);
+        }
+
+        private static void RunWithOptions(Options o)
+        {
+            Console.WriteLine(Telepaartie.Telepaartie.CalculateLLLForN(o.N, o.Buckets));
+            // TODO: Maybe show the longest running solution(s)
         }
     }
 }

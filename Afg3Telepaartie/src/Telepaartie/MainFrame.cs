@@ -6,7 +6,7 @@ using Extensions;
 
 namespace Telepaartie
 {
-    class MainFrame
+    public class MainFrame
     {
         private List<List<int>> Goal { get; set; }
         private List<List<int>> PossibleEndings { get; set; }

@@ -2,7 +2,8 @@
 {
     using System;
 
-    public class Telepaartie
+    public static class Telepaartie
     {
+        public static int CalculateLLLForN(int n, int buckets) => throw new NotImplementedException();
     }
 }
