@@ -6,22 +6,14 @@ using Extensions;
 
 namespace Telepaartie
 {
-    public class MainFrame
+    public static class MainFrame
     {
-        private List<List<int>> Goal { get; set; }
-        private List<List<int>> PossibleEndings { get; set; }
-
-        public MainFrame(List<List<int>> goal, List<List<int>> possibleEndings)
+        public static int LLL(int NumberOfCups = 3)
         {
-            Goal = goal;
-            PossibleEndings = possibleEndings;
-        }
+            List<List<int>> Goal = GetGoals(NumberOfCups);
 
-        public int LLL()
-        {
             List<State> AllOlds = new List<State>();
-            List<State> PossibleEndingStates = PossibleEndings.Select(x => new State(x)).ToList();
-            List<State> NewDads = PossibleEndingStates.ToList();
+            List<State> NewDads = GetEndings(NumberOfCups).Select(x => new State(x)).ToList();
             for(int i = 0; true; i++)
             {
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).Distinct().Except(AllOlds).ToList();
@@ -33,6 +25,18 @@ namespace Telepaartie
                 NewDads = NewChildos;
                 AllOlds.AddRange(NewChildos);
             }
+        }
+
+        private static List<List<int>> GetGoals(int NumberOfCups)
+        {
+            List<List<int>> Goals = new List<List<int>>();
+            return Goals;
+        }
+
+        private static List<List<int>> GetEndings(int NumberOfCups)
+        {
+            List<List<int>> Endings = new List<List<int>>();
+            return Endings;
         }
     }
 }
