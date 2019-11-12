@@ -10,7 +10,6 @@ namespace Telepaartie
     {
         public int Iterations { get => ((Daddy == null) ? (0) : (Daddy.Iterations + 1)); }
         public State Daddy { get; private set; }
-        public List<State> Childos { get; private set; } = null;
         public List<int> Bucks {get;}
 
 
@@ -32,8 +31,7 @@ namespace Telepaartie
 
         public List<State> GetNextGen()
         {
-            if (Childos != null) throw new Exception("I am a father, I don't want more kids");
-            Childos = new List<State>();
+            List<State> Childos = new List<State>();
             for(int i = 0; i < Bucks.Count; i++)
                 for(int u = 0; u < Bucks.Count; u++)
                     if (Bucks[i]%2 == 0 && Bucks[i] > 0 && i != u) Childos.Add(new State(this, new Tuple<int, int>(i, u)));
@@ -52,6 +50,7 @@ namespace Telepaartie
 
         public bool Equals(State Test)
         {
+            if(Test == null) return false;
             if(Test.Bucks.Count != Bucks.Count) throw new ArgumentException();
             for(int i = 0; i < Bucks.Count; i++)
             {
@@ -61,27 +60,12 @@ namespace Telepaartie
         }
 
         public override bool Equals(Object Test) => Equals(Test as State);
-        public List<State>GetChildosDeeper(int y)
-        {
-            if (y < 0) throw new Exception("Bruh u want me and my brothers, my parents or other stupid people");
-            if (y == 0) return new List<State> {this};
-            return Childos.SelectMany(x => x.GetChildosDeeper(y - 1)).ToList();
-        }
 
         private void ApplyOperation(Tuple<int, int> mover)
         {
             Bucks[mover.Item1] /= 2;
             Bucks[mover.Item2] += Bucks[mover.Item1];
             Bucks.Sort();
-        }
-
-        public void KillMe() => Daddy.Childos.Remove(this);
-
-        private void HelpMeIDontWannaGetAdopted(State NewDaddy)
-        {
-            if (NewDaddy.Iterations >= Daddy.Iterations) throw new Exception("My daddy is far better");
-            Daddy.Childos.Remove(this);
-            Daddy = NewDaddy;
         }
     }
 }

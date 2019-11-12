@@ -19,25 +19,19 @@ namespace Telepaartie
 
         public int LLL()
         {
-            //Todo: all PossibleEndings need one father
             List<State> AllOlds = new List<State>();
             List<State> PossibleEndingStates = PossibleEndings.Select(x => new State(x)).ToList();
-            List<State> NewDads = PossibleEndingStates
-                    .SelectMany(x => x.GetChildosDeeper(0))
-                    .ToList();
+            List<State> NewDads = PossibleEndingStates.ToList();
             for(int i = 0; true; i++)
             {
-                List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
-                List<State>ChildosWeWannaKill = NewChildos.GetDublicates(true, null);
-                NewChildos = NewChildos.Except(ChildosWeWannaKill).ToList();
-                List<State> a = NewChildos.Select(x => AllOlds.B(x));
-                ChildosWeWannaKill.ForEach(x => x.KillMe());
+                List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).Distinct().Except(AllOlds).ToList();
                 foreach(State s in NewChildos)
                 {
                     Goal.RemoveAll(x => s.IsEqual(x));
                 }
                 if(Goal.Count == 0) return i;
                 NewDads = NewChildos;
+                AllOlds.AddRange(NewChildos);
             }
         }
     }
