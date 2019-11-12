@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Urlaubsfahrt.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "--file <FILEHERE>"
+    }
+  }
+}

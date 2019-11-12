@@ -1,11 +1,10 @@
-﻿//TODO: Make this a static utility class
-namespace Urlaubsfahrt
+﻿namespace Urlaubsfahrt
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class Program
+    public static class Urlaubsfahrt
     {
         public static Track GetTrack(
             float trackLength,

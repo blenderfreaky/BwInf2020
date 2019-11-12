@@ -1,0 +1,76 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=3.5cm]{geometry}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage{babel}
+
+\usepackage{color}
+\usepackage{listings}
+\usepackage{courier}
+
+%\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
+\definecolor{bluekeywords}{rgb}{0,0,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.64,0.08,0.08}
+\definecolor{xmlcomments}{rgb}{0.5,0.5,0.5}
+\definecolor{types}{rgb}{0.17,0.57,0.68}
+
+\usepackage{listings}
+\lstset{language=[Sharp]C,
+captionpos=b,
+%numbers=left, %Nummerierung
+%numberstyle=\tiny, % kleine Zeilennummern
+frame=lines, % Oberhalb und unterhalb des Listings ist eine Linie
+showspaces=false,
+showtabs=false,
+breaklines=true,
+showstringspaces=false,
+breakatwhitespace=true,
+escapeinside={(*@}{@*)},
+commentstyle=\color{greencomments},
+morekeywords={partial, var, value, get, set},
+keywordstyle=\color{bluekeywords},
+stringstyle=\color{redstrings},
+basicstyle=\ttfamily\small,
+literate=%
+    {Ö}{{\"O}}1
+    {Ä}{{\"A}}1
+    {Ü}{{\"U}}1
+    {ß}{{\ss}}1
+    {ü}{{\"u}}1
+    {ä}{{\"a}}1
+    {ö}{{\"o}}1
+    {~}{{\textasciitilde}}1
+}
+
+\begin{document}
+
+\title{Aufgabe 2 - Nummernmerker}
+
+\section{Lösungsidee}
+
+Um die optimale Aufteilung zu ermitteln, verwende ich eine Variation des Knapsack-Algorithmus. Dieser funktioniert wie folgt:
+
+\begin{lstlisting}
+TeileNummerAuf(nullstellen) {
+    if ([Bereits für gleiche Parameter aufgerufen])
+        return [Bereits errechnetes Ergebnis];
+
+    for (int i in 2..4) {
+        subAufteilung = TeileNummerAuf(nullstellen[(i+1)..]);
+
+        Möglichkeiten.Add(subAufteilung.PrecedeBy(i));
+    }
+
+    return Möglichkeiten.Max(aufteilung => BewerteAufteilung(nullstellen, aufteilung));
+}
+
+BewerteAufteilung(nullstellen, aufteilung) {
+    return [Anzahl an führenden nullstellen in der Aufteilung];
+}
+\end{lstlisting}
+
+\end{document}
