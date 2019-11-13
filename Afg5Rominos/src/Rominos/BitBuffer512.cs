@@ -3,11 +3,26 @@
 namespace Rominos
 {
     using System;
+    using System.Globalization;
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 64)]
     public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
+        public static readonly BitBuffer512 Min = new BitBuffer512();
+
+        public static readonly BitBuffer512 Max = new BitBuffer512()
+        {
+            _h = ulong.MaxValue,
+            _g = ulong.MaxValue,
+            _f = ulong.MaxValue,
+            _e = ulong.MaxValue,
+            _d = ulong.MaxValue,
+            _c = ulong.MaxValue,
+            _b = ulong.MaxValue,
+            _a = ulong.MaxValue,
+        };
+
         #region Fields
 
 #pragma warning disable RCS1169 // Make field read-only.
@@ -64,12 +79,12 @@ namespace Rominos
 
         #region Bits
 
-        private static bool GetBit(ref BitBuffer512 bitBuffer, int bitIndex) => GetBit(GetUlongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64);
+        private static bool GetBit(ref BitBuffer512 bitBuffer, int bitIndex) => GetBit(GetulongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64);
 
-        private static void SetBit(ref BitBuffer512 bitBuffer, int bitIndex, bool bit) => SetBit(ref GetUlongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64, bit);
+        private static void SetBit(ref BitBuffer512 bitBuffer, int bitIndex, bool bit) => SetBit(ref GetulongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64, bit);
 
         // Extension method due to defensive copies etc. (see https://stackoverflow.com/questions/50490143/why-cant-a-c-sharp-struct-method-return-a-reference-to-a-field-but-a-non-membe)
-        private static ref ulong GetUlongContainingBit(ref BitBuffer512 bitBuffer, int bitIndex)
+        private static ref ulong GetulongContainingBit(ref BitBuffer512 bitBuffer, int bitIndex)
         {
             if (bitIndex < 0) throw new ArgumentException(nameof(bitIndex));
 
@@ -96,6 +111,17 @@ namespace Rominos
         #endregion Bits
 
         #region Overrides and Interface Implementations
+
+        public override string ToString() =>
+            (_h.ToString("X16")
+            + _g.ToString("X16")
+            + _f.ToString("X16")
+            + _e.ToString("X16")
+            + _d.ToString("X16")
+            + _c.ToString("X16")
+            + _b.ToString("X16")
+            + _a.ToString("X16"))
+            .TrimStart('0');
 
         public override readonly int GetHashCode()
         {
@@ -132,13 +158,21 @@ namespace Rominos
         public static bool operator <(BitBuffer512 lhs, BitBuffer512 rhs)
         {
             if (lhs._h < rhs._h) return true;
+            if (lhs._h > rhs._h) return false;
             if (lhs._g < rhs._g) return true;
+            if (lhs._g > rhs._g) return false;
             if (lhs._f < rhs._f) return true;
+            if (lhs._f > rhs._f) return false;
             if (lhs._e < rhs._e) return true;
+            if (lhs._e > rhs._e) return false;
             if (lhs._d < rhs._d) return true;
+            if (lhs._d > rhs._d) return false;
             if (lhs._c < rhs._c) return true;
+            if (lhs._c > rhs._c) return false;
             if (lhs._b < rhs._b) return true;
+            if (lhs._b > rhs._b) return false;
             if (lhs._a < rhs._a) return true;
+            if (lhs._a > rhs._a) return false;
 
             return false;
         }
@@ -146,14 +180,22 @@ namespace Rominos
         public static bool operator >(BitBuffer512 lhs, BitBuffer512 rhs)
         {
             if (lhs._h > rhs._h) return true;
+            if (lhs._h < rhs._h) return false;
             if (lhs._g > rhs._g) return true;
+            if (lhs._g < rhs._g) return false;
             if (lhs._f > rhs._f) return true;
+            if (lhs._f < rhs._f) return false;
             if (lhs._e > rhs._e) return true;
+            if (lhs._e < rhs._e) return false;
             if (lhs._d > rhs._d) return true;
+            if (lhs._d < rhs._d) return false;
             if (lhs._c > rhs._c) return true;
+            if (lhs._c < rhs._c) return false;
             if (lhs._b > rhs._b) return true;
+            if (lhs._b < rhs._b) return false;
             if (lhs._a > rhs._a) return true;
-
+            if (lhs._a < rhs._a) return false;
+                       >
             return false;
         }
 
