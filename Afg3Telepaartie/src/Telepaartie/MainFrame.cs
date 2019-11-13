@@ -6,19 +6,25 @@ using System.Text;
 using System.Linq;
 using Extensions;
 
-namespace Telepaartiee
+namespace Telepaartie
 {
     public static class MainFrame
     {
         public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15, Action<int> stamp = null)
         {
-            List<State> AllOlds = new List<State>();
             List<State> NewDads = GetEndings(NumberOfCups, NumberOfItems).Select(x => new State(x)).ToList();
-            for(int i = 0; true; i++)
+            List<State> AllOlds = NewDads.ToList();
+            for (int i = 0; true; i++)
             {
                 if(stamp != null)stamp(i);
-                List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).Distinct().Except(AllOlds).ToList();
-                if(NewChildos.Count == 0) return i;
+                List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                //NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
+                NewChildos = NewChildos.Distinct().ToList();
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks.ToArray()).ToList();
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                if (NewChildos.Count == 0) return i;
                 NewDads = NewChildos;
                 AllOlds.AddRange(NewChildos);
             }

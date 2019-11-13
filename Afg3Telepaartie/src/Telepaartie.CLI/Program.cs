@@ -7,11 +7,14 @@
     {
         public static void Main(string[] args)
         {
-            /*Telepaartiee.MainFrame.GetGoals(5, 15)
+            #if false
+            Telepaartiee.MainFrame.GetGoals(5, 15)
                 .ToList()
-                .ForEach(x => {Console.WriteLine(string.Join(',', x.Select(x => x.ToString())));});*/
-            Console.WriteLine(Telepaartiee.MainFrame.LLL(3, 5,Console.WriteLine));
+                .ForEach(x => {Console.WriteLine(string.Join(',', x.Select(x => x.ToString())));});
+            #else
+            Console.WriteLine(Telepaartie.MainFrame.LLL(3, 5,Console.WriteLine));
             Console.WriteLine("I lick ur feet");
+            #endif
         }
     }
 }
