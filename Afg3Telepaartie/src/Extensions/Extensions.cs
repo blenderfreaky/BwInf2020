@@ -9,10 +9,10 @@ namespace Extensions
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>
             (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            HashSet<TKey> knownKeys = new HashSet<TKey>();
+            HashSet<string> knownKeys = new HashSet<string>();
             foreach (TSource element in source)
             {
-                if (knownKeys.Add(keySelector(element)))
+                if (knownKeys.Add(string.Join(',', keySelector(element))))
                 {
                     yield return element;
                 }
@@ -22,14 +22,14 @@ namespace Extensions
         public static IEnumerable<TSource> ExceptBy<TSource, TKey>
             (this IEnumerable<TSource> source, IEnumerable<TSource> except, Func<TSource, TKey> keySelector)
         {
-            HashSet<TKey> knownKeys = new HashSet<TKey>();
+            HashSet<string> knownKeys = new HashSet<string>();
             foreach (TSource element in except)
             {
-                knownKeys.Add(keySelector(element));
+                knownKeys.Add(string.Join(',',keySelector(element)));
             }
             foreach (TSource element in source)
             {
-                if (knownKeys.Contains(keySelector(element)))
+                if (!knownKeys.Contains(string.Join(',', keySelector(element))))
                 {
                     yield return element;
                 }

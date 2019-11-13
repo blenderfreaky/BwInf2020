@@ -19,10 +19,10 @@ namespace Telepaartie
                 if(stamp != null)stamp(i);
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
-                //NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
-                NewChildos = NewChildos.Distinct().ToList();
+                NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
+                //NewChildos = NewChildos.Distinct().ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
-                NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks.ToArray()).ToList();
+                NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks).ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
                 if (NewChildos.Count == 0) return i;
                 NewDads = NewChildos;
