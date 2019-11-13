@@ -2,6 +2,7 @@
 {
     using JM.LinqFaster;
     using System;
+    using System.Buffers;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -144,7 +145,7 @@
                     newBlock + new Vector2Int(-1, 1),
                 })
                 // Remove already occupied positions, as well as exclude positions blocked by the diagonal
-                .Except(Blocks).Except(DiagonalRootBlockade);
+                .Except(Blocks.Take(BlockLength)).Except(DiagonalRootBlockade);
 
                 var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
                 var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
@@ -154,18 +155,16 @@
 
                 yield return new Romino(
                     BlockLength + 1,
-                    AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset),
+                    AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset, BlockLength),
                     newPossibleExtensions,
                     DiagonalRoot + offset,
                     newSize);
             }
         }
 
-        private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func)
+        private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func, int length)
         {
-            int length = arr.Length;
-
-            T[] newArr = new T[length + 1];
+            T[] newArr = ArrayPool<T>.Shared.Rent(length + 1);
 
             for (int i = 0; i < length; i++)
             {

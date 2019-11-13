@@ -1,5 +1,6 @@
 ﻿//#define DEBUG_BitBuffer512
 //#define _8ULong
+//#define _4ULong
 
 namespace Rominos
 {
@@ -7,7 +8,15 @@ namespace Rominos
     using System.Globalization;
     using System.Runtime.InteropServices;
 
-    [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 64)]
+    [StructLayout(LayoutKind.Explicit, Pack = 1, Size =
+#if _8ULong
+        64
+#elif _4ULong
+        32
+#else
+        16
+#endif
+    )]
     public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         public static readonly BitBuffer512 Min = new BitBuffer512();
@@ -20,13 +29,15 @@ namespace Rominos
             _f = ulong.MaxValue,
             _e = ulong.MaxValue,
 #endif
+#if _4ULong
             _d = ulong.MaxValue,
             _c = ulong.MaxValue,
+#endif
             _b = ulong.MaxValue,
             _a = ulong.MaxValue,
         };
 
-        #region Fields
+#region Fields
 
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -55,12 +66,15 @@ namespace Rominos
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
+
+#if _4ULong
         [FieldOffset(24)] private ulong _d;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(16)] private ulong _c;
+#endif
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -74,7 +88,7 @@ namespace Rominos
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore RCS1169 // Make field read-only.
 
-        #endregion Fields
+#endregion Fields
 
         public bool this[int bitIndex]
         {
@@ -82,7 +96,7 @@ namespace Rominos
             set => SetBit(ref this, bitIndex, value);
         }
 
-        #region Bits
+#region Bits
 
         private static bool GetBit(ref BitBuffer512 bitBuffer, int bitIndex) => GetBit(GetulongContainingBit(ref bitBuffer, bitIndex), bitIndex % 64);
 
@@ -95,8 +109,10 @@ namespace Rominos
 
             if (bitIndex < 64 * 1) return ref bitBuffer._a;
             if (bitIndex < 64 * 2) return ref bitBuffer._b;
+#if _4ULong
             if (bitIndex < 64 * 3) return ref bitBuffer._c;
             if (bitIndex < 64 * 4) return ref bitBuffer._d;
+#endif
 #if _8ULong
             if (bitIndex < 64 * 5) return ref bitBuffer._e;
             if (bitIndex < 64 * 6) return ref bitBuffer._f;
@@ -128,9 +144,12 @@ namespace Rominos
             + _e.ToString("X16")
             +
 #endif
+#if _4ULong
             _d.ToString("X16")
             + _c.ToString("X16")
-            + _b.ToString("X16")
+            +
+#endif
+            _b.ToString("X16")
             + _a.ToString("X16"))
             .TrimStart('0');
 
@@ -143,8 +162,10 @@ namespace Rominos
             hashCode = (hashCode * -1521134295) + _f.GetHashCode();
             hashCode = (hashCode * -1521134295) + _e.GetHashCode();
 #endif
+#if _4ULong
             hashCode = (hashCode * -1521134295) + _d.GetHashCode();
             hashCode = (hashCode * -1521134295) + _c.GetHashCode();
+#endif
             hashCode = (hashCode * -1521134295) + _b.GetHashCode();
             hashCode = (hashCode * -1521134295) + _a.GetHashCode();
             return hashCode;
@@ -160,9 +181,12 @@ namespace Rominos
             && _e == other._e
             &&
 #endif
+#if _4ULong
             _d == other._d
             && _c == other._c
-            && _b == other._b
+            && 
+#endif
+            _b == other._b
             && _a == other._a;
 
         public readonly int CompareTo(BitBuffer512 other) => this < other ? -1 : this > other ? 1 : 0;
@@ -183,10 +207,12 @@ namespace Rominos
             if (lhs._e < rhs._e) return true;
             if (lhs._e > rhs._e) return false;
 #endif
+#if _4ULong
             if (lhs._d < rhs._d) return true;
             if (lhs._d > rhs._d) return false;
             if (lhs._c < rhs._c) return true;
             if (lhs._c > rhs._c) return false;
+#endif
             if (lhs._b < rhs._b) return true;
             if (lhs._b > rhs._b) return false;
             if (lhs._a < rhs._a) return true;
@@ -207,10 +233,12 @@ namespace Rominos
             if (lhs._e > rhs._e) return true;
             if (lhs._e < rhs._e) return false;
 #endif
+#if _4ULong
             if (lhs._d > rhs._d) return true;
             if (lhs._d < rhs._d) return false;
             if (lhs._c > rhs._c) return true;
             if (lhs._c < rhs._c) return false;
+#endif
             if (lhs._b > rhs._b) return true;
             if (lhs._b < rhs._b) return false;
             if (lhs._a > rhs._a) return true;
