@@ -195,7 +195,7 @@ namespace Rominos
             if (lhs._b < rhs._b) return false;
             if (lhs._a > rhs._a) return true;
             if (lhs._a < rhs._a) return false;
-                       >
+
             return false;
         }
 
