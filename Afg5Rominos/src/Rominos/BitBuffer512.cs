@@ -20,6 +20,7 @@ namespace Rominos
     public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         public static readonly BitBuffer512 Min = new BitBuffer512();
+        public static readonly BitBuffer512 Zero = new BitBuffer512();
 
         public static readonly BitBuffer512 Max = new BitBuffer512()
         {
