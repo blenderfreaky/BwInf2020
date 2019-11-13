@@ -41,6 +41,9 @@ namespace Telepaartiee
         public bool IsEqual(List<int> test)
         {
             if(test.Count != Bucks.Count) throw new ArgumentException();
+
+return Enumerable.SequenceEqual(Bucks, test);
+
             for(int i = 0; i < test.Count; i++)
             {
                 if(test[i] != Bucks[i]) return false;
@@ -48,24 +51,32 @@ namespace Telepaartiee
             return true;
         }
 
-        public bool Equals(State Test)
+        public bool Equals(State state)
         {
-            if(Test == null) return false;
-            if(Test.Bucks.Count != Bucks.Count) throw new ArgumentException();
+            if(state == null) return false;
+            if(state.Bucks.Count != Bucks.Count) throw new ArgumentException();
+
+return Enumerable.SequenceEqual(Bucks, state.Bucks);
+
             for(int i = 0; i < Bucks.Count; i++)
             {
-                if(Test.Bucks[i] != Bucks[i]) return false;
+                if(state.Bucks[i] != Bucks[i]) return false;
             }
             return true;
         }
 
-        public override bool Equals(Object Test) => Equals(Test as State);
+        public override bool Equals(object obj) => obj is State state && Equals(state);
 
         private void ApplyOperation(Tuple<int, int> mover)
         {
             Bucks[mover.Item1] /= 2;
             Bucks[mover.Item2] += Bucks[mover.Item1];
             Bucks.Sort();
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Iterations, Daddy, Bucks);
         }
     }
 }

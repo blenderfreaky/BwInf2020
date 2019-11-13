@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Collections.Immutable;
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -8,43 +10,40 @@ namespace Telepaartiee
 {
     public static class MainFrame
     {
-        public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15)
+        public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15, Action<int> stamp = null)
         {
-            List<List<int>> Goal = GetGoals(NumberOfCups, NumberOfItems);
-
             List<State> AllOlds = new List<State>();
             List<State> NewDads = GetEndings(NumberOfCups, NumberOfItems).Select(x => new State(x)).ToList();
             for(int i = 0; true; i++)
             {
+                if(stamp != null)stamp(i);
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).Distinct().Except(AllOlds).ToList();
-                foreach(State s in NewChildos)
-                {
-                    Goal.RemoveAll(x => s.IsEqual(x));
-                }
-                if(Goal.Count == 0) return i;
+                if(NewChildos.Count == 0) return i;
                 NewDads = NewChildos;
                 AllOlds.AddRange(NewChildos);
             }
         }
 
-        public static List<List<int>> GetGoals(int NumberOfCups, int NumberOfItems)
+        public static List<List<int>> GetGoals(int numberOfCups, int numberOfItems, int max = -1)
         {
-            if(NumberOfItems < 0 || NumberOfCups < 1) throw new ArgumentException();
-            if(NumberOfCups == 1) return new List<List<int>>{new List<int>{NumberOfItems}};
-            List<List<int>> Goals = new List<List<int>>();
-            for(int i = NumberOfItems; i >= Math.Ceiling((double)NumberOfItems/NumberOfCups); i--)
+        if (max == -1) max = numberOfItems;
+        if (numberOfCups < 1) throw new ArgumentException();
+        if (numberOfCups == 1) return Enumerable.Range(numberOfItems, 1).Select(x => new List<int> { x }).ToList();
+        
+        int min = (int)Math.Ceiling(numberOfItems/(decimal)numberOfCups);
+        return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
+            .SelectMany(i =>  
             {
-                Goals.AddRange(GetGoals(NumberOfCups - 1, NumberOfItems - i).Select(x => {x.Insert(0, i); return x;}));
-            }
-            Goals.ForEach(x => {x.Sort(); x.Reverse();});
-            Goals.Distinct();
-            return Goals;
+                List<List<int>> possibilites = GetGoals(numberOfCups - 1, numberOfItems - i, i);
+                foreach (var p in possibilites) p.Add(i);
+                return possibilites;
+            })
+            .ToList();
+
+            throw new ArgumentException();
         }
 
-        private static List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems)
-        {
-            List<List<int>> Endings = new List<List<int>>();
-            return Endings;
-        }
+        private static List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems) => 
+            GetGoals(NumberOfCups - 1, NumberOfItems).Select(x => {;x.Insert(0,0); return x;}).ToList();
     }
 }
