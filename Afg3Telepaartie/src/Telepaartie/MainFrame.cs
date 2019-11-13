@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Collections.Immutable;
+using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -6,38 +8,48 @@ using Extensions;
 
 namespace Telepaartie
 {
-    public class MainFrame
+    public static class MainFrame
     {
-        private List<List<int>> Goal { get; set; }
-        private List<List<int>> PossibleEndings { get; set; }
-
-        public MainFrame(List<List<int>> goal, List<List<int>> possibleEndings)
+        public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15, Action<int> stamp = null)
         {
-            Goal = goal;
-            PossibleEndings = possibleEndings;
-        }
-
-        public int LLL()
-        {
-            //Todo: all PossibleEndings need one father
-
-            List<State> PossibleEndingStates = PossibleEndings.Select(x => new State(x)).ToList();
-            List<State> NewDads = PossibleEndingStates
-                    .SelectMany(x => x.GetChildosDeeper(0))
-                    .ToList();
-            for(int i = 0; true; i++)
+            List<State> NewDads = GetEndings(NumberOfCups, NumberOfItems).Select(x => new State(x)).ToList();
+            List<State> AllOlds = NewDads.ToList();
+            for (int i = 0; true; i++)
             {
+                if(stamp != null)stamp(i);
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
-                List<State>ChildosWeWannaKill = NewChildos.GetDublicates(true, null);
-                NewChildos = NewChildos.Except(ChildosWeWannaKill).ToList();
-                ChildosWeWannaKill.ForEach(x => x.KillMe());
-                foreach(State s in NewChildos)
-                {
-                    Goal.RemoveAll(x => s.IsEqual(x));
-                }
-                if(Goal.Count == 0) return i;
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
+                //NewChildos = NewChildos.Distinct().ToList();
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks).ToList();
+                System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
+                if (NewChildos.Count == 0) return i;
                 NewDads = NewChildos;
+                AllOlds.AddRange(NewChildos);
             }
         }
+
+        public static List<List<int>> GetGoals(int numberOfCups, int numberOfItems, int max = -1)
+        {
+        if (max == -1) max = numberOfItems;
+        if (numberOfCups < 1) throw new ArgumentException();
+        if (numberOfCups == 1) return Enumerable.Range(numberOfItems, 1).Select(x => new List<int> { x }).ToList();
+        
+        int min = (int)Math.Ceiling(numberOfItems/(decimal)numberOfCups);
+        return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
+            .SelectMany(i =>  
+            {
+                List<List<int>> possibilites = GetGoals(numberOfCups - 1, numberOfItems - i, i);
+                foreach (var p in possibilites) p.Add(i);
+                return possibilites;
+            })
+            .ToList();
+
+            throw new ArgumentException();
+        }
+
+        private static List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems) => 
+            GetGoals(NumberOfCups - 1, NumberOfItems).Select(x => {;x.Insert(0,0); return x;}).ToList();
     }
 }

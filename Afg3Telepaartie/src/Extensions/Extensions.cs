@@ -6,26 +6,34 @@ namespace Extensions
 {
     public static class Extensions
     {
-        public static Tuple<T, P, R> DeepCopy<T, P, R>(this Tuple<T, P, R> origin) => 
-            new Tuple<T, P, R>(origin.Item1, origin.Item2, origin.Item3);
-
-        public static List<T> GetDublicates<T>(this List<T> Input, bool ReturnDuplicates = true, Func<T, T, bool> Test = null)
-            where T: IEquatable<T>
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+            (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            List<T> Singlos = new List<T>();
-            List<T> Dubblos = new List<T>();
-            foreach(T t in Input)
+            HashSet<string> knownKeys = new HashSet<string>();
+            foreach (TSource element in source)
             {
-                foreach(T tt in Singlos)
+                if (knownKeys.Add(string.Join(',', keySelector(element))))
                 {
-                    if((Test != null)?(Test(t, t)):(t.Equals(tt)))
-                    {
-                        if(!(!ReturnDuplicates && Dubblos.Contains(t)))
-                            Dubblos.Add(t);
-                    }
+                    yield return element;
                 }
             }
-            return Dubblos;
+        }
+
+        public static IEnumerable<TSource> ExceptBy<TSource, TKey>
+            (this IEnumerable<TSource> source, IEnumerable<TSource> except, Func<TSource, TKey> keySelector)
+        {
+            HashSet<string> knownKeys = new HashSet<string>();
+            foreach (TSource element in except)
+            {
+                knownKeys.Add(string.Join(',',keySelector(element)));
+            }
+            foreach (TSource element in source)
+            {
+                if (!knownKeys.Contains(string.Join(',', keySelector(element))))
+                {
+                    yield return element;
+                }
+            }
         }
     }
 }
