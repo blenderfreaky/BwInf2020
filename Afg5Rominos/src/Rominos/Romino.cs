@@ -3,6 +3,7 @@
     using JM.LinqFaster;
     using System;
     using System.Buffers;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -28,12 +29,12 @@
                 new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
-                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), },
+                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), }.ToList(),
                 new Vector2Int(0, 0),
                 new Vector2Int(1, 1));
 
         public readonly Vector2Int[] Blocks;
-        public readonly Vector2Int[] PossibleExtensions;
+        public readonly List<Vector2Int> PossibleExtensions;
         public readonly Vector2Int DiagonalRoot;
         public readonly Vector2Int Max;
         public readonly int BlockLength;
@@ -53,7 +54,7 @@
 
         public string AsciiArt => string.Join(Environment.NewLine, ToAsciiArt(true, true));
 
-        public Romino(int blockLength, Vector2Int[] blocks, Vector2Int[] possibleExtensions, Vector2Int diagonalRoot, Vector2Int max)
+        public Romino(int blockLength, Vector2Int[] blocks, List<Vector2Int> possibleExtensions, Vector2Int diagonalRoot, Vector2Int max)
         {
             Blocks = blocks;
             DiagonalRoot = diagonalRoot;
@@ -79,32 +80,22 @@
 
                 if (maxIndex != 0)
                 {
-                    (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap) map = Maps[maxIndex];
+                    (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap) = Maps[maxIndex];
 
-                    var offset = CalculateOffset(map.BlockMap);
+                    var offset = CalculateOffset(BlockMap);
 
-                    for (int i = 0; i < BlockLength; i++) Blocks[i] = map.BlockMap(Blocks[i]) + offset;
-                    for (int i = 0; i < PossibleExtensions.Length; i++) PossibleExtensions[i] = map.BlockMap(PossibleExtensions[i]) + offset;
+                    for (int i = 0; i < BlockLength; i++) Blocks[i] = BlockMap(Blocks[i]) + offset;
+                    for (int i = 0; i < PossibleExtensions.Count; i++) PossibleExtensions[i] = BlockMap(PossibleExtensions[i]) + offset;
 
-                    DiagonalRoot = map.DiagonalRootMap(DiagonalRoot) + offset;
+                    DiagonalRoot = DiagonalRootMap(DiagonalRoot) + offset;
 
                     // Don't add offset to max, it would might up with x or y equal to 0
-                    var mappedMax = map.BlockMap(Max);
+                    var mappedMax = BlockMap(Max);
                     Max = new Vector2Int(Math.Abs(mappedMax.X), Math.Abs(mappedMax.Y));
                 }
 
                 _uniqueCode = CalculateUniqueCode();
             }
-            Assertions();
-        }
-
-        private readonly void Assertions()
-        {
-            if (Blocks.MinF(x => x.X) != 0) throw new InvalidOperationException("BAD! SHOULD NOT HAPPEN!");
-            if (Blocks.MinF(x => x.Y) != 0) throw new InvalidOperationException("BAD! SHOULD NOT HAPPEN!");
-
-            if (Blocks.MaxF(x => x.X) != Max.X) throw new InvalidOperationException("BAD! SHOULD NOT HAPPEN!");
-            if (Blocks.MaxF(x => x.Y) != Max.Y) throw new InvalidOperationException("BAD! SHOULD NOT HAPPEN!");
         }
 
         public static IEnumerable<(int Size, Romino[] Rominos)> GetRominosUntilSize(int size)
@@ -129,12 +120,23 @@
             }
         }
 
+        private static IEnumerable<T> Yield8<T>(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8)
+        {
+            yield return t1;
+            yield return t2;
+            yield return t3;
+            yield return t4;
+            yield return t5;
+            yield return t6;
+            yield return t7;
+            yield return t8;
+        }
+
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
             foreach (var newBlock in PossibleExtensions)
             {
-                IEnumerable<Vector2Int> extensionsFromNewBlock = (new[]
-                {
+                IEnumerable<Vector2Int> extensionsFromNewBlock = Yield8(
                     newBlock + new Vector2Int(0, -1),
                     newBlock + new Vector2Int(0, 1),
                     newBlock + new Vector2Int(1, 0),
@@ -142,8 +144,7 @@
                     newBlock + new Vector2Int(1, 1),
                     newBlock + new Vector2Int(-1, 0),
                     newBlock + new Vector2Int(-1, -1),
-                    newBlock + new Vector2Int(-1, 1),
-                })
+                    newBlock + new Vector2Int(-1, 1))
                 // Remove already occupied positions, as well as exclude positions blocked by the diagonal
                 .Except(Blocks.Take(BlockLength)).Except(DiagonalRootBlockade);
 
@@ -151,34 +152,34 @@
                 var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
 
                 // Remove the added block and add the new, now appendable positions
-                Vector2Int[] newPossibleExtensions = PossibleExtensions.WhereF(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToArray();
+                List<Vector2Int> newPossibleExtensions = PossibleExtensions.Where(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToList();
 
                 yield return new Romino(
                     BlockLength + 1,
-                    AppendOneAndSelectInPlace(Blocks, newBlock, x => x + offset, BlockLength),
+                    AppendOneAndSelectInPlace(Blocks, newBlock, offset, BlockLength),
                     newPossibleExtensions,
                     DiagonalRoot + offset,
                     newSize);
             }
         }
 
-        private static T[] AppendOneAndSelectInPlace<T>(T[] arr, T elem, Func<T, T> func, int length)
+        private static Vector2Int[] AppendOneAndSelectInPlace(Vector2Int[] arr, Vector2Int elem, Vector2Int offset, int length)
         {
-            T[] newArr = ArrayPool<T>.Shared.Rent(length + 1);
+            //Vector2Int[] newArr = ArrayPool<Vector2Int>.Shared.Rent(length + 1);
+            Vector2Int[] newArr = new Vector2Int[length + 1];
 
             for (int i = 0; i < length; i++)
             {
-                newArr[i] = func(arr[i]);
+                newArr[i] = arr[i] + offset;
             }
 
-            newArr[arr.Length] = func(elem);
+            newArr[length] = elem + offset;
 
             return newArr;
         }
 
         private readonly BitBuffer512 CalculateUniqueCode()
         {
-
             static int GetWeight(int x, int y, int size) => (y * size) + x;
 
             var bits = new BitBuffer512();
@@ -223,7 +224,6 @@
 
         private readonly Vector2Int CalculateOffset(Func<Vector2Int, Vector2Int> map)
         {
-            Assertions();
             var mappedSize = map(Max);
             return new Vector2Int(Math.Max(-mappedSize.X, 0), Math.Max(-mappedSize.Y, 0));
         }
