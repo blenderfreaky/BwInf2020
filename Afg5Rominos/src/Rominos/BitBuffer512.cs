@@ -1,4 +1,5 @@
 ﻿//#define DEBUG_BitBuffer512
+//#define _8ULong
 
 namespace Rominos
 {
@@ -13,10 +14,12 @@ namespace Rominos
 
         public static readonly BitBuffer512 Max = new BitBuffer512()
         {
+#if _8ULong
             _h = ulong.MaxValue,
             _g = ulong.MaxValue,
             _f = ulong.MaxValue,
             _e = ulong.MaxValue,
+#endif
             _d = ulong.MaxValue,
             _c = ulong.MaxValue,
             _b = ulong.MaxValue,
@@ -27,45 +30,47 @@ namespace Rominos
 
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
+#if _8ULong
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(0)] private ulong _h;
+        [FieldOffset(64)] private ulong _h;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(8)] private ulong _g;
+        [FieldOffset(56)] private ulong _g;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(16)] private ulong _f;
+        [FieldOffset(48)] private ulong _f;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(32)] private ulong _e;
+#endif
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(64)] private ulong _d;
+        [FieldOffset(24)] private ulong _d;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(128)] private ulong _c;
+        [FieldOffset(16)] private ulong _c;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(256)] private ulong _b;
+        [FieldOffset(8)] private ulong _b;
 
 #if DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(512)] private ulong _a;
+        [FieldOffset(0)] private ulong _a;
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore RCS1169 // Make field read-only.
 
@@ -92,10 +97,12 @@ namespace Rominos
             if (bitIndex < 64 * 2) return ref bitBuffer._b;
             if (bitIndex < 64 * 3) return ref bitBuffer._c;
             if (bitIndex < 64 * 4) return ref bitBuffer._d;
+#if _8ULong
             if (bitIndex < 64 * 5) return ref bitBuffer._e;
             if (bitIndex < 64 * 6) return ref bitBuffer._f;
             if (bitIndex < 64 * 7) return ref bitBuffer._g;
             if (bitIndex < 64 * 8) return ref bitBuffer._h;
+#endif
 
             throw new ArgumentOutOfRangeException(nameof(bitIndex));
         }
@@ -108,16 +115,20 @@ namespace Rominos
             else val |= (1ul << bitIndex);
         }
 
-        #endregion Bits
+#endregion Bits
 
-        #region Overrides and Interface Implementations
+#region Overrides and Interface Implementations
 
         public override string ToString() =>
-            (_h.ToString("X16")
+            (
+#if _8ULong
+            _h.ToString("X16")
             + _g.ToString("X16")
             + _f.ToString("X16")
             + _e.ToString("X16")
-            + _d.ToString("X16")
+            +
+#endif
+            _d.ToString("X16")
             + _c.ToString("X16")
             + _b.ToString("X16")
             + _a.ToString("X16"))
@@ -126,10 +137,12 @@ namespace Rominos
         public override readonly int GetHashCode()
         {
             var hashCode = -553793028;
+#if _8ULong
             hashCode = (hashCode * -1521134295) + _h.GetHashCode();
             hashCode = (hashCode * -1521134295) + _g.GetHashCode();
             hashCode = (hashCode * -1521134295) + _f.GetHashCode();
             hashCode = (hashCode * -1521134295) + _e.GetHashCode();
+#endif
             hashCode = (hashCode * -1521134295) + _d.GetHashCode();
             hashCode = (hashCode * -1521134295) + _c.GetHashCode();
             hashCode = (hashCode * -1521134295) + _b.GetHashCode();
@@ -140,23 +153,27 @@ namespace Rominos
         public override readonly bool Equals(object? obj) => obj is BitBuffer512 buffer && Equals(buffer);
 
         public readonly bool Equals(BitBuffer512 other) =>
+#if _8ULong
             _h == other._h
             && _g == other._g
             && _f == other._f
             && _e == other._e
-            && _d == other._d
+            &&
+#endif
+            _d == other._d
             && _c == other._c
             && _b == other._b
             && _a == other._a;
 
         public readonly int CompareTo(BitBuffer512 other) => this < other ? -1 : this > other ? 1 : 0;
 
-        #endregion Overrides and Interface Implementations
+#endregion Overrides and Interface Implementations
 
-        #region Operators
+#region Operators
 
         public static bool operator <(BitBuffer512 lhs, BitBuffer512 rhs)
         {
+#if _8ULong
             if (lhs._h < rhs._h) return true;
             if (lhs._h > rhs._h) return false;
             if (lhs._g < rhs._g) return true;
@@ -165,6 +182,7 @@ namespace Rominos
             if (lhs._f > rhs._f) return false;
             if (lhs._e < rhs._e) return true;
             if (lhs._e > rhs._e) return false;
+#endif
             if (lhs._d < rhs._d) return true;
             if (lhs._d > rhs._d) return false;
             if (lhs._c < rhs._c) return true;
@@ -179,6 +197,7 @@ namespace Rominos
 
         public static bool operator >(BitBuffer512 lhs, BitBuffer512 rhs)
         {
+#if _8ULong
             if (lhs._h > rhs._h) return true;
             if (lhs._h < rhs._h) return false;
             if (lhs._g > rhs._g) return true;
@@ -187,6 +206,7 @@ namespace Rominos
             if (lhs._f < rhs._f) return false;
             if (lhs._e > rhs._e) return true;
             if (lhs._e < rhs._e) return false;
+#endif
             if (lhs._d > rhs._d) return true;
             if (lhs._d < rhs._d) return false;
             if (lhs._c > rhs._c) return true;
@@ -207,6 +227,6 @@ namespace Rominos
 
         public static bool operator !=(BitBuffer512 lhs, BitBuffer512 rhs) => !(lhs == rhs);
 
-        #endregion Operators
+#endregion Operators
     }
 }
