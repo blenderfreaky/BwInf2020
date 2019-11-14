@@ -12,7 +12,7 @@
                 .ToList()
                 .ForEach(x => {Console.WriteLine(string.Join(',', x.Select(x => x.ToString())));});
             #else
-            Console.WriteLine(Telepaartie.MainFrame.LLL(3, 5,Console.WriteLine));
+            Console.WriteLine(Telepaartie.Teelepartie.LLL(3, 5,Console.WriteLine));
             Console.WriteLine("I lick ur feet");
             #endif
         }
