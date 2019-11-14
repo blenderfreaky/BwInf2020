@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/Telepaartie.CLI/bin/Debug/netcoreapp3.0/Telepaartie.CLI.dll",
-            "args": [],
+            "args": ["-c", "3", "-e", "3", "-s"],
             "cwd": "${workspaceFolder}/Telepaartie.CLI",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
