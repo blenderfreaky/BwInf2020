@@ -1,77 +1,73 @@
-using System.Security.AccessControl;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Extensions;
-
 namespace Telepaartie
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class State : IEquatable<State>
     {
-        public int Iterations { get => ((Daddy == null) ? (0) : (Daddy.Iterations + 1)); }
-        public State Daddy { get; private set; }
-        public List<int> Bucks { get; }
-
+        public int Iterations { get => Daddy == null ? 0 : (Daddy.Iterations + 1); }
+        public State Daddy { get; }
+        public List<int> Buckets { get; }
+        private int _hashCode;
 
         public State(List<int> end)
         {
-            Bucks = end.ToList();
-            Bucks.Sort();
+            Buckets = end.ToList();
+            Buckets.Sort();
             Daddy = null;
+            UpdateHashCode();
         }
 
-        private State(State origin, Tuple<int, int> mover)
+        private void UpdateHashCode() =>
+            _hashCode = Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
+
+        private State(State origin, (int, int) mover)
         {
-            Bucks = origin.Bucks.ToList();
-            ApplyOperation(mover);
+            Buckets = origin.Buckets.ToList();
+            ApplyOperation(mover.Item1, mover.Item2);
 
             Daddy = origin;
+            UpdateHashCode();
         }
 
-
-        public List<State> GetNextGen()
+        public IEnumerable<State> GetNextGen()
         {
-            List<State> Childos = new List<State>();
-            for (int i = 0; i < Bucks.Count; i++)
+            for (int i = 0; i < Buckets.Count; i++)
             {
-                for (int u = 0; u < Bucks.Count; u++)
+                for (int u = 0; u < Buckets.Count; u++)
                 {
-                    if (Bucks[i] % 2 == 0 && Bucks[i] > 0 && i != u)
+                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0 && i != u)
                     {
-                        Childos.Add(new State(this, new Tuple<int, int>(i, u)));
+                        yield return new State(this, (i, u));
                     }
                 }
             }
-
-            return Childos;
         }
 
         public bool Equals(State state)
         {
             if (state == null) return false;
-            if (state.Bucks.Count != Bucks.Count) throw new ArgumentException();
+            if (state.Buckets.Count != Buckets.Count) throw new ArgumentException();
 
-            return Bucks.SequenceEqual(state.Bucks);
-
-            for (int i = 0; i < Bucks.Count; i++)
+            for (int i = 0; i < Buckets.Count; i++)
             {
-                if (state.Bucks[i] != Bucks[i]) return false;
+                if (state.Buckets[i] != Buckets[i]) return false;
             }
             return true;
         }
 
+        private void ApplyOperation(int first, int second)
+        {
+            Buckets[first] /= 2;
+            Buckets[second] += Buckets[first];
+            Buckets.Sort();
+        }
+
         public override bool Equals(object obj) => obj is State state && Equals(state);
 
-        private void ApplyOperation(Tuple<int, int> mover)
-        {
-            Bucks[mover.Item1] /= 2;
-            Bucks[mover.Item2] += Bucks[mover.Item1];
-            Bucks.Sort();
-        }
+        public override int GetHashCode() => _hashCode;
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Iterations, Daddy, Bucks);
-        }
+        public override string ToString() => "State (Iter:" + Iterations + ") {" + string.Join(';', Buckets) + "}";
     }
 }

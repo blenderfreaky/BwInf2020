@@ -7,8 +7,4 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Extensions\Extensions.csproj" />
-  </ItemGroup>
-
 </Project>

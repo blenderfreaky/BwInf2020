@@ -2,41 +2,36 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     public static class Teelepartie
     {
-        private struct StateEqualityComparer : IEqualityComparer<State>
+        public static int LLL(int numberOfCups = 3, int numberOfItems = 15, Action<string> handleProgress = null)
         {
-            public static readonly StateEqualityComparer Default = new StateEqualityComparer();
+            List<State> newDads = GetEndings(numberOfCups, numberOfItems)
+                .Select(x => new State(x))
+                .ToList();
 
-            public readonly bool Equals(State l, State r) => l.Equals(r);
-            public readonly int GetHashCode(State s) => s.GetHashCode();
-        }
+            List<State> allOlds = newDads
+                .ToList();
 
-        public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15, Action<int> handleProgress = null)
-        {
-            List<State> NewDads = GetEndings(NumberOfCups, NumberOfItems).Select(x => new State(x)).ToList();
-            List<State> AllOlds = NewDads.ToList();
             for (int i = 0; ; i++)
             {
-                handleProgress?.Invoke(i);
-                List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
-                Debug.Write(NewChildos.Count.ToString());
+                handleProgress?.Invoke(i.ToString());
 
-                //NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
-                NewChildos = NewChildos.Distinct(StateEqualityComparer.Default).ToList();
-                Debug.Write(NewChildos.Count.ToString());
+                List<State> newChildos = newDads
+                    .SelectMany(x => x.GetNextGen())
+                    .Distinct()
+                    .Except(allOlds).ToList();
 
-                //NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks).ToList();
-                NewChildos = NewChildos.Except(AllOlds, StateEqualityComparer.Default).ToList();
-                Debug.Print(NewChildos.Count.ToString());
+                if (newChildos.Count == 0)
+                {
+                    handleProgress(allOlds.Aggregate((x, y) => x.Iterations > y.Iterations ? x : y).ToString());
+                    return i;
+                }
 
-                if (NewChildos.Count == 0) return i;
-
-                NewDads = NewChildos;
-                AllOlds.AddRange(NewChildos);
+                newDads = newChildos;
+                allOlds.AddRange(newChildos);
             }
         }
 
