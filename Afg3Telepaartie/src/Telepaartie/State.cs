@@ -8,13 +8,14 @@ namespace Telepaartie
     {
         public int Iterations { get => Daddy == null ? 0 : (Daddy.Iterations + 1); }
         public State Daddy { get; }
-        public List<int> Buckets { get; }
+        public IReadOnlyList<int> Buckets { get; }
         private int _hashCode;
 
         public State(List<int> end)
         {
-            Buckets = end.ToList();
-            Buckets.Sort();
+            List<int> temp = end.ToList();
+            temp.Sort();
+            Buckets = temp;
             Daddy = null;
             UpdateHashCode();
         }
@@ -24,9 +25,16 @@ namespace Telepaartie
 
         private State(State origin, (int, int) mover)
         {
-            Buckets = origin.Buckets.ToList();
-            ApplyOperation(mover.Item1, mover.Item2);
+            void ApplyOperation(int first, int second, List<int> temp)
+        {
+            temp[first] /= 2;
+            temp[second] += temp[first];
+            temp.Sort();
+        }
 
+            List<int> temp = origin.Buckets.ToList();
+            ApplyOperation(mover.Item1, mover.Item2, temp);
+            Buckets = temp;
             Daddy = origin;
             UpdateHashCode();
         }
@@ -55,13 +63,6 @@ namespace Telepaartie
                 if (state.Buckets[i] != Buckets[i]) return false;
             }
             return true;
-        }
-
-        private void ApplyOperation(int first, int second)
-        {
-            Buckets[first] /= 2;
-            Buckets[second] += Buckets[first];
-            Buckets.Sort();
         }
 
         public override bool Equals(object obj) => obj is State state && Equals(state);
