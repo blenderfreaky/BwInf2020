@@ -43,7 +43,7 @@
 
             for (int i = 0; ; i++)
             {
-                handleProgress?.Invoke(i.ToString());
+                handleProgress?.Invoke($"\rStarting iteration {i}");
 
                 List<State> newChildos = newDads
                     .AsParallel()
@@ -53,8 +53,22 @@
 
                 if (newChildos.Count == 0)
                 {
-                    handleProgress(allOlds.Aggregate((x, y) => x.Iterations > y.Iterations ? x : y).ToString());
-                    return i;
+                    handleProgress?.Invoke(Environment.NewLine);
+                    foreach (var oldestChild in newDads
+                        .AsParallel()
+                        .SelectMany(x => x.GetNextGen())
+                        .Distinct())
+                    {
+                        handleProgress?.Invoke(Environment.NewLine + "--------------" + Environment.NewLine + Environment.NewLine);
+
+                        for (var current = oldestChild; current != null; current = current.Daddy)
+                        {
+                            handleProgress?.Invoke(current.ToString() + Environment.NewLine);    
+                        }
+                    }
+                    handleProgress?.Invoke(Environment.NewLine + "--------------" + Environment.NewLine + Environment.NewLine) ;
+
+                    return i + 1;
                 }
 
                 newDads = newChildos;
