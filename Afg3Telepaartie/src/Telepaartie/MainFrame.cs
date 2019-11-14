@@ -10,6 +10,13 @@ namespace Telepaartie
 {
     public static class MainFrame
     {
+private struct StateEqualityComparer : IEqualityComparer<State> {
+public static readonly StateEqualityComparer Default = new StateEqualityComparer();
+
+    public readonly bool Equals(State l, State r) => l.Equals(r);
+    public readonly int GetHashCode(State s) => s.GetHashCode();
+}
+
         public static int LLL(int NumberOfCups = 3, int NumberOfItems = 15, Action<int> stamp = null)
         {
             List<State> NewDads = GetEndings(NumberOfCups, NumberOfItems).Select(x => new State(x)).ToList();
@@ -19,10 +26,11 @@ namespace Telepaartie
                 if(stamp != null)stamp(i);
                 List<State> NewChildos = NewDads.SelectMany(x => x.GetNextGen()).ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
-                NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
-                //NewChildos = NewChildos.Distinct().ToList();
+                //NewChildos = NewChildos.DistinctBy<State, int[]>(x => x.Bucks.ToArray()).ToList();
+                NewChildos = NewChildos.Distinct(StateEqualityComparer.Default).ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
-                NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks).ToList();
+                //NewChildos = NewChildos.ExceptBy(AllOlds, x => x.Bucks).ToList();
+                NewChildos = NewChildos.Except(AllOlds, StateEqualityComparer.Default).ToList();
                 System.Diagnostics.Debug.Print(NewChildos.Count.ToString());
                 if (NewChildos.Count == 0) return i;
                 NewDads = NewChildos;
