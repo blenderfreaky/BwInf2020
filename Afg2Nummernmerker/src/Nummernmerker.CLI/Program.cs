@@ -2,7 +2,10 @@
 {
     using CommandLine;
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
 
     public class Options
     {
@@ -13,7 +16,7 @@
         public string NumberString { get; set; }
 
         [Option('n', "number", Required = false, HelpText = "The number to split. Must be smaller or equal to " + nameof(Int64.MaxValue))]
-        public long Number { get; set; }
+        public long? Number { get; set; }
 
         [Option('l', "leastDigits", Required = false, Default = 2, HelpText = "The lowest number of digits that can be used consecutiely. Defaults to 2.")]
         public int MinSequenceLength { get; set; }
@@ -32,9 +35,37 @@
 
         private static void RunWithOptions(Options o)
         {
-            string number = "011000000011000100111111101011";
+            if (o.Number.HasValue && o.NumberString != null) Console.WriteLine("Can't have --number and --numberS set at the same time.");
 
-            Console.WriteLine(string.Join(' ', Nummernmerker.MerkNummernToText(number, 2, 4)));
+            if (o.Number.HasValue) Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength);
+            else if (o.NumberString != null) Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength);
+            else Console.WriteLine("Either --number or --numberS need to be set.");
+        }
+
+        private static void Run(string numberText, int minSequenceLength, int maxSequenceLength)
+        {
+            RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000);
+        }
+
+        private static void RunWithStackSize(Action action, int stackSize)
+        {
+            var thread = new Thread(new ThreadStart(action),  stackSize);
+            thread.Start();
+        }
+
+        private static void RunCore(string numberText, int minSequenceLength, int maxSequenceLength)
+        {
+            Console.WriteLine("Starting splitting of number " + numberText + " with segments of length " + minSequenceLength + ".." + maxSequenceLength);
+            Console.WriteLine("  Digits:             " + numberText.Length);
+
+            Stopwatch stopwatch = new Stopwatch();
+            var result = Nummernmerker.MerkNummern(numberText, minSequenceLength, maxSequenceLength);
+            stopwatch.Stop();
+
+            Console.WriteLine("Results: ");
+            Console.WriteLine("  Calculation time:   " + stopwatch.ElapsedMilliseconds + "ms");
+            Console.WriteLine("  Leading zeros hit:  " + result.LeadingZerosHit);
+            Console.WriteLine("  Final distribution: " + string.Join(' ', result.ApplyDistribution(numberText)));
         }
     }
 }
