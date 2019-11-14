@@ -7,7 +7,7 @@
     /// <summary>
     /// Represents a solution to a Nummermerking problem.
     /// </summary>
-    public readonly struct NummerMerkingSummary : IEquatable<NummerMerkingSummary>
+    public readonly struct NummerMerkingSolution : IEquatable<NummerMerkingSolution>
     {
         /// <summary>
         /// The final calculated distribution.
@@ -40,15 +40,31 @@
         public readonly int LeadingZerosHit;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NummerMerkingSummary"/> structure with the given values.
+        /// Whether the Nummermerking problem could be solved.
+        /// </summary>
+        public readonly bool IsSuccessful;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NummerMerkingSolution"/> structure with the given values.
         /// </summary>
         /// <param name="distribution">The final calculated distribution.</param>
         /// <param name="leadingZerosHit">The amount of leading zeros that the distribution hits.</param>
-        public NummerMerkingSummary(int[] distribution, int leadingZerosHit)
+        /// <param name="isSuccessful">Whether the Nummermerking problem could be solved.</param>
+        private NummerMerkingSolution(int[] distribution, int leadingZerosHit, bool isSuccessful
+            )
         {
             Distribution = distribution;
             LeadingZerosHit = leadingZerosHit;
+            IsSuccessful = isSuccessful;
         }
+
+        public static NummerMerkingSolution Success(int[] distribution, int leadingZerosHit) => new NummerMerkingSolution(distribution, leadingZerosHit, true);
+
+        private static readonly NummerMerkingSolution _failure = new NummerMerkingSolution(default, default, false);
+        public static NummerMerkingSolution Failure() => _failure;
+
+        private static readonly NummerMerkingSolution _empty = new NummerMerkingSolution(Array.Empty<int>(), 0, true);
+        public static NummerMerkingSolution Empty() => _empty;
 
         /// <summary>
         /// Applies the distribution to the given text.
@@ -76,10 +92,10 @@
 
         #region Overrides and Interface Implementations
         /// <inheritdoc/>
-        public readonly override bool Equals(object obj) => obj is NummerMerkingSummary other && Equals(other);
+        public readonly override bool Equals(object obj) => obj is NummerMerkingSolution other && Equals(other);
 
         /// <inheritdoc/>
-        public readonly bool Equals(NummerMerkingSummary other) =>
+        public readonly bool Equals(NummerMerkingSolution other) =>
             Distribution.SequenceEqual(other.Distribution)
             && LeadingZerosHit == other.LeadingZerosHit;
 
@@ -93,10 +109,10 @@
         }
 
         /// <inheritdoc/>
-        public static bool operator ==(NummerMerkingSummary left, NummerMerkingSummary right) => left.Equals(right);
+        public static bool operator ==(NummerMerkingSolution left, NummerMerkingSolution right) => left.Equals(right);
 
         /// <inheritdoc/>
-        public static bool operator !=(NummerMerkingSummary left, NummerMerkingSummary right) => !(left == right);
+        public static bool operator !=(NummerMerkingSolution left, NummerMerkingSolution right) => !(left == right);
         #endregion
     }
 }
