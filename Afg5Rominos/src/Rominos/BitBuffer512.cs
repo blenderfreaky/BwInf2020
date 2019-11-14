@@ -1,11 +1,15 @@
 ﻿//#define DEBUG_BitBuffer512
-//#define _8ULong
-//#define _4ULong
+
+// Add these to support bigger Rominos. Slightly affects performance.
+#define _8ULong
+#define _4ULong
 
 namespace Rominos
 {
     using System;
-    using System.Globalization;
+#if !DEBUG_BitBuffer512
+    using System.Diagnostics;
+#endif
     using System.Runtime.InteropServices;
 
     [StructLayout(LayoutKind.Explicit, Pack = 1, Size =
@@ -42,46 +46,46 @@ namespace Rominos
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
 #if _8ULong
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(64)] private ulong _h;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(56)] private ulong _g;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(48)] private ulong _f;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(32)] private ulong _e;
 #endif
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
 
 #if _4ULong
         [FieldOffset(24)] private ulong _d;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(16)] private ulong _c;
 #endif
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(8)] private ulong _b;
 
-#if DEBUG_BitBuffer512
+#if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
         [FieldOffset(0)] private ulong _a;
