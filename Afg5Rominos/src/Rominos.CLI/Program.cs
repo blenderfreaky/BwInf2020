@@ -38,13 +38,21 @@
 
         public static void RunWithOptions(Options options)
         {
+            if (options.Size > 10)
+            {
+                Console.WriteLine("Sizes greater then 10 are, altough supported, very resource intensive. If you have less then 32GB RAM, I'd advise against running.");
+                Console.WriteLine("Continue? Y/N");
+
+                if (Console.ReadLine().StartsWith("N", StringComparison.OrdinalIgnoreCase)) return;
+            }
+
             if (options.Stopwatch)
             {
                 Console.WriteLine("Starting");
 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                foreach (var rom in Romino.GetRominosUntilSize(10)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
+                foreach (var rom in Romino.GetRominosUntilSize(options.Size)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
                 stopwatch.Stop();
                 Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
 
