@@ -6,11 +6,14 @@ namespace Telepaartie
 
     public class State : IEquatable<State>
     {
+        #region Props & Fields
         public int Iterations { get => Daddy == null ? 0 : (Daddy.Iterations + 1); }
         public State Daddy { get; }
         public IReadOnlyList<int> Buckets { get; }
         private int _hashCode;
+        #endregion
 
+        #region Constructor
         public State(List<int> end)
         {
             List<int> temp = end.ToList();
@@ -19,9 +22,6 @@ namespace Telepaartie
             Daddy = null;
             UpdateHashCode();
         }
-
-        private void UpdateHashCode() =>
-            _hashCode = Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
 
         private State(State origin, (int, int) mover)
         {
@@ -38,7 +38,7 @@ namespace Telepaartie
             Daddy = origin;
             UpdateHashCode();
         }
-
+        #endregion
         public IEnumerable<State> GetNextGen()
         {
             for (int i = 0; i < Buckets.Count; i++)
@@ -53,6 +53,10 @@ namespace Telepaartie
             }
         }
 
+        private void UpdateHashCode() =>
+            _hashCode = Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
+
+        #region OverRides
         public bool Equals(State state)
         {
             if (state == null) return false;
@@ -70,5 +74,6 @@ namespace Telepaartie
         public override int GetHashCode() => _hashCode;
 
         public override string ToString() => "State (Iter:" + Iterations + ") {" + string.Join(';', Buckets) + "}";
+        #endregion
     }
 }

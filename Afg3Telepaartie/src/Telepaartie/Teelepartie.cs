@@ -8,21 +8,48 @@
     {
         public static int LLL(int numberOfCups = 3, int numberOfItems = 15, Action<string> handleProgress = null)
         {
+            #region Funcs & Meth
+            List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems) =>
+                GetGoals(NumberOfCups - 1, NumberOfItems).Select(x => {; x.Insert(0, 0); return x; }).ToList();
+
+            List<List<int>> GetGoals(int numberOfCups, int numberOfItems, int max = -1)
+            {
+                if (max == -1) max = numberOfItems;
+                if (numberOfCups < 1) throw new ArgumentException();
+                if (numberOfCups == 1) return Enumerable.Range(numberOfItems, 1).Select(x => new List<int> { x }).ToList();
+
+                int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups);
+                return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
+                    .SelectMany(i =>
+                    {
+                        List<List<int>> possibilites = GetGoals(numberOfCups - 1, numberOfItems - i, i);
+                        foreach (var p in possibilites) p.Add(i);
+                        return possibilites;
+                    })
+                    .ToList();
+
+                throw new ArgumentException();
+            }
+            #endregion
+
+            #region Fields
             List<State> newDads = GetEndings(numberOfCups, numberOfItems)
                 .Select(x => new State(x))
                 .ToList();
 
             List<State> allOlds = newDads
                 .ToList();
+            #endregion
 
             for (int i = 0; ; i++)
             {
                 handleProgress?.Invoke(i.ToString());
 
                 List<State> newChildos = newDads
+                    .AsParallel()
                     .SelectMany(x => x.GetNextGen())
                     .Distinct()
-                    .Except(allOlds).ToList();
+                    .Except(allOlds.AsParallel()).ToList();
 
                 if (newChildos.Count == 0)
                 {
@@ -34,27 +61,5 @@
                 allOlds.AddRange(newChildos);
             }
         }
-
-        public static List<List<int>> GetGoals(int numberOfCups, int numberOfItems, int max = -1)
-        {
-            if (max == -1) max = numberOfItems;
-            if (numberOfCups < 1) throw new ArgumentException();
-            if (numberOfCups == 1) return Enumerable.Range(numberOfItems, 1).Select(x => new List<int> { x }).ToList();
-
-            int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups);
-            return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
-                .SelectMany(i =>
-                {
-                    List<List<int>> possibilites = GetGoals(numberOfCups - 1, numberOfItems - i, i);
-                    foreach (var p in possibilites) p.Add(i);
-                    return possibilites;
-                })
-                .ToList();
-
-            throw new ArgumentException();
-        }
-
-        private static List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems) =>
-            GetGoals(NumberOfCups - 1, NumberOfItems).Select(x => {; x.Insert(0, 0); return x; }).ToList();
     }
 }
