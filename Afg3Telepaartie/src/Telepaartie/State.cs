@@ -39,6 +39,8 @@ namespace Telepaartie
             UpdateHashCode();
         }
         #endregion
+        
+        #region Funcs & Meth
         public IEnumerable<State> GetNextGen()
         {
             for (int i = 0; i < Buckets.Count; i++)
@@ -55,7 +57,8 @@ namespace Telepaartie
 
         private void UpdateHashCode() =>
             _hashCode = Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
-
+        #endregion
+        
         #region OverRides
         public bool Equals(State state)
         {
