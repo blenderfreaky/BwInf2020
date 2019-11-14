@@ -1,5 +1,8 @@
 ﻿namespace Nummernmerker.CLI
 {
+    using BenchmarkDotNet.Attributes;
+    using BenchmarkDotNet.Configs;
+    using BenchmarkDotNet.Running;
     using CommandLine;
     using System;
     using System.Collections.Generic;
@@ -23,6 +26,15 @@
 
         [Option('m', "mostDigits", Required = false, Default = 4, HelpText = "The highest number of digits that can be used consecutively without splitting. Defaults to 4.")]
         public int MaxSequenceLength { get; set; }
+
+        [Option('b', "benchmarkDigits", Required = false, HelpText = "Whether to run a benchmark.")]
+        public bool Benchmark { get; set; }
+
+        [Option('d', "benchmarkDigits", Required = false, Default = 1000, HelpText = "The amount of digits to benchmark with random numbers with. Defaults to 1000.")]
+        public int BenchmarkForLength { get; set; }
+
+        [Option('p', "benchmarkZeroPropability", Required = false, Default = 0.5, HelpText = "The propability a digits in the benchmark is going to be zero. Defaults to 0.5.")]
+        public double BenchmarkZeroPropability { get; set; }
     }
 
     public static class Program
@@ -35,16 +47,33 @@
 
         private static void RunWithOptions(Options o)
         {
-            if (o.Number.HasValue && o.NumberString != null) Console.WriteLine("Can't have --number and --numberS set at the same time.");
-
-            if (o.Number.HasValue) Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength);
-            else if (o.NumberString != null) Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength);
-            else Console.WriteLine("Either --number or --numberS need to be set.");
+            if (o.Benchmark)
+            {
+                NummernmerkerBenchmark.Length = o.BenchmarkForLength;
+                NummernmerkerBenchmark.ZeroPropability = o.BenchmarkZeroPropability;
+                BenchmarkRunner.Run<NummernmerkerBenchmark>();
+            }
+            else if (o.Number.HasValue && o.NumberString != null)
+            {
+                Console.WriteLine("Can't have --number and --numberS set at the same time.");
+            }
+            else if (o.Number.HasValue)
+            {
+                Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength);
+            }
+            else if (o.NumberString != null)
+            {
+                Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength);
+            }
+            else
+            {
+                Console.WriteLine("Either --number or --numberS need to be set, or --benchmark needs to be true.");
+            }
         }
 
         private static void Run(string numberText, int minSequenceLength, int maxSequenceLength)
         {
-            RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000);
+            RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000); // Very big numbers produce a stack overflow
         }
 
         private static void RunWithStackSize(Action action, int stackSize)
@@ -58,12 +87,10 @@
             Console.WriteLine("Starting splitting of number " + numberText + " with segments of length " + minSequenceLength + ".." + maxSequenceLength);
             Console.WriteLine("  Digits:             " + numberText.Length);
 
-            Stopwatch stopwatch = new Stopwatch();
             var result = Nummernmerker.MerkNummern(numberText, minSequenceLength, maxSequenceLength);
-            stopwatch.Stop();
 
             Console.WriteLine("Results: ");
-            Console.WriteLine("  Calculation time:   " + stopwatch.ElapsedMilliseconds + "ms");
+            //Console.WriteLine("  Calculation time:   " + stopwatch.ElapsedMilliseconds + "ms");
             Console.WriteLine("  Leading zeros hit:  " + result.LeadingZerosHit);
             Console.WriteLine("  Final distribution: " + string.Join(' ', result.ApplyDistribution(numberText)));
         }
