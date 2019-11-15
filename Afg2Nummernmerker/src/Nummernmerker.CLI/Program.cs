@@ -7,8 +7,10 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public class Options
     {
@@ -21,19 +23,19 @@
         [Option('n', "number", Required = false, HelpText = "The number to split. Must be smaller or equal to " + nameof(Int64.MaxValue))]
         public long? Number { get; set; }
 
-        [Option('l', "leastDigits", Required = false, Default = 2, HelpText = "The lowest number of digits that can be used consecutiely. Defaults to 2.")]
+        [Option('l', "leastDigits", Required = false, Default = 2, HelpText = "The lowest number of digits that can be used consecutiely.")]
         public int MinSequenceLength { get; set; }
 
-        [Option('m', "mostDigits", Required = false, Default = 4, HelpText = "The highest number of digits that can be used consecutively without splitting. Defaults to 4.")]
+        [Option('m', "mostDigits", Required = false, Default = 4, HelpText = "The highest number of digits that can be used consecutively without splitting.")]
         public int MaxSequenceLength { get; set; }
 
-        [Option('b', "benchmarkDigits", Required = false, HelpText = "Whether to run a benchmark.")]
+        [Option('b', "benchmark", Required = false, HelpText = "Whether to run a benchmark.")]
         public bool Benchmark { get; set; }
 
-        [Option('d', "benchmarkDigits", Required = false, Default = 1000, HelpText = "The amount of digits to benchmark with random numbers with. Defaults to 1000.")]
+        [Option('d', "benchmarkDigits", Required = false, Default = 1000, HelpText = "The amount of digits to benchmark with random numbers with.")]
         public int BenchmarkForLength { get; set; }
 
-        [Option('p', "benchmarkZeroPropability", Required = false, Default = 0.5, HelpText = "The propability a digits in the benchmark is going to be zero. Defaults to 0.5.")]
+        [Option('p', "benchmarkZeroPropability", Required = false, Default = 0.5, HelpText = "The propability a digits in the benchmark is going to be zero.")]
         public double BenchmarkZeroPropability { get; set; }
     }
 
@@ -53,17 +55,20 @@
                 NummernmerkerBenchmark.ZeroPropability = o.BenchmarkZeroPropability;
                 BenchmarkRunner.Run<NummernmerkerBenchmark>();
             }
-            else if (o.Number.HasValue && o.NumberString != null)
-            {
-                Console.WriteLine("Can't have --number and --numberS set at the same time.");
-            }
-            else if (o.Number.HasValue)
+            if (o.Number.HasValue)
             {
                 Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength);
             }
-            else if (o.NumberString != null)
+            if (o.NumberString != null)
             {
                 Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength);
+            }
+            if (o.File != null)
+            {
+                foreach (var line in File.ReadAllLines(o.File))
+                {
+                    Run(line, o.MinSequenceLength, o.MaxSequenceLength);
+                }
             }
             else
             {
@@ -80,6 +85,11 @@
         {
             var thread = new Thread(new ThreadStart(action),  stackSize);
             thread.Start();
+
+            while (thread.IsAlive)
+            {
+                Task.Delay(5);
+            }
         }
 
         private static void RunCore(string numberText, int minSequenceLength, int maxSequenceLength)
@@ -90,7 +100,6 @@
             var result = Nummernmerker.MerkNummern(numberText, minSequenceLength, maxSequenceLength);
 
             Console.WriteLine("Results: ");
-            //Console.WriteLine("  Calculation time:   " + stopwatch.ElapsedMilliseconds + "ms");
             Console.WriteLine("  Leading zeros hit:  " + result.LeadingZerosHit);
             Console.WriteLine("  Final distribution: " + string.Join(' ', result.ApplyDistribution(numberText)));
         }
