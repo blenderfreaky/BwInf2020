@@ -21,8 +21,8 @@
 \usepackage{listings}
 \lstset{language=[Sharp]C,
 captionpos=b,
-%numbers=left, %Nummerierung
-%numberstyle=\tiny, % kleine Zeilennummern
+numbers=left, %Nummerierung
+numberstyle=\tiny, % kleine Zeilennummern
 frame=lines, % Oberhalb und unterhalb des Listings ist eine Linie
 showspaces=false,
 showtabs=false,
@@ -56,20 +56,103 @@ Um die optimale Aufteilung zu ermitteln, verwende ich eine Variation des Knapsac
 
 \begin{lstlisting}
 TeileNummerAuf(nullstellen) {
-    if ([Bereits für gleiche Parameter aufgerufen])
-        return [Bereits errechnetes Ergebnis];
+    if ( <Bereits für gleiche Parameter aufgerufen> ) {
+        return <Bereits errechnetes Ergebnis>;
+    }
+    
+    if ( <Zu wenig Stellen zum aufteilen> ) {
+    	return <Fehler>;
+    }
 
     for (int i in 2..4) {
-        subAufteilung = TeileNummerAuf(nullstellen[(i+1)..]);
+        subAufteilung = TeileNummerAuf(nullstellen.Skip(i));
 
-        Möglichkeiten.Add(subAufteilung.PrecedeBy(i));
+		if ( <subAufteilung Fehler produziert hat> ) continue;
+		
+        Möglichkeiten.Add([i].Concat(subAufteilung));
     }
 
     return Möglichkeiten.Max(aufteilung => BewerteAufteilung(nullstellen, aufteilung));
 }
 
 BewerteAufteilung(nullstellen, aufteilung) {
-    return [Anzahl an führenden nullstellen in der Aufteilung];
+    return <Anzahl an führenden Nullstellen in der Aufteilung>;
+}
+\end{lstlisting}
+
+Hierbei werden bereits errechnete Ergebnisse global gespeichert, sodass bei mehreren Rechnungen nacheinander die Ergebnisse der vorigen Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
+
+\section{Umsetzung}
+
+Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit .NET Core 3.1 entschieden.
+Der sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee); die Zentrale Methode die den Algorithmus ausführt hat die Signatur \textit{NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)}. Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen der einzelnen aufgeteilten Segmente.
+
+Für das speicheren alter Ergebnisse wird ein struct \textit{MerkedNummer} verwendet, welches die Eingaben für die Methode zwischenspeichert, und ein struct \textit{NummerMerkingSolution}, welches die Ergebnisse zwischenspeichert. Diese werden in einem \textit{System.Collections.Generics.Dictionary`2} aufeinander gemappt, sodass immer einer \textit{MerkedNummer} eine \textit{NummerMerkingSolution} zugeordnet ist.
+
+Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes Array zurückgegeben, sondern eine Instanz des structs \textit{System.ArraySegment`1}. Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array, womit unnötige Array-Allocations verhindert werden, was Kosten des Garbage collectors spart.
+
+\section{Quellcode}
+
+\begin{lstlisting}
+private static readonly Dictionary<MerkedNummer, NummerMerkingSolution> MerkedNummers =
+    new Dictionary<MerkedNummer, NummerMerkingSolution>();
+
+public static NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
+    MerkNummern(new MerkedNummer(zeros, minSequenceLength, maxSequenceLength));
+
+private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
+{
+    if (MerkedNummers.TryGetValue(merkedNummer, out var optimalDistribution)) return optimalDistribution;
+
+    if (merkedNummer.Zeros.Count < merkedNummer.MinSequenceLength)
+    {
+        return MerkedNummers[merkedNummer] = NummerMerkingSolution.Failure();
+    }
+
+    int nextGenerationSize =
+        Math.Min(
+            merkedNummer.Zeros.Count,
+            merkedNummer.MaxSequenceLength + 1)
+        - merkedNummer.MinSequenceLength;
+
+    if (nextGenerationSize <= 0)
+    {
+        return MerkedNummers[merkedNummer] = NummerMerkingSolution.Empty();
+    }
+
+    var nextGeneration = new NummerMerkingSolution[nextGenerationSize];
+
+    for (int i = 0; i < nextGenerationSize; i++)
+    {
+        int length = i + merkedNummer.MinSequenceLength;
+
+        var subSolution =
+            MerkNummern(
+                new ArraySegment<bool>(merkedNummer.Zeros.Array, merkedNummer.Zeros.Offset + length, merkedNummer.Zeros.Count - length),
+                merkedNummer.MinSequenceLength,
+                merkedNummer.MaxSequenceLength);
+
+        nextGeneration[i] = !subSolution.IsSuccessful
+            ? NummerMerkingSolution.Failure()
+            : NummerMerkingSolution.Success(
+                subSolution.Distribution.PrecedeOne(length),
+                subSolution.LeadingZerosHit + (((IList<bool>)merkedNummer.Zeros)[0] ? 1 : 0));
+    }
+
+    var elements = nextGeneration.WhereF(x => x.IsSuccessful);
+
+    if (elements.Length == 0)
+    {
+        return MerkedNummers[merkedNummer] = NummerMerkingSolution.Failure();
+    }
+
+    if (elements.Length == 1)
+    {
+        return MerkedNummers[merkedNummer] = elements[0];
+    }
+
+    NummerMerkingSolution bestSolution = elements.AggregateF((x, y) => x.LeadingZerosHit < y.LeadingZerosHit ? x : y);
+    return MerkedNummers[merkedNummer] = bestSolution;
 }
 \end{lstlisting}
 
