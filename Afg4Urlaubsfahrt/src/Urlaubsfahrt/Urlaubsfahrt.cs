@@ -6,21 +6,26 @@
 
     public static class Urlaubsfahrt
     {
+        [ThreadStatic]
+        internal static float FuelLength;
+
+        [ThreadStatic]
+        internal static float StartFuelLength;
+
         public static Track GetTrack(
-            float trackLength,
             float startFuelLength,
             float fuelLength,
             List<GasStation> allStations)
         {
-            Track.FuelLength = fuelLength;
-            Track.StartFuelLength = startFuelLength;
+            FuelLength = fuelLength;
+            StartFuelLength = startFuelLength;
 
-            List<Track> trackParts = new List<Track> { Track.EmptyTrack };
+            List<Track> trackParts = new List<Track> { Track.Empty };
 
             foreach (GasStation station in allStations)
             {
                 trackParts.RemoveAll(x => station.Position - x.Stops.Last().Position < fuelLength &&
-                    x != Track.EmptyTrack);
+                    x != Track.Empty);
 
                 List<Track> possibleParts = trackParts.ToList();
 
@@ -33,15 +38,15 @@
                         .MinBy(x => x.GetPriceTo(station)), station);
                     trackParts.Add(t);
 #else
-                    List<Tuple<Track, float?>> BestTrackTuples = new List<Tuple<Track, float?>>();
+                    List<Tuple<Track, float?>> bestTrackTuples = new List<Tuple<Track, float?>>();
                     possibleParts
                         .AllMins(x => x.Stops.Count)
                         .ToList()
                         .ForEach(
-                            x => BestTrackTuples
+                            x => bestTrackTuples
                             .Add(new Tuple<Track, float?>(x, x.GetPriceTo(station))));
-                    BestTrackTuples.RemoveAll(x => x.Item2 == null);
-                    BestTrackTuples.Select(x => x.Item1).ToList().ForEach(x => possibleParts.Add(new Track(x, station)));
+                    bestTrackTuples.RemoveAll(x => x.Item2 == null);
+                    bestTrackTuples.Select(x => x.Item1).ToList().ForEach(x => possibleParts.Add(x.Append(station)));
 #endif
                 }
             }
