@@ -24,7 +24,7 @@ namespace Telepaartie.CLI
     {
         public static void Main(string[] args)
         {
-            if(args.Length == 0) args = "-c 4 -e 600 -s -v".Split(' ');
+            //if(args.Length == 0) args = "-c 4 -e 600 -s -v".Split(' ');
             Parser.Default.ParseArguments<Options>(args).WithParsed(KrinschBoye);
         }
 
