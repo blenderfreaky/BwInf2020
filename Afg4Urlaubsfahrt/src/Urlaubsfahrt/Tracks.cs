@@ -4,16 +4,30 @@ namespace Urlaubsfahrt
     using System.Collections.Generic;
     using System.Linq;
 
-    public partial class Track
+    public class Track
     {
+        public static Track Empty => new Track();
+
         public List<GasStation> Stops { get; }
 
-        public static Track Empty => new Track();
+        private Track() => Stops = new List<GasStation>();
+
+        public Track(GasStation station) => Stops.Add(station);
+
+        private Track(Track t, GasStation s)
+        {
+            Stops.AddRange(t.Stops);
+            Stops.Add(s);
+        }
+
+        public Track Append(GasStation s) => new Track(this, s);
+
+        public float? GetPriceTo(GasStation s) => GetPriceTo(s.Position);
 
         public float? GetPriceTo(float pos)
         {
             List<(GasStation Station, float Distance)> path = new List<(GasStation Station, float Distance)>();
-            List<GasStation> allStations = Stops.OrderBy(x => x.PricePerVolumeInEuroPerLiter).ToList();
+            List<GasStation> allStations = Stops.OrderBy(x => x.PricePerTank).ToList();
 
             List<Range> fullBois = new List<Range>();
             List<float> possiblePaths = new List<float> { pos, Urlaubsfahrt.StartFuelLength };
@@ -23,29 +37,26 @@ namespace Urlaubsfahrt
             foreach (GasStation s in allStations)
             {
                 //TODO: If all covered => break
-                (Range Element, int Index)? temp0 = fullBois.IndexMinWhere(x => x.End > s.Position);
-                if (!temp0.HasValue)
+                if (!fullBois.TryIndexMinWhere(x => x.End > s.Position, out Range underBorder, out int underBorderIndex))
                 {
-                    List<float> posslos = new List<float>() { s.Position + Urlaubsfahrt.FuelLength, pos };
                     Range part = new Range(
                             s.Position,
-                            posslos.Min());
+                            Math.Min(s.Position + Urlaubsfahrt.TankDistance, pos));
 
                     fullBois.Add(part);
                     path.Add((s, part.End - part.Start));
-                }
-#warning This will throw a null-ref exception if the !temp0.HasValue branch was visited, as it does not assign a new value
-                (Range Element, int Index) underBorderIndexTuple
-                    = temp0.Value;
 
-                Range underBorder = underBorderIndexTuple.Element;
-                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + Urlaubsfahrt.FuelLength)
+                    continue;
+                }
+
+                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + Urlaubsfahrt.TankDistance)
                 {
                     continue;
                 }
+
                 if (underBorder.Start > s.Position)
                 {
-                    fullBois.RemoveAt(underBorderIndexTuple.Index);
+                    fullBois.RemoveAt(underBorderIndex);
 
                     fullBois.Add(
                         new Range(s.Position,
@@ -54,54 +65,35 @@ namespace Urlaubsfahrt
                 }
                 else
                 {
-                    fullBois.RemoveAt(underBorderIndexTuple.Index);
+                    fullBois.RemoveAt(underBorderIndex);
 
-                    (Range Element, int Index)? temp1 = fullBois.IndexMinWhere(x => x.Start > underBorder.End);
-
-                    if (temp1.HasValue)
+                    if (fullBois.TryIndexMinWhere(x => x.Start > underBorder.End, out Range upperBorder, out int upperBorderIndex))
                     {
-                        (Range Element, int Index) UpperBorderTupleIndexTuple
-                            = temp1.Value;
-
-                        if (UpperBorderTupleIndexTuple.Element.Start <= s.Position + Urlaubsfahrt.FuelLength)
+                        if (upperBorder.Start <= s.Position + Urlaubsfahrt.TankDistance)
                         {
-                            fullBois.RemoveAt(UpperBorderTupleIndexTuple.Index);
-                            fullBois.Add(
-                                new Range(
-                                    underBorder.Start,
-                                    underBorderIndexTuple.Element.End));
-                            path.Add((s, UpperBorderTupleIndexTuple.Element.Start - underBorder.End));
+                            fullBois.RemoveAt(upperBorderIndex);
+                            fullBois.Add(underBorder);
+                            path.Add((s, upperBorder.Start - underBorder.End));
                         }
+
                         continue;
                     }
 
-                    List<float> posslos = new List<float>() { s.Position + Urlaubsfahrt.FuelLength, pos };
+                    float end = Math.Min(s.Position + Urlaubsfahrt.TankDistance, pos);
                     fullBois.Add(
                         new Range(
                             underBorder.Start,
-                            posslos.Min()));
-                    path.Add((s, posslos.Min() - underBorder.End));
+                            end));
+                    path.Add((s, end - underBorder.End));
                 }
+
                 if (fullBois[0].Start == 0 && fullBois[0].End == pos)
                 {
-                    return path.Select(x => x.Station.PricePerVolumeInEuroPerLiter * x.Distance).Sum();
+                    return path.Select(x => x.Station.PricePerTank * x.Distance).Sum();
                 }
             }
+
             return null;
-        }
-
-        public float? GetPriceTo(GasStation s) => GetPriceTo(s.Position);
-
-        private Track() => Stops = new List<GasStation>();
-
-        public Track(GasStation station) => Stops.Add(station);
-
-        public Track Append(GasStation s) => new Track(this, s);
-
-        private Track(Track t, GasStation s)
-        {
-            Stops.AddRange(t.Stops);
-            Stops.Add(s);
         }
     }
 }
