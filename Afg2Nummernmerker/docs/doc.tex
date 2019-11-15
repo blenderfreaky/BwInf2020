@@ -20,10 +20,11 @@
 
 \usepackage{listings}
 \lstset{language=[Sharp]C,
+background=gray,
 captionpos=b,
 numbers=left, %Nummerierung
 numberstyle=\tiny, % kleine Zeilennummern
-frame=lines, % Oberhalb und unterhalb des Listings ist eine Linie
+frame=lrtb,
 showspaces=false,
 showtabs=false,
 breaklines=true,
@@ -51,7 +52,7 @@ literate=%
 \title{Aufgabe 2 - Nummernmerker}
 
 \section{Lösungsidee}
-
+asd
 Um die optimale Aufteilung zu ermitteln, verwende ich eine Variation des Knapsack-Algorithmus. Dieser funktioniert wie folgt:
 
 \begin{lstlisting}
@@ -90,6 +91,40 @@ Der sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee); die Zentrale M
 Für das speicheren alter Ergebnisse wird ein struct \textit{MerkedNummer} verwendet, welches die Eingaben für die Methode zwischenspeichert, und ein struct \textit{NummerMerkingSolution}, welches die Ergebnisse zwischenspeichert. Diese werden in einem \textit{System.Collections.Generics.Dictionary`2} aufeinander gemappt, sodass immer einer \textit{MerkedNummer} eine \textit{NummerMerkingSolution} zugeordnet ist.
 
 Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes Array zurückgegeben, sondern eine Instanz des structs \textit{System.ArraySegment`1}. Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array, womit unnötige Array-Allocations verhindert werden, was Kosten des Garbage collectors spart.
+
+\section{Beispiele}
+
+\begin{lstlisting}
+Starting splitting of number 005480000005179734 with segments of length 2..4
+  Digits:             18
+Results:
+  Leading zeros hit:  2
+  Final distribution: 0054 8000 0005 1797
+
+Starting splitting of number 03495929533790154412660 with segments of length 2..4
+  Digits:             23
+Results:
+  Leading zeros hit:  1
+  Final distribution: 0349 5929 5337 9015 441 26
+
+Starting splitting of number 5319974879022725607620179 with segments of length 2..4
+  Digits:             25
+Results:
+  Leading zeros hit:  0
+  Final distribution: 5319 9748 7902 2725 6076 201
+
+Starting splitting of number 9088761051699482789038331267 with segments of length 2..4
+  Digits:             28
+Results:
+  Leading zeros hit:  0
+  Final distribution: 9088 7610 5169 9482 7890 3833 12
+
+Starting splitting of number 011000000011000100111111101011 with segments of length 2..4
+  Digits:             30
+Results:
+  Leading zeros hit:  3
+  Final distribution: 0110 0000 001 1000 1001 1111 110 10
+\end{lstlisting}
 
 \section{Quellcode}
 

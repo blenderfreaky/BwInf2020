@@ -1,11 +1,8 @@
 ﻿namespace Nummernmerker
 {
     using JM.LinqFaster;
-    using MoreLinq;
-    using MoreLinq.Experimental;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public static class Nummernmerker
     {

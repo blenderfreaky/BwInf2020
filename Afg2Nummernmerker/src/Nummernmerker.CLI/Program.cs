@@ -1,12 +1,8 @@
 ﻿namespace Nummernmerker.CLI
 {
-    using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Configs;
     using BenchmarkDotNet.Running;
     using CommandLine;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
