@@ -2,36 +2,13 @@ namespace Urlaubsfahrt
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
-    public class Track
+    public partial class Track
     {
-#warning Global state is really bad
-        public static float FuelLength { get; set; }
-#warning Global state is really bad
-        public static float StartFuelLength { get; set; }
-
         public List<GasStation> Stops { get; }
 
-        public static Track EmptyTrack => new Track();
-
-        private readonly struct Range : IEquatable<Range>
-        {
-            public readonly float Start, End;
-
-            public Range(float start, float end)
-            {
-                Start = start;
-                End = end;
-            }
-
-            public override bool Equals(object obj) => obj is Range range && Equals(range);
-
-            public bool Equals([AllowNull] Range other) => Start == other.Start && End == other.End;
-
-            public override int GetHashCode() => HashCode.Combine(Start, End);
-        }
+        public static Track Empty => new Track();
 
         public float? GetPriceTo(float pos)
         {
@@ -39,7 +16,7 @@ namespace Urlaubsfahrt
             List<GasStation> allStations = Stops.OrderBy(x => x.PricePerVolumeInEuroPerLiter).ToList();
 
             List<Range> fullBois = new List<Range>();
-            List<float> possiblePaths = new List<float> { pos, StartFuelLength };
+            List<float> possiblePaths = new List<float> { pos, Urlaubsfahrt.StartFuelLength };
 
             fullBois.Add(new Range(0, possiblePaths.Min()));
 
@@ -49,7 +26,7 @@ namespace Urlaubsfahrt
                 (Range Element, int Index)? temp0 = fullBois.IndexMinWhere(x => x.End > s.Position);
                 if (!temp0.HasValue)
                 {
-                    List<float> posslos = new List<float>() { s.Position + FuelLength, pos };
+                    List<float> posslos = new List<float>() { s.Position + Urlaubsfahrt.FuelLength, pos };
                     Range part = new Range(
                             s.Position,
                             posslos.Min());
@@ -62,7 +39,7 @@ namespace Urlaubsfahrt
                     = temp0.Value;
 
                 Range underBorder = underBorderIndexTuple.Element;
-                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + FuelLength)
+                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + Urlaubsfahrt.FuelLength)
                 {
                     continue;
                 }
@@ -86,7 +63,7 @@ namespace Urlaubsfahrt
                         (Range Element, int Index) UpperBorderTupleIndexTuple
                             = temp1.Value;
 
-                        if (UpperBorderTupleIndexTuple.Element.Start <= s.Position + FuelLength)
+                        if (UpperBorderTupleIndexTuple.Element.Start <= s.Position + Urlaubsfahrt.FuelLength)
                         {
                             fullBois.RemoveAt(UpperBorderTupleIndexTuple.Index);
                             fullBois.Add(
@@ -98,7 +75,7 @@ namespace Urlaubsfahrt
                         continue;
                     }
 
-                    List<float> posslos = new List<float>() { s.Position + FuelLength, pos };
+                    List<float> posslos = new List<float>() { s.Position + Urlaubsfahrt.FuelLength, pos };
                     fullBois.Add(
                         new Range(
                             underBorder.Start,
@@ -115,14 +92,16 @@ namespace Urlaubsfahrt
 
         public float? GetPriceTo(GasStation s) => GetPriceTo(s.Position);
 
-        public Track(GasStation s) => Stops = new List<GasStation> { s };
+        private Track() => Stops = new List<GasStation>();
 
-        public Track(Track t, GasStation s)
+        public Track(GasStation station) => Stops.Add(station);
+
+        public Track Append(GasStation s) => new Track(this, s);
+
+        private Track(Track t, GasStation s)
         {
             Stops.AddRange(t.Stops);
             Stops.Add(s);
         }
-
-        private Track() => Stops = new List<GasStation>();
     }
 }

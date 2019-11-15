@@ -38,7 +38,7 @@
                 allStations.Add(new GasStation(values[0], values[1]));
             }
 
-            Track track = Urlaubsfahrt.GetTrack(trackLength, startFuel / usage * 100, fuelLength, allStations);
+            Track track = Urlaubsfahrt.GetTrack(startFuel / usage * 100, fuelLength, allStations);
 
             Console.WriteLine(track.ToString());
         }
