@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 
-\usepackage[margin=3.5cm]{geometry}
+\usepackage[margin=2.5cm]{geometry}
 
 \usepackage[ngerman]{babel}
 \usepackage[T1]{fontenc}
@@ -11,16 +11,20 @@
 \usepackage{listings}
 \usepackage{courier}
 
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
 %\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
 \definecolor{bluekeywords}{rgb}{0,0,1}
 \definecolor{greencomments}{rgb}{0,0.5,0}
 \definecolor{redstrings}{rgb}{0.64,0.08,0.08}
 \definecolor{xmlcomments}{rgb}{0.5,0.5,0.5}
 \definecolor{types}{rgb}{0.17,0.57,0.68}
+\definecolor{background}{rgb}{0.95,0.95,0.95}
 
 \usepackage{listings}
 \lstset{language=[Sharp]C,
-background=gray,
+backgroundcolor=\color{background},
 captionpos=b,
 numbers=left, %Nummerierung
 numberstyle=\tiny, % kleine Zeilennummern
@@ -52,8 +56,10 @@ literate=%
 \title{Aufgabe 2 - Nummernmerker}
 
 \section{Lösungsidee}
-asd
-Um die optimale Aufteilung zu ermitteln, verwende ich eine Variation des Knapsack-Algorithmus. Dieser funktioniert wie folgt:
+
+Um die optimale Aufteilung zu ermitteln,
+verwenden wir eine Variation des Knapsack-Algorithmus.
+Dieser funktioniert wie folgt:
 
 \begin{lstlisting}
 TeileNummerAuf(nullstellen) {
@@ -163,7 +169,10 @@ private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
 
         var subSolution =
             MerkNummern(
-                new ArraySegment<bool>(merkedNummer.Zeros.Array, merkedNummer.Zeros.Offset + length, merkedNummer.Zeros.Count - length),
+                new ArraySegment<bool>(
+                  merkedNummer.Zeros.Array,
+                  merkedNummer.Zeros.Offset + length,
+                  merkedNummer.Zeros.Count - length),
                 merkedNummer.MinSequenceLength,
                 merkedNummer.MaxSequenceLength);
 
@@ -171,7 +180,8 @@ private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
             ? NummerMerkingSolution.Failure()
             : NummerMerkingSolution.Success(
                 subSolution.Distribution.PrecedeOne(length),
-                subSolution.LeadingZerosHit + (((IList<bool>)merkedNummer.Zeros)[0] ? 1 : 0));
+                subSolution.LeadingZerosHit
+                + (((IList<bool>)merkedNummer.Zeros)[0] ? 1 : 0));
     }
 
     var elements = nextGeneration.WhereF(x => x.IsSuccessful);
