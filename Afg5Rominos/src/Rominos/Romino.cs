@@ -123,6 +123,7 @@
             PossibleExtensions = possibleExtensions;
             Max = max;
 
+            _uniqueCode = default; // Needs to be assigned in order to call methods, including CalculateUniqueCode.
             _uniqueCode = CalculateUniqueCode();
 
             // Find highest unique Code.
