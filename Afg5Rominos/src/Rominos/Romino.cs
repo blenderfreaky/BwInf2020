@@ -20,13 +20,14 @@
         };
 
         public static Romino One =
-            new Romino(2, new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) },
+            new Romino(new[] { new Vector2Int(0, 0), new Vector2Int(1, 1) },
                 // These are hardcoded in by hand, because this list is only populated lazily by appending, rather than computed once.
                 // As this first romino can not be computed like other rominos, this won't be populated using normal methods.
                 new[] { new Vector2Int(-1, -1), new Vector2Int(0, -1), new Vector2Int(1, -1),
                         new Vector2Int(-1, 0),                                                new Vector2Int(2, 0),
                         new Vector2Int(-1, 1),                                                new Vector2Int(2, 1),
-                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), }.ToList(),
+                                                new Vector2Int(0, 2),  new Vector2Int(1, 2),  new Vector2Int(2, 2), }
+                    .ToList(),
                 new Vector2Int(0, 0),
                 new Vector2Int(1, 1));
 
@@ -34,7 +35,6 @@
         public readonly List<Vector2Int> PossibleExtensions;
         public readonly Vector2Int DiagonalRoot;
         public readonly Vector2Int Max;
-        public readonly int BlockLength;
 
         private readonly BitBuffer512 _uniqueCode;
 
@@ -51,13 +51,12 @@
 
         public string AsciiArt => string.Join(Environment.NewLine, ToAsciiArt(true, true));
 
-        public Romino(int blockLength, Vector2Int[] blocks, List<Vector2Int> possibleExtensions, Vector2Int diagonalRoot, Vector2Int max)
+        public Romino(Vector2Int[] blocks, List<Vector2Int> possibleExtensions, Vector2Int diagonalRoot, Vector2Int max)
         {
             Blocks = blocks;
             DiagonalRoot = diagonalRoot;
             PossibleExtensions = possibleExtensions;
             Max = max;
-            BlockLength = blockLength;
 
             _uniqueCode = default;
 
@@ -81,7 +80,7 @@
 
                     var offset = CalculateOffset(BlockMap);
 
-                    for (int i = 0; i < BlockLength; i++) Blocks[i] = BlockMap(Blocks[i]) + offset;
+                    for (int i = 0; i < Blocks.Length; i++) Blocks[i] = BlockMap(Blocks[i]) + offset;
                     for (int i = 0; i < PossibleExtensions.Count; i++) PossibleExtensions[i] = BlockMap(PossibleExtensions[i]) + offset;
 
                     DiagonalRoot = DiagonalRootMap(DiagonalRoot) + offset;
@@ -137,7 +136,7 @@
                 IEnumerable<Vector2Int> extensionsFromNewBlock =
                     GetDirectNeighbours(newBlock)
                     // Remove already occupied positions
-                    .Except(Blocks.Take(BlockLength))
+                    .Except(Blocks.Take(Blocks.Length))
                     // Exclude positions blocked by the protected diagonal
                     .Except(DiagonalRootBlockade);
 
@@ -148,8 +147,7 @@
                 List<Vector2Int> newPossibleExtensions = PossibleExtensions.Where(x => x != newBlock).Union(extensionsFromNewBlock).Select(x => x + offset).ToList();
 
                 yield return new Romino(
-                    BlockLength + 1,
-                    AppendOneAndSelectInPlace(Blocks, newBlock, offset, BlockLength),
+                    AppendOneAndSelectInPlace(Blocks, newBlock, offset, Blocks.Length),
                     newPossibleExtensions,
                     DiagonalRoot + offset,
                     newSize);
@@ -177,9 +175,9 @@
 
             var bits = new BitBuffer512();
 
-            int length = BlockLength;
+            int length = Blocks.Length;
 
-            for (int i = 0; i < BlockLength; i++)
+            for (int i = 0; i < Blocks.Length; i++)
             {
                 bits[GetWeight(Blocks[i].X, Blocks[i].Y, length)] = true;
             }
@@ -193,13 +191,13 @@
 
             var bits = new BitBuffer512();
 
-            int length = BlockLength;
+            int length = Blocks.Length;
 
             var offset = CalculateOffset(func);
 
             Vector2Int min = new Vector2Int(int.MaxValue, int.MaxValue);
 
-            for (int i = 0; i < BlockLength; i++)
+            for (int i = 0; i < Blocks.Length; i++)
             {
                 var mapped = func(Blocks[i]) + offset;
 
@@ -226,7 +224,7 @@
         {
             var blocks = new bool[Max.X + 1, Max.Y + 1];
 
-            foreach (var block in Blocks.Take(BlockLength)) blocks[block.X, block.Y] = true;
+            foreach (var block in Blocks.Take(Blocks.Length)) blocks[block.X, block.Y] = true;
             return blocks;
         }
 
