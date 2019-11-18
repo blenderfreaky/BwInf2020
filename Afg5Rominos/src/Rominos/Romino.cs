@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Text;
 
-    public struct Romino : IEquatable<Romino>, IComparable<Romino>
+    public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     {
         private static readonly (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[] Maps = new (Func<Vector2Int, Vector2Int> BlockMap, Func<Vector2Int, Vector2Int> DiagonalRootMap)[]
         {
@@ -117,33 +117,29 @@
             }
         }
 
-        private static IEnumerable<T> Yield8<T>(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8)
+        // Generate IEnumerable<T> instead of allocing a new array
+        private static IEnumerable<Vector2Int> GetDirectNeighbours(Vector2Int block)
         {
-            yield return t1;
-            yield return t2;
-            yield return t3;
-            yield return t4;
-            yield return t5;
-            yield return t6;
-            yield return t7;
-            yield return t8;
+            yield return block + new Vector2Int(0, -1);
+            yield return block + new Vector2Int(0, 1);
+            yield return block + new Vector2Int(1, 0);
+            yield return block + new Vector2Int(1, -1);
+            yield return block + new Vector2Int(1, 1);
+            yield return block + new Vector2Int(-1, 0);
+            yield return block + new Vector2Int(-1, -1);
+            yield return block + new Vector2Int(-1, 1);
         }
 
         public readonly IEnumerable<Romino> AddOneNotUnique()
         {
             foreach (var newBlock in PossibleExtensions)
             {
-                IEnumerable<Vector2Int> extensionsFromNewBlock = Yield8(
-                    newBlock + new Vector2Int(0, -1),
-                    newBlock + new Vector2Int(0, 1),
-                    newBlock + new Vector2Int(1, 0),
-                    newBlock + new Vector2Int(1, -1),
-                    newBlock + new Vector2Int(1, 1),
-                    newBlock + new Vector2Int(-1, 0),
-                    newBlock + new Vector2Int(-1, -1),
-                    newBlock + new Vector2Int(-1, 1))
-                // Remove already occupied positions, as well as exclude positions blocked by the diagonal
-                .Except(Blocks.Take(BlockLength)).Except(DiagonalRootBlockade);
+                IEnumerable<Vector2Int> extensionsFromNewBlock =
+                    GetDirectNeighbours(newBlock)
+                    // Remove already occupied positions
+                    .Except(Blocks.Take(BlockLength))
+                    // Exclude positions blocked by the protected diagonal
+                    .Except(DiagonalRootBlockade);
 
                 var offset = new Vector2Int(Math.Max(-newBlock.X, 0), Math.Max(-newBlock.Y, 0));
                 var newSize = new Vector2Int(Math.Max(newBlock.X, Max.X), Math.Max(newBlock.Y, Max.Y)) + offset;
