@@ -227,15 +227,6 @@
         {
             foreach (var newBlock in PossibleExtensions)
             {
-                IEnumerable<Vector2Int> extensionsFromNewBlock =
-                    // Get the direct neighbours, i.e. the blocks that will be possible spots
-                    // for adding blocks after newBlock has been added
-                    GetDirectNeighbours(newBlock)
-                    // Remove already occupied positions
-                    .Except(Blocks)
-                    // Exclude positions blocked by the protected diagonal
-                    .Except(DiagonalRootBlockade);
-
                 // If the new block has x or y smaller than 0, move the entire romino such that
                 // the lowest x and y are 0.
                 // This offset will need to be applied to anything inside the romino.
@@ -247,17 +238,21 @@
                     // or if the new block has coordinates x or y smaller than 0, increase size.
                     + offset;
 
-                List<Vector2Int> newPossibleExtensions =
-                    // Re-use old extension spots.
-                    PossibleExtensions
-                    // Remove the newly added block.
-                    .Where(x => x != newBlock)
-                    // Add the new extension spots.
-                    .Union(extensionsFromNewBlock)
-                    // Apply the offset to all extension spots.
-                    .Select(x => x + offset)
-                    // Execute Query by iterating into a list. Cheaper than .ToArray()
-                    .ToList();
+                HashSet<Vector2Int> newPossibleExtensions =
+                    // Get the direct neighbours, i.e. the blocks that will be possible spots
+                    // for adding blocks after newBlock has been added
+                    new HashSet<Vector2Int>(GetDirectNeighbours(newBlock + offset));
+
+                // Remove already occupied positions
+                newPossibleExtensions.ExceptWith(Blocks.Select(x => x + offset));
+                // Exclude positions blocked by the protected diagonal
+                newPossibleExtensions.ExceptWith(DiagonalRootBlockade.Select(x => x + offset));
+
+                // Re-use old extension spots.
+                newPossibleExtensions.UnionWith(PossibleExtensions.Select(x => x + offset));
+
+                // Remove the newly added block.
+                newPossibleExtensions.Remove(newBlock + offset);
 
                 // Allocate a new array for the new romino, with one more space then right now
                 // to store the new block in.
@@ -274,7 +269,7 @@
 
                 yield return new Romino(
                     newBlocks,
-                    newPossibleExtensions,
+                    new List<Vector2Int>(newPossibleExtensions),
                     // Apply offset to the diagonal root as well.
                     DiagonalRoot + offset,
                     newSize);
