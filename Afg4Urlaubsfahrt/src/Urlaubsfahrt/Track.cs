@@ -29,6 +29,8 @@ namespace Urlaubsfahrt
             List<(GasStation Station, float Distance)> path = new List<(GasStation Station, float Distance)>();
             List<GasStation> allStations = Stops.OrderBy(x => x.PricePerTank).ToList();
 
+            // TODO: Don't use float, use GasStation references
+
             List<Range> fullBois = new List<Range>();
             List<float> possiblePaths = new List<float> { pos, Urlaubsfahrt.StartFuelLength };
 
