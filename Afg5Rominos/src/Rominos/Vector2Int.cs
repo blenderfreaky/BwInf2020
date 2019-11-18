@@ -1,8 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace Rominos
+﻿namespace Rominos
 {
+    using System;
+    using System.Diagnostics;
+
     [DebuggerStepThrough]
     [DebuggerDisplay("X:{X}, Y:{Y}")]
     public readonly struct Vector2Int : IEquatable<Vector2Int>
