@@ -1,7 +1,6 @@
 ﻿namespace Rominos
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -377,32 +376,37 @@
         #endregion
 
         #region Overrides and Interface Implementations
-        // <inheritdoc/>
-#pragma warning disable RCS1139 // Add summary element to documentation comment.
+        /// <inheritdoc/>
         /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
-#pragma warning restore RCS1139 // Add summary element to documentation comment.
 
+        /// <inheritdoc/>
         public override readonly int GetHashCode() => _uniqueCode.GetHashCode();
 
-        // <inheritdoc/>
-#pragma warning disable RCS1139 // Add summary element to documentation comment.
+        /// <inheritdoc/>
         /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public readonly bool Equals(Romino romino) => _uniqueCode == romino._uniqueCode;
-#pragma warning restore RCS1139 // Add summary element to documentation comment.
 
+        /// <inheritdoc/>
+        /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public readonly int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
 
+        /// <inheritdoc/>
         public static bool operator ==(Romino left, Romino right) => left.Equals(right);
 
+        /// <inheritdoc/>
         public static bool operator !=(Romino left, Romino right) => !(left == right);
 
+        /// <inheritdoc/>
         public static bool operator <(Romino left, Romino right) => left.CompareTo(right) < 0;
 
+        /// <inheritdoc/>
         public static bool operator <=(Romino left, Romino right) => left.CompareTo(right) <= 0;
 
+        /// <inheritdoc/>
         public static bool operator >(Romino left, Romino right) => left.CompareTo(right) > 0;
 
+        /// <inheritdoc/>
         public static bool operator >=(Romino left, Romino right) => left.CompareTo(right) >= 0;
         #endregion
     }

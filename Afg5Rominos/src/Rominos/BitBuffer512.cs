@@ -1,9 +1,12 @@
-﻿//#define DEBUG_BitBuffer512
+﻿// Enable this to disable debugger stepthrough
+//#define DEBUG_BitBuffer512
 
 // Add these to support bigger Rominos. Slightly affects performance.
-#define _8ULong
-#define _4ULong
+//#define _8ULong // 22 size rominos
+//#define _4ULong // 16 size rominos
+// Else         // 11 size rominos
 
+// There be dragons below
 namespace Rominos
 {
     using System;
@@ -27,6 +30,9 @@ namespace Rominos
         16
 #endif
     )]
+#if !DEBUG_BitBuffer512
+    [DebuggerStepThrough]
+#endif
     public struct BitBuffer512 : IEquatable<BitBuffer512>, IComparable<BitBuffer512>
     {
         /// <summary>
@@ -81,11 +87,11 @@ namespace Rominos
         [FieldOffset(32)] private ulong _e;
 #endif
 
+#if _4ULong
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
 
-#if _4ULong
         [FieldOffset(24)] private ulong _d;
 
 #if !DEBUG_BitBuffer512
