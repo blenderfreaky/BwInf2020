@@ -9,7 +9,7 @@ namespace Urlaubsfahrt
 
     public readonly struct Track : IEquatable<Track>
     {
-        public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty);
+        public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty.Add(GasStation.Home));
 
         public readonly ImmutableList<GasStation> Stops;
 
@@ -27,7 +27,7 @@ namespace Urlaubsfahrt
 
         public readonly DrivingPlan? GetCheapestPathTo(double destination, double startFuelLength, double tankLength)
         {
-            DrivingPlan drivingPlan = new DrivingPlan();
+            DrivingPlan drivingPlan = DrivingPlan.Empty;
 
             // If we can get to the destination on our tank already, we don't need to check for other options; it's already free.
             if (destination < startFuelLength)
@@ -41,14 +41,17 @@ namespace Urlaubsfahrt
 
             HashSet<Range> coveredRanges = new HashSet<Range>
             {
-                new Range(0, startFuelLength)
+                new Range(0, startFuelLength),
+                new Range(destination, destination + tankLength)
             };
 
             foreach (GasStation station in Stops.OrderBy(x => x.Price))
             {
                 Range newRange = new Range(station.Position, station.Position + tankLength);
 
-                foreach (var coveredRange in coveredRanges)
+                double distance = newRange.Length;
+
+                foreach (var coveredRange in coveredRanges.ToList())
                 {
                     // Check whether the start and end point collide with the given range.
                     bool containsStart = coveredRange.Contains(newRange.Start);
@@ -66,10 +69,18 @@ namespace Urlaubsfahrt
                     if (containsStart)
                     {
                         newRange = new Range(coveredRange.Start, newRange.End);
+                        distance = newRange.End - coveredRange.End;
                     }
                     else if (containsEnd)
                     {
                         newRange = new Range(newRange.Start, coveredRange.End);
+                        distance = coveredRange.Start - newRange.Start;
+                    }
+
+                    if (newRange.Length == 0)
+                    {
+                        newRange = Range.NaR;
+                        break;
                     }
                 }
 
@@ -79,7 +90,7 @@ namespace Urlaubsfahrt
                 drivingPlan.Add(station, newRange.Length);
 
                 // If range spans the entire path, then the track is covered.
-                if (newRange.Start == 0 && newRange.End == destination)
+                if (newRange.Start == 0 && newRange.End >= destination)
                 {
                     return drivingPlan;
                 }

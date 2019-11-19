@@ -12,13 +12,13 @@ namespace Urlaubsfahrt
 
         public static DrivingPlan Empty => new DrivingPlan(new List<(GasStation Station, double Distance)>());
 
-        public DrivingPlan(List<(GasStation Station, double Distance)> stations) => Stops = stations;
+        public DrivingPlan(List<(GasStation Station, double Distance)> stops) => Stops = stops;
 
-        public double Price => Stops.Sum(x => x.Distance * x.Station.Price);
+        public readonly double Price => Stops.Sum(x => x.Distance * x.Station.Price);
 
-        public void Add(GasStation station, double distance) => Stops.Add((station, distance));
+        public readonly void Add(GasStation station, double distance) => Stops.Add((station, distance));
 
-        public void Sort() => Stops.Sort((x, y) => x.Station.Position.CompareTo(y.Station.Position));
+        public readonly void Sort() => Stops.Sort((x, y) => x.Station.Position.CompareTo(y.Station.Position));
 
         public override bool Equals(object? obj) => obj is DrivingPlan plan && Equals(plan);
         public bool Equals([AllowNull] DrivingPlan other) => Stops.SequenceEqual(other.Stops);

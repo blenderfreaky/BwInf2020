@@ -2,7 +2,7 @@
   "profiles": {
     "Urlaubsfahrt.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--file <FILEHERE>"
+      "commandLineArgs": "--file \"C:\\Users\\blend\\Documents\\School\\Info\\BwInf2020\\Afg4Urlaubsfahrt\\examples\\fahrt3.txt\""
     }
   }
 }

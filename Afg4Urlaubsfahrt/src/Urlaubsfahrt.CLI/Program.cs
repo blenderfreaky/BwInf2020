@@ -32,13 +32,21 @@
             List<GasStation> allStations = new List<GasStation>();
             for (int i = 5; i < lines.Length; i++)
             {
-                double[] values = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x)).ToArray(); //compiler error
-                allStations.Add(new GasStation(values[0], values[1]));
+                string[] values = lines[i]
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                allStations.Add(new GasStation(double.Parse(values[1]), double.Parse(values[0])));
             }
+            allStations.Add(new GasStation(0, trackLength));
 
             Track track = Urlaubsfahrt.FindBestTrack(allStations, startFuel / usage * 100, fuelLength);
 
-            Console.WriteLine(track.ToString());
+            Console.WriteLine(string.Join(' ', track.Stops));
+
+            var drivingPlan = track.GetCheapestPathTo(trackLength, startFuel / usage * 100, fuelLength);
+
+            Console.WriteLine(string.Join(' ', drivingPlan.Value.Stops));
+            Console.WriteLine("Price: " + drivingPlan.Value.Price);
         }
     }
 }
