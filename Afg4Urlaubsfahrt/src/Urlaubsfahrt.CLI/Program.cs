@@ -22,8 +22,6 @@
 
         public static void RunWithOptions(Options o)
         {
-            Console.WriteLine("Insert path:");
-
             string[] lines = File.ReadAllLines(o.File);
             double usage = int.Parse(lines[0]);
             double maxFuel = int.Parse(lines[1]);
@@ -38,7 +36,7 @@
                 allStations.Add(new GasStation(values[0], values[1]));
             }
 
-            Track track = Urlaubsfahrt.FindBestTrack(startFuel / usage * 100, fuelLength, allStations);
+            Track track = Urlaubsfahrt.FindBestTrack(allStations, startFuel / usage * 100, fuelLength);
 
             Console.WriteLine(track.ToString());
         }

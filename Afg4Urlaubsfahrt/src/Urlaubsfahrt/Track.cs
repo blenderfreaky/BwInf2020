@@ -2,55 +2,55 @@ namespace Urlaubsfahrt
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
-    public sealed class Track
+    public readonly struct Track : IEquatable<Track>
     {
-        public static Track Empty => new Track();
+        public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty);
 
-        public List<GasStation> Stops { get; }
+        public readonly ImmutableList<GasStation> Stops;
 
-        private Track() => Stops = new List<GasStation>();
+        public readonly GasStation LastStop => Stops[Stops.Count - 1];
 
-        private Track(Track t, GasStation s)
+        private Track(ImmutableList<GasStation> stops) => Stops = stops;
+
+        public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
+
+        public readonly double? GetCheapestPriceTo(GasStation destination, double startFuelLength, double tankLength) =>
+            GetCheapestPriceTo(destination.Position, startFuelLength, tankLength);
+
+        public readonly double? GetCheapestPriceTo(double destination, double startFuelLength, double tankLength) =>
+            GetCheapestPathTo(destination, startFuelLength, tankLength)?.Price;
+
+        public readonly DrivingPlan? GetCheapestPathTo(double destination, double startFuelLength, double tankLength)
         {
-            Stops.AddRange(t.Stops);
-            Stops.Add(s);
-        }
-
-        public Track With(GasStation newEnd) => new Track(this, newEnd);
-
-        public double? GetCheapestPriceTo(GasStation destination) => GetCheapestPriceTo(destination.Position);
-
-        public double? GetCheapestPriceTo(double destination) =>
-            GetCheapestPathTo(destination).Sum(x => x.Distance * x.Station?.Price);
-
-        public List<(GasStation Station, double Distance)> GetCheapestPathTo(double destination)
-        {
-            List<(GasStation Station, double Distance)> finalPath = new List<(GasStation Station, double Distance)>();
+            DrivingPlan drivingPlan = new DrivingPlan();
 
             // If we can get to the destination on our tank already, we don't need to check for other options; it's already free.
-            if (destination < Urlaubsfahrt.StartFuelLength)
+            if (destination < startFuelLength)
             {
-                finalPath.Add((null, Urlaubsfahrt.StartFuelLength));
-                return finalPath;
+                drivingPlan.Add(GasStation.Home, destination);
+                return drivingPlan;
             }
 
-            finalPath.Add((null, Urlaubsfahrt.StartFuelLength));
+            // Use up the entirety of the starting fuel
+            drivingPlan.Add(GasStation.Home, startFuelLength);
 
             HashSet<Range> coveredRanges = new HashSet<Range>
             {
-                new Range(0, Urlaubsfahrt.StartFuelLength)
+                new Range(0, startFuelLength)
             };
 
             foreach (GasStation station in Stops.OrderBy(x => x.Price))
             {
-                Range newRange = new Range(station.Position, station.Position + Urlaubsfahrt.TankDistance);
+                Range newRange = new Range(station.Position, station.Position + tankLength);
 
                 foreach (var coveredRange in coveredRanges)
                 {
-                    // Check whether the start and end point collide with the given range
+                    // Check whether the start and end point collide with the given range.
                     bool containsStart = coveredRange.Contains(newRange.Start);
                     bool containsEnd = coveredRange.Contains(newRange.End);
 
@@ -76,13 +76,26 @@ namespace Urlaubsfahrt
                 if (newRange == Range.NaR) continue;
 
                 coveredRanges.Add(newRange);
+                drivingPlan.Add(station, newRange.Length);
 
-                finalPath.Add((station, newRange.Length));
-
-                if (newRange.Start == 0 && newRange.End == destination) return finalPath;
+                // If range spans the entire path, then the track is covered.
+                if (newRange.Start == 0 && newRange.End == destination)
+                {
+                    return drivingPlan;
+                }
             }
 
             return null;
         }
+
+        public override readonly bool Equals(object? obj) => obj is Track track && Equals(track);
+
+        public readonly bool Equals([AllowNull] Track other) => EqualityComparer<ImmutableList<GasStation>>.Default.Equals(Stops, other.Stops);
+
+        public override readonly int GetHashCode() => HashCode.Combine(Stops);
+
+        public static bool operator ==(Track left, Track right) => left.Equals(right);
+
+        public static bool operator !=(Track left, Track right) => !(left == right);
     }
 }

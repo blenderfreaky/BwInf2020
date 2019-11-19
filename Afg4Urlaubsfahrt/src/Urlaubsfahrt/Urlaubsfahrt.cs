@@ -6,26 +6,17 @@
 
     public static class Urlaubsfahrt
     {
-        [ThreadStatic]
-        internal static double TankDistance;
-
-        [ThreadStatic]
-        internal static double StartFuelLength;
-
         public static Track FindBestTrack(
+            List<GasStation> allStations,
             double startFuelLength,
-            double fuelLength,
-            List<GasStation> allStations)
+            double tankLength)
         {
-            TankDistance = fuelLength;
-            StartFuelLength = startFuelLength;
-
             List<Track> optimalSubTracks = new List<Track> { Track.Empty };
 
             foreach (GasStation station in allStations)
             {
                 optimalSubTracks.RemoveAll(x =>
-                    station.Position - x.Stops.Last().Position < fuelLength);
+                    station.Position - x.LastStop.Position < tankLength);
 
                 if (optimalSubTracks.Count == 0)
                 {
@@ -33,11 +24,12 @@
                 }
 
                 optimalSubTracks.AddRange(optimalSubTracks
-                    .AllMins(x => x.Stops.Count)
-                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station)))
+                    .AllMinsBy(x => x.Stops.Count)
+                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, startFuelLength, tankLength)))
                     .Where(x => x.Price != null)
                     .Select(x => x.Track.With(station)));
             }
+
             return optimalSubTracks.Last();
         }
     }

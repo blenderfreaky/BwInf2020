@@ -39,7 +39,7 @@
         public readonly bool Contains(double position) =>
             position >= Start && position <= End;
 
-        public override readonly bool Equals(object obj) => obj is Range range && Equals(range);
+        public override readonly bool Equals(object? obj) => obj is Range range && Equals(range);
 
         public readonly bool Equals([AllowNull] Range other) => Start == other.Start && End == other.End;
 

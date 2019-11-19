@@ -1,9 +1,5 @@
 \documentclass[a4paper,10pt,ngerman]{scrartcl}
-\usepackage{
-    babel,
-    tabularx,
-    booktabs,
-    }
+\usepackage{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
@@ -160,13 +156,10 @@ literate=%
     \end{tikzpicture}   
 }
 
-\newcommand{\romin}[1]{\rlap{\raisebox{-.5ex}{#1}}}
-
 \begin{document}
 
 \maketitle
 \tableofcontents
-
 
 \section{Lösungsidee}
 
@@ -366,31 +359,29 @@ verwendet wie folgt:
 \item Addiere die Werte aller Blöcke der Permutation, sei dies der Wert der Permutation
 \end{enumerate}
 
-Es wird quasi der Block als Maske für folgende Werte verwendet:
+% \begin{tabular}{|c|c|c|}
+%     $2^0$ & $2^1$ & $2^2$ \\
+%     $2^3$ & $2^4$ & $2^5$ \\
+%     $2^6$ & $2^7$ & $2^8$ \\
+% \end{tabular}
 
-\begin{figure}[ht]
-    \centering
-    \begin{tikzpicture}[scale=\cellsize]
-        \draw (0,0) -- (0,3);
-        \draw (1,0) -- (1,3);
-        \draw (2,0) -- (2,3);
-        \draw (3,0) -- (3,3);
-        \draw (0,0) -- (3,0);
-        \draw (0,1) -- (3,1);
-        \draw (0,2) -- (3,2);
-        \draw (0,3) -- (3,3);
-        \draw (0.5,2.5) node {$2^0$};
-        \draw (1.5,2.5) node {$2^1$};
-        \draw (2.5,2.5) node {$2^2$};
-        \draw (0.5,1.5) node {$2^3$};
-        \draw (1.5,1.5) node {$2^4$};
-        \draw (2.5,1.5) node {$2^5$};
-        \draw (0.5,0.5) node {$2^6$};
-        \draw (1.5,0.5) node {$2^7$};
-        \draw (2.5,0.5) node {$2^8$};
-       \end{tikzpicture}
-    \caption{Faktoren}
+\begin{figure}
+    
+\begin{tabular}{ccc}
+    \hline
+    a & b & c \\
+    \hline
+    a & b & c \\
+    \hline
+    a & b & c \\
+    \hline 
+\end{tabular}
 \end{figure}
+
+
+
+Dabei ist zwar noch viel Raum für Optimierung,
+aber dieser Algorithmus ist ausreichend und O(n).
 
 \subsubsection{Endgültige Duplikat-Eliminierung}
 
