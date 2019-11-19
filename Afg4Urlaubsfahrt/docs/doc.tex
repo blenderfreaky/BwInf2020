@@ -112,14 +112,52 @@ literate=%
 \vspace{0.5cm}
 
 \section{Lösungsidee}
-Die Grundidee der Lösung basiert auf der Tatsache, dass jede ideale Lösung in 2 kleinere jeweils auch ideal lösbare Teilprobleme heruntergebrochen werden kann. In diesem Fall wird für jede Tankstelle iterativ basierend auf den bisher berechneten Wegen der beste Gefunden, wobei die Stationen der Position nach aufsteigend sortiert sind. Auf diese Art und Weise kann jedes Mal die ideale Lösung bestimmt werden. \\
-Die ideale Betankungsmenge für jedes Teilproblem wird errechnet, indem mit dem Preis aufsteigend immer so voll wie es geht getankt wird, wie es geht, es sei denn, dass breits durch eine preiswertere Tankstelle der Bereich betankt ist. 
-
+Im Folgenden wird ''Weg'' als Alias für eine Menge von Tankstellen verwendet, von der man den günstigsten Preis um zur letzten Tankstelle zu kommen, abrufen kann. \\
+Der Algorithmus ist in 2 Teile geteilt, wobei der Nebenalgorithmus den günstigsten Preis eines Weges berechnet und der Hauptalgorithmus den insgesamt besten Weg zum Ziel findet.
+Die Hauptalgorithmus enthält eine Liste, die für jede Tankstelle den besten Weg (die wenigsten Stopps und der geringste Preis) zu ihr enthält. Jeder dieser Wege wird gebildet, indem für jede Tankstelle davor der beste Weg gefunden wird. Aus all diesen bereits berechneten Wegen wird jeweils ein neuer gebildet, indem die aktuell betrachtete Tankstelle angehangen wird, von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind. Die Günstigsten werden mit Hilfe vom Nebenalgorithmus gefunden. Diese Wege werden dann der Liste hinzugefügt und das Verfahren wird für die nächste Tankstelle wiederholt, bis das Ziel erreicht wird. \\
+Der Nebenalgorithmus berechnet den besten Preis für einen Weg. Dafür werden die Tankstellen dem Preis entlang aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
+\newpage
 \section{Umsetzung}
-Der Hauptalgorithmus liegt in der Urlaubsfahrt.cs in der Urlaubsfahrt-Klasse in der Funktion GetTack, die als Argumente die Streckenlänge, das Start-Benzin, die Strecke, die mit einer maximalen Tankfüllung zurückgelegt werden kann und eine Liste aller Tankstellen. Tankstellen sind in GasStation.cs in der Klasse GasStation dargestellt und enthalten den Preis und die Position. Die Klasse Track aus Track.cs  enthält eine Liste an Tankstellen und berechnet für diese Zusammensetzung an Tankstellen den besten Preis, egal an wie vielen Tankstellen gehalten wird. \\
-Die Hauptfunktion, GetTrack, enthält eine Liste, trackParts, die für jede Tankstelle den besten Track zu ihr enthält. Dieser wird gebildet, indem für jede Tankstelle davor der beste Track gefunden wird. Aus all diesen bereits berechneten Tracks wird jeweils ein neuer gebildet, indem , von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind, falls es mehrere sind. Die Berechnung des Preises eines Abschnitts wird im nächsten Abschnitt erklärt. Dieser Lösungsweg findet das richtige Ergebnis, da eine ideale Lösung immer in 2 selbst auch wieder ideal lösbare Teilprobleme zerlegt werden kann. \\
-Der beste Preis eines Wegabschnitts wird mit Hilfe von Abdeckung gelöst. Dafür werden die Tankstellen dem Preis entlang aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
-2
+\subsection{Codestruktur}
+\begin{itemize}
+	\item Urlaubsfahrt.cs
+	\begin{itemize}
+		\item enthält die statische Klasse Urlaubsfahrt, die die statische Methode GetTrack enthält, die der Hauptalgorithmus ist
+		\item GetTrack erhält als Parameter:
+		 \begin{itemize}
+		 	\item die Streckenlänge
+		 	\item das Start-Benzin 
+		 	\item die Streckenlänge
+		 	\item die mit einer maximalen Tankfüllung zurückgelegt werden kann
+		 	\item eine Liste aller Tankstellen
+		\end{itemize}
+	\end{itemize}
+		\item GasStation.cs
+	\begin{itemize}
+		\item enthält die Position und den Benzinpreis einer Tankstelle
+	\end{itemize}
+		\item Track.cs
+	\begin{itemize}
+		\item berechnet für einen Weg den besten Preis, unabhängig von den benötigten Stopps
+		\item enthält eine Liste von allen Tankstellen des Weges
+		\item ein Track kann folgendermaßen gebildet werden:
+		\begin{itemize}
+			\item nur aus einer Tankstelle
+			\item aus einem Track und einer Tankstelle
+			\item weiter existiert ein Empty-Track, der keine Stationen beinhaltet
+		\end{itemize}
+			\item die Methode GetPriceTo ist der Nebenalgorithmus und berechnet entweder bis zu einem Punkt oder zu einer Tankstelle den Preis
+			\item Extensions.cs
+		\begin{itemize}
+			\item enthält Methoden, die generische Klassen oder Interfaces erweitern
+			\begin{itemize}
+				\item AllMins gibt von einem IEnumerable von TSource die Elemente zurück, die bei einer Funktion von TSource zu einem IComparable minimal sind
+			\end{itemize}
+		\end{itemize}
+		
+	\end{itemize}
+\end{itemize}
+\subsubsection{Implementierung}
 \section{Beispiele}
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
 

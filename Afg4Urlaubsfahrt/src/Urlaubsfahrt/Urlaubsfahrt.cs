@@ -24,24 +24,19 @@
 
             foreach (GasStation station in allStations)
             {
-                trackParts.RemoveAll(x => station.Position - x.Stops.Last()
-                .Position < fuelLength &&x != Track.Empty);
+                trackParts.RemoveAll(x => 
+                    station.Position - x.Stops.Last().Position < fuelLength);
 
-                List<Track> possibleParts = trackParts.ToList();
-
-                if (!possibleParts.Count == 0)
+                if (trackParts.Count == 0)
                 {
-                    List<Tuple<Track, float?>> bestTrackTuples = new List<Tuple<Track, float?>>();
-                    possibleParts
-                        .AllMins(x => x.Stops.Count)
-                        .ToList()
-                        .ForEach(
-                            x => bestTrackTuples
-                            .Add(new Tuple<Track, float?>(x, x.GetPriceTo(station))));
-                    bestTrackTuples.RemoveAll(x => x.Item2 == null);
-                    bestTrackTuples.Select(x => x.Item1).ToList().ForEach(x => possibleParts.Add(x.Append(station)));
+                    throw new InvalidOperationException("No solutions found");
                 }
-                else throw new InvalidOperationException("No solutions found");
+
+                trackParts.AddRange(trackParts
+                    .AllMins(x => x.Stops.Count)
+                    .Select(x => (Track: x, Price: x.GetPriceTo(station)))
+                    .Where(x => x.Price != null)
+                    .Select(x => x.Track.Append(station)));
             }
             return trackParts.Last();
         }
