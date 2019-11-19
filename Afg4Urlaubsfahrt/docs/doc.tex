@@ -158,43 +158,47 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 \begin{itemize}
 	\item Urlaubsfahrt.cs
 	\begin{itemize}
-		\item enthält die statische Klasse Urlaubsfahrt, die die statische Methode GetTrack enthält, die der Hauptalgorithmus ist
-		\item GetTrack erhält als Parameter:
+		\item enthält die statische Klasse |Urlaubsfahrt|, die die statische Methode |GetTrack| enthält, die den Hauptalgorithmus ausführt
+		\item |GetTrack| erhält als Parameter:
 		 \begin{itemize}
 		 	\item die Streckenlänge
 		 	\item das Start-Benzin 
-		 	\item die Streckenlänge
 		 	\item die mit einer maximalen Tankfüllung zurückgelegt werden kann
 		 	\item eine Liste aller Tankstellen
 		\end{itemize}
-	\end{itemize}
-		\item GasStation.cs
-	\begin{itemize}
-		\item enthält die Position und den Benzinpreis einer Tankstelle
-	\end{itemize}
-		\item Track.cs
+    \end{itemize}
+    
+    \item GasStation.cs
+    \begin{itemize}
+        \item enthält die Position und den Benzinpreis einer Tankstelle
+    \end{itemize}
+
+    \item Track.cs
 	\begin{itemize}
 		\item berechnet für einen Weg den besten Preis, unabhängig von den benötigten Stopps
 		\item enthält eine Liste von allen Tankstellen des Weges
 		\item ein Track kann folgendermaßen gebildet werden:
 		\begin{itemize}
-			\item nur aus einer Tankstelle
+			\item aus einer Tankstelle
 			\item aus einem Track und einer Tankstelle
-			\item weiter existiert ein Empty-Track, der keine Stationen beinhaltet
+			\item aus nichts; das statische Feld |EmptyTrack| repräsentiert einen komplett leeren Weg
 		\end{itemize}
-			\item die Methode GetPriceTo ist der Nebenalgorithmus und berechnet entweder bis zu einem Punkt oder zu einer Tankstelle den Preis
-			\item Extensions.cs
-		\begin{itemize}
-			\item enthält Methoden, die generische Klassen oder Interfaces erweitern
-			\begin{itemize}
-				\item AllMins gibt von einem IEnumerable von TSource die Elemente zurück, die bei einer Funktion von TSource zu einem IComparable minimal sind
-			\end{itemize}
-		\end{itemize}
-		
-	\end{itemize}
+        \item die Methode |GetPriceTo| führt den Nebenalgorithmus aus, und berechnet entweder bis zu einem arbiträren Punkt, oder zu einer Tankstelle den Preis aus
+    \end{itemize}
+
+    \item Extensions.cs
+    \begin{itemize}
+        \item enthält Methoden, die generische Klassen oder Interfaces erweitern
+        \begin{itemize}
+            \item |AllMins<TSource>| gibt von einem IEnumerable von TSource die Elemente zurück, die bei einer Funktion von TSource zu |IComparable<T>| gleichwertig zum Minimum sind
+        \end{itemize}
+    \end{itemize}
 \end{itemize}
+
 \subsubsection{Implementierung}
+
 \section{Beispiele}
+
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
 
 \section{Quellcode}
