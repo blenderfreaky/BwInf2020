@@ -137,13 +137,17 @@ Wenn nicht wird zur nächsten Tankstelle derr Zuordnung übergegangen. \\
 Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht. \\
 Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl. Danach wird der Preis aller übrigen Wege ermittelt, und von denen wird der billigste ausgewählt. Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle. Dieser wird dann in die Zuordnung eingetragen.
 
-Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Ziel Teil der Zuordnung ist. Dieser ist dann der optimale Weg vom Start zum Ziel.
+Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Streckenende Teil der Zuordnung ist. Dieser ist dann der optimale Weg vom Start zum Streckenende.
 
 \subsection{Nebenalgorithmus}
 
 Der Nebenalgorithmus berechnet den besten Preis für einen gegebenen Weg. 
 
-Dafür werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
+Dafür werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
+
+Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke. In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
+
+Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
 
 \newpage
 
