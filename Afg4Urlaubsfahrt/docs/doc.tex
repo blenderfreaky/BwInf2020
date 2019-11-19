@@ -161,8 +161,7 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 		\item enthält die statische Klasse |Urlaubsfahrt|, die die statische Methode |GetTrack| enthält, die den Hauptalgorithmus ausführt
 		\item |GetTrack| erhält als Parameter:
 		 \begin{itemize}
-		 	\item die Streckenlänge
-		 	\item das Start-Benzin 
+		 	\item die Strecke, die mit dem bereits im Tank vorhandenen Benzin zurückgelegt werden kann
 		 	\item die mit einer maximalen Tankfüllung zurückgelegt werden kann
 		 	\item eine Liste aller Tankstellen
 		\end{itemize}
@@ -196,7 +195,16 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 \end{itemize}
 
 \subsubsection{Implementierung}
-
+\begin{lstlisting}
+GetTrack(float MitDemStartBenzinZurücklegbarerWeg, float MitVollemTankZurücklegbarerWeg, Liste<Tankstelle> AlleTankstellen)
+{
+	Liste<Weg> WegeZuAllenTankstellen = Weg.LeererWeg;
+	FürJede(Tankstelle Station in AlleTankstellen)
+	{
+		WegeZuAllenTankstellen.EntferneAlleFürDieGilt(der Abstand der letzten Tankstelle zu Station > MitVollemTankZurücklegbarerWeg);
+	}
+}
+\end{lstlisting}
 \section{Beispiele}
 
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
