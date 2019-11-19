@@ -112,13 +112,45 @@ literate=%
 \vspace{0.5cm}
 
 \section{Lösungsidee}
-Im Folgenden wird ''Weg'' als Alias für eine Menge von Tankstellen verwendet, von der man den günstigsten Preis um zur letzten Tankstelle zu kommen, abrufen kann. \\
-Der Algorithmus ist in 2 Teile geteilt, wobei der Nebenalgorithmus den günstigsten Preis eines Weges berechnet und der Hauptalgorithmus den insgesamt besten Weg zum Ziel findet.
-Die Hauptalgorithmus enthält eine Liste, die für jede Tankstelle den besten Weg (die wenigsten Stopps und der geringste Preis) zu ihr enthält. Jeder dieser Wege wird gebildet, indem für jede Tankstelle davor der beste Weg gefunden wird. Aus all diesen bereits berechneten Wegen wird jeweils ein neuer gebildet, indem die aktuell betrachtete Tankstelle angehangen wird, von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind. Die Günstigsten werden mit Hilfe vom Nebenalgorithmus gefunden. Diese Wege werden dann der Liste hinzugefügt und das Verfahren wird für die nächste Tankstelle wiederholt, bis das Ziel erreicht wird. \\
-Der Nebenalgorithmus berechnet den besten Preis für einen Weg. Dafür werden die Tankstellen dem Preis entlang aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
+
+\subsection{Definitionen}
+
+Im Folgenden wird ''Weg'' als Alias für eine Menge von zu besuchenden Tankstellen verwendet.
+
+Weiterhin wird mit ''bestem Weg'' oder ''optimalem Weg'', der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen bezeichnet. Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
+
+\subsection{Kernidee}
+
+Der Algorithmus ist in 2 Teile geteilt;
+Der Nebenalgorithmus errechnet den günstigsten Preis, der benötigt ist um einen bestimmten Weg abzufahren.
+
+Der Hauptalgorithmus errechnet, unter Verwendung des Nebenalgorithmus, den optimalen Weg von einer Tankstelle zu einer anderen.
+
+\subsection{Hauptalgorithmus}
+
+Der Hauptalgorithmus baut nach und nach eine Zuordnung auf, die für jede Tankstelle den besten Weg zu ihr enthält.
+
+Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird. 
+Sind die optimalen Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des optimalen Wegs zu dieser beginnen.
+Zuerst werden alle optimale Wege zu den vorherigen Tankstelle durchiteriert. Dabei wird zuerst überprüft von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann. \\
+Wenn nicht wird zur nächsten Tankstelle derr Zuordnung übergegangen. \\
+Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht. \\
+Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl. Danach wird der Preis aller übrigen Wege ermittelt, und von denen wird der billigste ausgewählt. Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle. Dieser wird dann in die Zuordnung eingetragen.
+
+Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Ziel Teil der Zuordnung ist. Dieser ist dann der optimale Weg vom Start zum Ziel.
+
+\subsection{Nebenalgorithmus}
+
+Der Nebenalgorithmus berechnet den besten Preis für einen gegebenen Weg. 
+
+Dafür werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
+
 \newpage
+
 \section{Umsetzung}
+
 \subsection{Codestruktur}
+
 \begin{itemize}
 	\item Urlaubsfahrt.cs
 	\begin{itemize}

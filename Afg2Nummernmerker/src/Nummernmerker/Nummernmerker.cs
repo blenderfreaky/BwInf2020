@@ -48,9 +48,12 @@
                 Math.Min(
                     // Either the number of digits left,
                     merkedNummer.Zeros.Count,
-                    // or the max length of digits
+                    // or the max length of distributions.
                     merkedNummer.MaxSequenceLength)
-                - merkedNummer.MinSequenceLength;
+                // Subtract min sequence length, as distributions smaller than it are not allowed.
+                - merkedNummer.MinSequenceLength
+                // Add one, as min is inclusive.
+                + 1;
 
             if (nextGenerationSize <= 0)
             {
