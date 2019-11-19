@@ -25,20 +25,20 @@
             Console.WriteLine("Insert path:");
 
             string[] lines = File.ReadAllLines(o.File);
-            float usage = int.Parse(lines[0]);
-            float maxFuel = int.Parse(lines[1]);
-            float startFuel = int.Parse(lines[2]);
-            float trackLength = int.Parse(lines[3]);
-            float fuelLength = maxFuel / usage * 100;
+            double usage = int.Parse(lines[0]);
+            double maxFuel = int.Parse(lines[1]);
+            double startFuel = int.Parse(lines[2]);
+            double trackLength = int.Parse(lines[3]);
+            double fuelLength = maxFuel / usage * 100;
 
             List<GasStation> allStations = new List<GasStation>();
             for (int i = 5; i < lines.Length; i++)
             {
-                float[] values = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => float.Parse(x)).ToArray(); //compiler error
+                double[] values = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x)).ToArray(); //compiler error
                 allStations.Add(new GasStation(values[0], values[1]));
             }
 
-            Track track = Urlaubsfahrt.GetTrack(startFuel / usage * 100, fuelLength, allStations);
+            Track track = Urlaubsfahrt.FindBestTrack(startFuel / usage * 100, fuelLength, allStations);
 
             Console.WriteLine(track.ToString());
         }

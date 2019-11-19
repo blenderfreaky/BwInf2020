@@ -2,9 +2,10 @@ namespace Urlaubsfahrt
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
-    public class Track
+    public sealed class Track
     {
         public static Track Empty => new Track();
 
@@ -12,87 +13,73 @@ namespace Urlaubsfahrt
 
         private Track() => Stops = new List<GasStation>();
 
-        public Track(GasStation station) => Stops.Add(station);
-
         private Track(Track t, GasStation s)
         {
             Stops.AddRange(t.Stops);
             Stops.Add(s);
         }
 
-        public Track Append(GasStation s) => new Track(this, s);
+        public Track With(GasStation newEnd) => new Track(this, newEnd);
 
-        public float? GetPriceTo(GasStation s) => GetPriceTo(s.Position);
+        public double? GetCheapestPriceTo(GasStation destination) => GetCheapestPriceTo(destination.Position);
 
-        public float? GetPriceTo(float pos)
+        public double? GetCheapestPriceTo(double destination) =>
+            GetCheapestPathTo(destination).Sum(x => x.Distance * x.Station?.Price);
+
+        public List<(GasStation Station, double Distance)> GetCheapestPathTo(double destination)
         {
-            List<(GasStation Station, float Distance)> path = new List<(GasStation Station, float Distance)>();
-            List<GasStation> allStations = Stops.OrderBy(x => x.PricePerTank).ToList();
+            List<(GasStation Station, double Distance)> finalPath = new List<(GasStation Station, double Distance)>();
 
-            // TODO: Don't use float, use GasStation references
-
-            List<Range> fullBois = new List<Range>();
-            List<float> possiblePaths = new List<float> { pos, Urlaubsfahrt.StartFuelLength };
-
-            fullBois.Add(new Range(0, possiblePaths.Min()));
-
-            foreach (GasStation s in allStations)
+            // If we can get to the destination on our tank already, we don't need to check for other options; it's already free.
+            if (destination < Urlaubsfahrt.StartFuelLength)
             {
-                //TODO: If all covered => break
-                if (!fullBois.TryIndexMinWhere(x => x.End > s.Position, out Range underBorder, out int underBorderIndex))
+                finalPath.Add((null, Urlaubsfahrt.StartFuelLength));
+                return finalPath;
+            }
+
+            finalPath.Add((null, Urlaubsfahrt.StartFuelLength));
+
+            HashSet<Range> coveredRanges = new HashSet<Range>
+            {
+                new Range(0, Urlaubsfahrt.StartFuelLength)
+            };
+
+            foreach (GasStation station in Stops.OrderBy(x => x.Price))
+            {
+                Range newRange = new Range(station.Position, station.Position + Urlaubsfahrt.TankDistance);
+
+                foreach (var coveredRange in coveredRanges)
                 {
-                    Range part = new Range(
-                            s.Position,
-                            Math.Min(s.Position + Urlaubsfahrt.TankDistance, pos));
+                    // Check whether the start and end point collide with the given range
+                    bool containsStart = coveredRange.Contains(newRange.Start);
+                    bool containsEnd = coveredRange.Contains(newRange.End);
 
-                    fullBois.Add(part);
-                    path.Add((s, part.End - part.Start));
-
-                    continue;
-                }
-
-                if (underBorder.Start <= s.Position && underBorder.End >= s.Position + Urlaubsfahrt.TankDistance)
-                {
-                    continue;
-                }
-
-                if (underBorder.Start > s.Position)
-                {
-                    fullBois.RemoveAt(underBorderIndex);
-
-                    fullBois.Add(
-                        new Range(s.Position,
-                        underBorder.End));
-                    path.Add((s, underBorder.Start - s.Position));
-                }
-                else
-                {
-                    fullBois.RemoveAt(underBorderIndex);
-
-                    if (fullBois.TryIndexMinWhere(x => x.Start > underBorder.End, out Range upperBorder, out int upperBorderIndex))
+                    // If the new range is fully contained by a cheaper path we can stop.
+                    if (containsStart && containsEnd)
                     {
-                        if (upperBorder.Start <= s.Position + Urlaubsfahrt.TankDistance)
-                        {
-                            fullBois.RemoveAt(upperBorderIndex);
-                            fullBois.Add(underBorder);
-                            path.Add((s, upperBorder.Start - underBorder.End));
-                        }
-
-                        continue;
+                        newRange = Range.NaR;
+                        break;
                     }
 
-                    float end = Math.Min(s.Position + Urlaubsfahrt.TankDistance, pos);
-                    fullBois.Add(
-                        new Range(
-                            underBorder.Start,
-                            end));
-                    path.Add((s, end - underBorder.End));
+                    coveredRanges.Remove(coveredRange);
+
+                    if (containsStart)
+                    {
+                        newRange = new Range(coveredRange.Start, newRange.End);
+                    }
+                    else if (containsEnd)
+                    {
+                        newRange = new Range(newRange.Start, coveredRange.End);
+                    }
                 }
 
-                if (fullBois[0].Start == 0 && fullBois[0].End == pos)
-                {
-                    return path.Select(x => x.Station.PricePerTank * x.Distance).Sum();
-                }
+                if (newRange == Range.NaR) continue;
+
+                coveredRanges.Add(newRange);
+
+                finalPath.Add((station, newRange.Length));
+
+                if (newRange.Start == 0 && newRange.End == destination) return finalPath;
             }
 
             return null;

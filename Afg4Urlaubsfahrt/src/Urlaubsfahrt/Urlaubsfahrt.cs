@@ -7,38 +7,38 @@
     public static class Urlaubsfahrt
     {
         [ThreadStatic]
-        internal static float TankDistance;
+        internal static double TankDistance;
 
         [ThreadStatic]
-        internal static float StartFuelLength;
+        internal static double StartFuelLength;
 
-        public static Track GetTrack(
-            float startFuelLength,
-            float fuelLength,
+        public static Track FindBestTrack(
+            double startFuelLength,
+            double fuelLength,
             List<GasStation> allStations)
         {
             TankDistance = fuelLength;
             StartFuelLength = startFuelLength;
 
-            List<Track> trackParts = new List<Track> { Track.Empty };
+            List<Track> optimalSubTracks = new List<Track> { Track.Empty };
 
             foreach (GasStation station in allStations)
             {
-                trackParts.RemoveAll(x => 
+                optimalSubTracks.RemoveAll(x =>
                     station.Position - x.Stops.Last().Position < fuelLength);
 
-                if (trackParts.Count == 0)
+                if (optimalSubTracks.Count == 0)
                 {
                     throw new InvalidOperationException("No solutions found");
                 }
 
-                trackParts.AddRange(trackParts
+                optimalSubTracks.AddRange(optimalSubTracks
                     .AllMins(x => x.Stops.Count)
-                    .Select(x => (Track: x, Price: x.GetPriceTo(station)))
+                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station)))
                     .Where(x => x.Price != null)
-                    .Select(x => x.Track.Append(station)));
+                    .Select(x => x.Track.With(station)));
             }
-            return trackParts.Last();
+            return optimalSubTracks.Last();
         }
     }
 }
