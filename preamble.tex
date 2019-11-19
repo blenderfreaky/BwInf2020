@@ -1,0 +1,121 @@
+\documentclass[a4paper,10pt,ngerman]{scrartcl}
+\usepackage{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
+
+% Die nächsten drei Felder bitte anpassen:
+\newcommand{\Aufgabe}{Aufgabe 4: Urlaubsfahrt} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
+\newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
+\newcommand{\Namen}{Johannes von Stoephasius} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+
+% Fonts
+\usepackage{lmodern}
+\usepackage{inconsolata}
+%\usepackage{courier}
+
+% Kopf- und Fußzeilen
+\usepackage{scrlayer-scrpage, lastpage}
+\setkomafont{pageheadfoot}{\large\textrm}
+\lohead{\Aufgabe}
+\rohead{Team-ID: \TeamID}
+\cfoot*{\thepage{}/\pageref{LastPage}}
+
+% Position des Titels
+\usepackage{titling}
+\setlength{\droptitle}{-1.0cm}
+
+% Für mathematische Befehle und Symbole
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Für Bilder
+\usepackage{graphicx}
+
+% Für Algorithmen
+\usepackage{algpseudocode}
+
+% Für Quelltext
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{
+  keywordstyle=\color{blue},commentstyle=\color{mygreen},
+  stringstyle=\color{mymauve},rulecolor=\color{black},
+  basicstyle=\footnotesize\ttfamily,numberstyle=\tiny\color{mygray},
+  captionpos=b, % sets the caption-position to bottom
+  keepspaces=true, % keeps spaces in text
+  numbers=left, numbersep=5pt, showspaces=false,showstringspaces=true,
+  showtabs=false, stepnumber=2, tabsize=2, title=\lstname
+}
+\lstdefinelanguage{JavaScript}{ % JavaScript ist als einzige Sprache noch nicht vordefiniert
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  sensitive=true
+}
+
+%\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
+\definecolor{bluekeywords}{rgb}{0,0,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.64,0.08,0.08}
+\definecolor{xmlcomments}{rgb}{0.5,0.5,0.5}
+\definecolor{types}{rgb}{0.17,0.57,0.68}
+\definecolor{background}{rgb}{0.95,0.95,0.95}
+
+\lstdefinelanguage{[Sharp]C}{ % Better C# highlighting
+language=[Sharp]C,
+backgroundcolor=\color{background},
+captionpos=b,
+numbers=left, %Nummerierung
+numberstyle=\tiny, % kleine Zeilennummern
+frame=lrtb,
+showspaces=false,
+showtabs=false,
+breaklines=true,
+showstringspaces=false,
+breakatwhitespace=true,
+escapeinside={(*@}{@*)},
+commentstyle=\color{greencomments},
+morekeywords={partial, var, value, get, set},
+keywordstyle=\color{bluekeywords},
+stringstyle=\color{redstrings},
+basicstyle=\ttfamily\small,
+literate=%
+    {Ö}{{\"O}}1
+    {Ä}{{\"A}}1
+    {Ü}{{\"U}}1
+    {ß}{{\ss}}1
+    {ü}{{\"u}}1
+    {ä}{{\"a}}1
+    {ö}{{\"o}}1
+    {~}{{\textasciitilde}}1
+}
+
+% Diese beiden Pakete müssen zuletzt geladen werden
+%\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+
+% Daten für die Titelseite
+\title{\textbf{\Huge\Aufgabe}}
+\author{\LARGE Team-ID: \LARGE \TeamID \\\\
+	    \LARGE Team-Name: \LARGE \TeamName \\\\
+	    \LARGE Bearbeiter dieser Aufgabe: \\ 
+	    \LARGE \Namen\\\\}
+\date{\LARGE\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\begin{lstlisting}[language=[Sharp]C]
+CODE
+\end{lstlisting}
+
+\end{document}
