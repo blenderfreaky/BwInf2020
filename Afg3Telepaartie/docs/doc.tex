@@ -5,7 +5,7 @@
 \usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
 
 % Die nächsten drei Felder bitte anpassen:
-\newcommand{\Aufgabe}{Aufgabe 4: Urlaubsfahrt} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\Aufgabe}{Aufgabe 3: Telepaartie} % Aufgabennummer und Aufgabennamen angeben
 \newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
 \newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
 \newcommand{\Namen}{Johannes von Stoephasius} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
@@ -75,9 +75,7 @@
 \vspace{0.5cm}
 
 \section{Lösungsidee}
-Die Grundidee der Lösung basiert auf der Tatsache, dass jede ideale Lösung in 2 kleinere jeweils auch ideal lösbare Teilprobleme heruntergebrochen werden kann. In diesem Fall wird für jede Tankstelle iterativ basierend auf den bisher berechneten Wegen der beste Gefunden, wobei die Stationen der Position nach aufsteigend sortiert sind. Auf diese Art und Weise kann jedes Mal die ideale Lösung bestimmt werden. \\
-Die ideale Betankungsmenge für jedes Teilproblem wird errechnet, indem mit dem Preis aufsteigend immer so voll wie es geht getankt wird, wie es geht, es sei denn, dass breits durch eine preiswertere Tankstelle der Bereich betankt ist. 
-
+Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zum 
 \section{Umsetzung}
 Der Hauptalgorithmus liegt in der Urlaubsfahrt.cs in der Urlaubsfahrt-Klasse in der Funktion GetTack, die als Argumente die Streckenlänge, das Start-Benzin, die Strecke, die mit einer maximalen Tankfüllung zurückgelegt werden kann und eine Liste aller Tankstellen. Tankstellen sind in GasStation.cs in der Klasse GasStation dargestellt und enthalten den Preis und die Position. Die Klasse Track aus Track.cs  enthält eine Liste an Tankstellen und berechnet für diese Zusammensetzung an Tankstellen den besten Preis, egal an wie vielen Tankstellen gehalten wird. \\
 Die Hauptfunktion, GetTrack, enthält eine Liste, trackParts, die für jede Tankstelle den besten Track zu ihr enthält. Dieser wird gebildet, indem für jede Tankstelle davor der beste Track gefunden wird. Aus all diesen bereits berechneten Tracks wird jeweils ein neuer gebildet, indem , von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind, falls es mehrere sind. Die Berechnung des Preises eines Abschnitts wird im nächsten Abschnitt erklärt. Dieser Lösungsweg findet das richtige Ergebnis, da eine ideale Lösung immer in 2 selbst auch wieder ideal lösbare Teilprobleme zerlegt werden kann. \\
