@@ -5,14 +5,12 @@
 \usepackage[ngerman]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-%\usepackage{babel}
+\usepackage{lmodern}
+\usepackage{inconsolata}
 
 \usepackage{color}
 \usepackage{listings}
 \usepackage{courier}
-
-\usepackage[T1]{fontenc}
-\usepackage{inconsolata}
 
 %\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
 \definecolor{bluekeywords}{rgb}{0,0,1}
@@ -50,6 +48,7 @@ literate=%
     {ö}{{\"o}}1
     {~}{{\textasciitilde}}1
 }
+
 
 \begin{document}
 
@@ -91,10 +90,21 @@ Hierbei werden bereits errechnete Ergebnisse global gespeichert, sodass bei mehr
 
 \section{Umsetzung}
 
-Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit .NET Core 3.1 entschieden.
-Der sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee); die Zentrale Methode die den Algorithmus ausführt hat die Signatur \textit{NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)}. Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen der einzelnen aufgeteilten Segmente.
+Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit
+.NET Core 3.1 entschieden.
+Der Sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee);
+die Zentrale Methode die den Algorithmus ausführt hat die Signatur
+\textit{NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)}.
+Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen
+der einzelnen aufgeteilten Segmente.
 
-Für das speicheren alter Ergebnisse wird ein struct \textit{MerkedNummer} verwendet, welches die Eingaben für die Methode zwischenspeichert, und ein struct \textit{NummerMerkingSolution}, welches die Ergebnisse zwischenspeichert. Diese werden in einem \textit{System.Collections.Generics.Dictionary`2} aufeinander gemappt, sodass immer einer \textit{MerkedNummer} eine \textit{NummerMerkingSolution} zugeordnet ist.
+Für das speicheren alter Ergebnisse wird ein struct \textit{MerkedNummer}
+verwendet, welches die Eingaben für die Methode zwischenspeichert,
+und ein struct \textit{NummerMerkingSolution}, welches die Ergebnisse
+zwischenspeichert. Diese werden in einem
+\textit{System.Collections.Generics.Dictionary`2} aufeinander gemappt,
+sodass immer einer \textit{MerkedNummer} eine \textit{NummerMerkingSolution}
+zugeordnet ist.
 
 Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes Array zurückgegeben, sondern eine Instanz des structs \textit{System.ArraySegment`1}. Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array, womit unnötige Array-Allocations verhindert werden, was Kosten des Garbage collectors spart.
 
