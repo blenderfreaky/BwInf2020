@@ -1,12 +1,8 @@
 ﻿namespace Nummernmerker.CLI
 {
-    using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Configs;
     using BenchmarkDotNet.Running;
     using CommandLine;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -49,36 +45,48 @@
 
         private static void RunWithOptions(Options o)
         {
-            if (o.Benchmark)
-            {
-                NummernmerkerBenchmark.Length = o.BenchmarkForLength;
-                NummernmerkerBenchmark.ZeroPropability = o.BenchmarkZeroPropability;
-                BenchmarkRunner.Run<NummernmerkerBenchmark>();
-            }
             if (o.Number.HasValue)
             {
-                Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength);
+                Run(o.Number.ToString(), o.MinSequenceLength, o.MaxSequenceLength, o.Benchmark);
             }
-            if (o.NumberString != null)
+            else if (o.NumberString != null)
             {
-                Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength);
+                Run(o.NumberString, o.MinSequenceLength, o.MaxSequenceLength, o.Benchmark);
             }
-            if (o.File != null)
+            else if (o.File != null)
             {
                 foreach (var line in File.ReadAllLines(o.File))
                 {
-                    Run(line, o.MinSequenceLength, o.MaxSequenceLength);
+                    Run(line, o.MinSequenceLength, o.MaxSequenceLength, o.Benchmark);
                 }
+            }
+            else if (o.Benchmark && o.BenchmarkForLength > 0)
+            {
+                NummernmerkerBenchmark.Length = o.BenchmarkForLength;
+                NummernmerkerBenchmark.ZeroPropability = o.BenchmarkZeroPropability;
+                NummernmerkerBenchmark.MinSequenceLength = o.MinSequenceLength;
+                NummernmerkerBenchmark.MaxSequenceLength = o.MaxSequenceLength;
+                BenchmarkRunner.Run<NummernmerkerBenchmark>();
             }
             else
             {
-                Console.WriteLine("Either --number or --numberS need to be set, or --benchmark needs to be true.");
+                Console.WriteLine("Either --number, --numberS or --file need to be set, or --benchmark needs to be true.");
             }
         }
 
-        private static void Run(string numberText, int minSequenceLength, int maxSequenceLength)
+        private static void Run(string numberText, int minSequenceLength, int maxSequenceLength, bool bench)
         {
-            RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000); // Very big numbers produce a stack overflow
+            if (!bench)
+            {
+                RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000); // Very big numbers produce a stack overflow
+            }
+            else
+            {
+                NummernmerkerBenchmark.GlobalText = numberText.Select(x => x == '0').ToArray();
+                NummernmerkerBenchmark.MinSequenceLength = minSequenceLength;
+                NummernmerkerBenchmark.MaxSequenceLength = maxSequenceLength;
+                BenchmarkRunner.Run<NummernmerkerBenchmark>();
+            }
         }
 
         private static void RunWithStackSize(Action action, int stackSize)

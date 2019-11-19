@@ -52,7 +52,7 @@
 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                foreach (var rom in Romino.GetRominosUntilSize(options.Size)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Length);
+                foreach (var rom in Romino.GetRominosUntilSize(options.Size)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Count);
                 stopwatch.Stop();
                 Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
 
@@ -84,12 +84,12 @@
                 {
                     lock (_padlockRunWithOptions)
                     {
-                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks ({rominoSizeClass.Rominos.Length}) \n"
+                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks ({rominoSizeClass.Rominos.Count}) \n"
                             + (options.TargetFilePath == null ? "\tLoading..." : string.Empty));
 
                         if (options.TargetFilePath != null)
                         {
-                            ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size} ({rominoSizeClass.Rominos.Length})");
+                            ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size} ({rominoSizeClass.Rominos.Count})");
                         }
 
                         string[][] text = rominoSizeClass.Rominos

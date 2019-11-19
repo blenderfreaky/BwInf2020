@@ -1,18 +1,15 @@
 ﻿namespace Nummernmerker
 {
     using JM.LinqFaster;
-    using MoreLinq;
-    using MoreLinq.Experimental;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public static class Nummernmerker
     {
         private static readonly Dictionary<MerkedNummer, NummerMerkingSolution> MerkedNummers =
             new Dictionary<MerkedNummer, NummerMerkingSolution>();
 
-        public static void ClearCache() => MerkedNummers.Clear();   
+        public static void ClearCache() => MerkedNummers.Clear();
 
         #region Overloads
         public static IEnumerable<string> MerkNummernToText(long number, int minSequenceLength, int maxSequenceLength) =>

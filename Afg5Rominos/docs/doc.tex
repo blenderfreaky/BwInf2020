@@ -1,5 +1,9 @@
 \documentclass[12pt]{article}
 
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
@@ -9,10 +13,11 @@
 \newcommand{\printwhitecell}[2][]{\node[draw=gray, semithick, fill=white, minimum width=\cellsize cm, minimum height=\cellsize cm] at #2 {#1};} 
 \newcommand{\printblackcell}[1]{\node[draw=gray, semithick, fill=black, minimum width=\cellsize cm, minimum height=\cellsize cm] at #1 {};} 
 \newcommand{\printcircle}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/2);} 
-\newcommand{\printblackcircle}[1]{\draw[black, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
-\newcommand{\printwhitecircle}[1]{\draw[white, semithick, fill=gray] #1 circle (\circlesize cm/8);} 
+\newcommand{\printblackcircle}[1]{\draw[black, semithick, fill=black] #1 circle (\circlesize cm/8);} 
+\newcommand{\printwhitecircle}[1]{\draw[white, semithick, fill=white] #1 circle (\circlesize cm/8);}
+%\newcommand{\printdots}[1]{\draw[gray, semithick, fill=gray] #1 circle (\circlesize cm/4);} 
 
-\newcommand{\printcell}[2]{%
+\newcommand{\printcell}[2]{%1
     \if#1w%
         \printwhitecell{#2}%
     \else%
@@ -25,10 +30,12 @@
             \else%
                 \if#1C%
                     \printblackcell{#2}%
-                    \printcircle{#2}%
+                    \printwhitecircle{#2}%
                 \else
                 	\if#1d%
-                	\else
+                    \printwhitecell{#2}%
+                    \printblackcircle{#2}%
+                    \else%
                     \printwhitecell[#1]{#2}%
                     \fi%
                 \fi%
@@ -212,18 +219,18 @@ Es lässt sich hier erkennen, das die Existenz einer echten Diagonale nicht zwin
 }}
 
 Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt. 
-Bei den Mööglichen Block-additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Block-additionsmöglichkeiten entfernt:
+Bei den Möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Block-Additionsmöglichkeiten entfernt:
 
 \printmatrix{}{{
     {c,c,c,w},
-    {c,b,w,c},
-    {c,w,b,c},
+    {c,C,d,c},
+    {c,d,C,c},
     {w,c,c,c}%
 }}
 
 Diese 4 beschützten Blöcke werden auch bei Spiegelungen, Verschiebungen und Rotationen mitverfolgt, sodass diese eine Diagonale immer besteht.
 
-\subsection{Eliminierung von Duplikaten}
+\subsection{Eliminierung von Duplikaten} \label{dupl}
 
 Zur Eliminierung von Duplikaten werden die Rominos zuerst eindeutig orientiert, um Vergleiche zwischen gleichen, aber transformierten Rominos zu erleichtern.
 
@@ -231,33 +238,446 @@ Zur Eliminierung von Duplikaten werden die Rominos zuerst eindeutig orientiert, 
 
 Die Verschiebung wird eliminiert durch Verschiebung des Rominos in die linke obere Ecke des Gitters; also wird der Block mit der geringsten x-Koordinate auf x=0 verschoben, und der Block mit der geringsten y-Koordinate auf y=0.
 
-\subsubsection{Rotation und Spiegelung}
+\subsubsection{Rotation und Spiegelung} \label{uniqueCode}
 
-Um Rotation und Spiegelung eines Rominos zu eliminieren, werden zuerst alle seine Permutationen (also alle Kombinationen von Rotation und Spiegelung) ermittelt, und denen wird ein eindeutiger Wert zugewiesen. Daraufhin wird das Romino mit dem niedrigstem eindeutigem Wert ausgewählt. Die Bestimmung dieses eindeutigen Werts habe ich einen trivialen Algorithmus verwendet wie folgt:
+Um Rotation und Spiegelung eines Rominos zu eliminieren,
+werden zuerst alle seine Permutationen
+(also alle Kombinationen von Rotation und Spiegelung)
+ermittelt, und denen wird ein eindeutiger Wert zugewiesen.
+Daraufhin wird das Romino mit dem höchsten dieser eindeutigen Werte ausgewählt.
+Hierbei ist es eigentlich egal, ob der niedrigste oder höchste Wert genommen
+wird, solange das Ergebnis eindeutig ist.
+
+Die Bestimmung dieses eindeutigen Werts haben wir einen trivialen Algorithmus
+verwendet wie folgt:
 
 \begin{enumerate}
 \item Nehme einen Block b aus der Permutation des Rominos
 \item Seien die Koordinaten (x, y) die Koordinaten des Blocks b, wobei die minimale x-Koordinate und die minimale y-Koordinate aus allen Blöcken der Permutation 0 ist.
-\item Man weise dem Block b den Wert \(2^{(y * \text{<Anzahl an Blöcken>)} + x}\) zu
+\item Man weise dem Block b den Wert \(2^{(y * <\text{Anzahl an Blöcken}>) + x}\) zu
 \item Addiere die Werte aller Blöcke der Permutation, sei dies der Wert der Permutation
 \end{enumerate}
 
-Dabei ist zwar noch viel Raum für Optimierung, aber dieser Algorithmus ist ausreichend und O(n).
+Dabei ist zwar noch viel Raum für Optimierung,
+aber dieser Algorithmus ist ausreichend und O(n).
 
 \subsubsection{Endgültige Duplikat-Eliminierung}
 
-Zum endgültigen eliminieren der Duplikate, werden zuerst alle Rominos wie oben beschrieben
+Zum endgültigen eliminieren der Duplikate werden zuerst alle Rominos
+wie oben beschrieben orientiert, dann werden die eindeutigen Werte dieser
+verglichen, um schnell Gleichheit zu ermitteln. Durch Verwendung dieser
+Vergleichsmethode lassen sich schnell Duplikate entfernen.
+
+\newpage
 
 \subsubsection{Beispiel}
 
+\paragraph{Ausgangsromino}
+
+\printmatrix{}{{
+    {c,c,c,w},
+    {c,C,d,c},
+    {c,d,C,c},
+    {w,c,c,c}%
+}}
+
+\paragraph{Nächste Rominos}
+
+\begin{center}
+
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,b,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,b,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {b,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,b},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,w},
+        {b,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,w},
+        {w,w,b,b},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,b,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,b,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,b}%
+    }}
+    \end{minipage}
+
+\end{center}
+
+\paragraph{Verschiebung eliminieren}
+
+\begin{center}
+
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,b,w,w},
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {b,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,w,w,w},
+        {b,w,b,w},
+        {w,b,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {w,b,w,w},
+        {b,w,b,w},
+        {w,w,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,b,w},
+        {w,w,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,w,w},
+        {b,w,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,b,w,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+    \printmatrix{}{{
+        {b,w,w,w},
+        {w,b,w,w},
+        {w,w,b,w},
+        {w,w,w,w}%
+    }}
+    \end{minipage}
+
+\end{center}
+
+\paragraph{Rotation und Spiegelung eliminieren}
+
+
+Ausgehend von dem Romino;
+
+\begin{center}
+
+    \printmatrix{}{{
+        {b,w,w},
+        {w,b,w},
+        {w,w,b}%
+    }}
+
+\end{center}
+
+werden folgende Permutationen festgestellt:
+
+\begin{center}
+
+    \begin{minipage}{0.4\textwidth}
+        \center
+        \printmatrix{Permutation 1}{{
+            {b,w,w},
+            {w,b,w},
+            {w,w,b}%
+        }}
+        \vspace{-0.2cm}
+        \[Wert_1 = 2^0 + 2^4 + 2^8 = 273\]
+    \end{minipage}
+    \begin{minipage}{0.4\textwidth}
+        \center
+        \printmatrix{Permutation 2}{{
+            {w,w,b},
+            {w,b,w},
+            {b,w,w}%
+        }}
+        \vspace{-0.2cm}
+        \[Wert_2 = 2^2 + 2^4 + 2^6 = 84\]
+    \end{minipage}
+
+\end{center}
+
+Hierbei ist \(Wert_2 = 84 < 273 = Wert_1\). Da Permutation 1 mit \(Wert_1\)
+den höchsten Wert hat, wird Permutation 1 als die eindeutige Rotierung
+festgelegt.
+
+Analog auf alle Rominos angewendet ergibt sich:
+
+\begin{center}
+
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{273}{{
+            {b,w,w,w},
+            {w,b,w,w},
+            {w,w,b,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {b,w,w,w},
+            {w,b,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,b,w,w},
+            {b,w,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {b,w,w,w},
+            {w,b,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,b,w,w},
+            {b,w,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,b,w,w},
+            {b,w,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {b,w,w,w},
+            {w,b,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,b,w,w},
+            {b,w,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {b,w,w,w},
+            {w,b,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{273}{{
+            {b,w,w,w},
+            {w,b,w,w},
+            {w,w,b,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+
+\end{center}
+
+Nun lassen sich trivialerweise die Duplikate eliminieren;
+
+\begin{center}
+
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{273}{{
+            {b,w,w,w},
+            {w,b,w,w},
+            {w,w,b,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {b,w,w,w},
+            {w,b,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,b,w,w},
+            {b,w,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+
+\end{center}
+
+Über den gesamten Prozess hinweg wird auch die geschützte Diagonale mitverfolgt,
+bei den 3er-Rominos ist sie wie folgt plaziert:
+
+\begin{center}
+
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{273}{{
+            {b,w,w,w},
+            {w,C,d,w},
+            {w,d,C,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{49}{{
+            {C,d,w,w},
+            {d,C,b,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+    \begin{minipage}{0.18\textwidth}
+        \printmatrix{42}{{
+            {w,C,d,w},
+            {b,d,C,w},
+            {w,w,w,w},
+            {w,w,w,w}%
+        }}
+    \end{minipage}
+
+\end{center}
 
 \section{Umsetzung}
 
-Zur Umsetzung habe ich den obigen Algorithmus in C# 8.0 mit .NET Core 3.0 implementiert.
+Zur Umsetzung haben wir den obigen Algorithmus in C\# 8.0 mit
+.NET Core 3.0 implementiert.
 
-Zur Darstellung von Rominos habe ich ein struct definiert, welches eine Array von den Koordinaten der Blöcke, ein Array von den Koordinaten möglicher Block-Additionen, den eindeutigen Wert, und die linken-oberen Koordinaten der 4 geschützten Positionen der geschützten Diagonale.
+Die Rominos werden in Form eines structs \textit{Romino} gespeichert. das
+struct beinhaltet
 
-
-%TODO IN CODE: Dont instantiate permutations, make them lazy
+\begin{enumerate}
+    \item \textit{Vector2Int[] Blocks} - 
+        Das Array mit allen Blöcken des Rominos.
+    \item \textit{List<Vector2Int> PossibleExtensions} - 
+        Die Liste mit allen Block-Additionsmöglichkeiten.
+        Hierbei ist zu bemerken, dass die Größe der Liste konstant bleibt;
+        es wird hier eine Liste statt einem Array verwendet, da bei der
+        Erstellung die Größe unbekannt ist, und die Liste noch in ein Array
+        zu konvertieren unnötig Rechenzeit kostet.
+    \item \textit{Vector2Int DiagonalRoot} - Die linke obere Ecke der 
+        geschützten Diagonale.
+    \item \textit{Vector2Int Max} - Die rechte untere Ecke des Rominos.
+        Verwendet für korrigieren der Verschiebung ohne über alle Blöcke zu
+        iterieren.
+    \item \textit{BitBuffer512 \_uniqueCode} - Der eindeutige Wert, errechnet
+        wie in \ref{uniqueCode}.
+\end{enumerate}
 
 \end{document}

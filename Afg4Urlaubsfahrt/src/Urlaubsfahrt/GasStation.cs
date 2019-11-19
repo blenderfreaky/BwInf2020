@@ -4,11 +4,11 @@ namespace Urlaubsfahrt
     {
         public GasStation(float pricePerVolumeInEuroPerLiter, float position)
         {
-            PricePerVolumeInEuroPerLiter = pricePerVolumeInEuroPerLiter;
+            PricePerTank = pricePerVolumeInEuroPerLiter;
             Position = position;
         }
 
-        public float PricePerVolumeInEuroPerLiter { get; }
+        public float PricePerTank { get; }
         public float Position { get; }
     }
 }

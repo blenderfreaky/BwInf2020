@@ -7,7 +7,7 @@
     public static class Urlaubsfahrt
     {
         [ThreadStatic]
-        internal static float FuelLength;
+        internal static float TankDistance;
 
         [ThreadStatic]
         internal static float StartFuelLength;
@@ -17,7 +17,7 @@
             float fuelLength,
             List<GasStation> allStations)
         {
-            FuelLength = fuelLength;
+            TankDistance = fuelLength;
             StartFuelLength = startFuelLength;
 
             List<Track> trackParts = new List<Track> { Track.Empty };
