@@ -179,7 +179,7 @@ Da Rominos mindestens zwei Steine haben müssen um eine Diagonale zu besitzen, i
 
 Um alle n-Rominos für ein beliebiges n zu finden, würde man den obigen Algorithmus verwenden um aus dem 2er-Romino alle 3-Rominos zu folgern, dann aus diesen alle 4-Rominos etc. bis man alle n-Rominos errechnet hat.
 
-\subsection{Hinzufügen von Blöcken}
+\subsection{Hinzufügen von Blöcken} \label{addBlocks}
 
 Um Blöcke hinzuzufügen, werden zuerst die Stellen ermittelt, wo Blöcke angefügt werden können, sodass das Romino zusammenhängend bleibt. Hierfür werden die Nachbarn jedes Blocks des Rominos ermittelt, daraufhin werden Duplikate und bereits belegte Blöcke eliminiert.
 
@@ -659,14 +659,14 @@ bei den 3er-Rominos ist sie wie folgt plaziert:
 Zur Umsetzung haben wir den obigen Algorithmus in C\# 8.0 mit
 .NET Core 3.0 implementiert.
 
-Die Rominos werden in Form eines structs \textit{Romino} gespeichert. das
-struct beinhaltet
+Die Rominos werden in Form eines readonly structs \textit{Romino} gespeichert.
+Das struct beinhaltet
 
 \begin{enumerate}
     \item \textit{Vector2Int[] Blocks} - 
         Das Array mit allen Blöcken des Rominos.
     \item \textit{List<Vector2Int> PossibleExtensions} - 
-        Die Liste mit allen Block-Additionsmöglichkeiten.
+        Die Liste mit allen \\ Block-Additionsmöglichkeiten.
         Hierbei ist zu bemerken, dass die Größe der Liste konstant bleibt;
         es wird hier eine Liste statt einem Array verwendet, da bei der
         Erstellung die Größe unbekannt ist, und die Liste noch in ein Array
@@ -679,5 +679,27 @@ struct beinhaltet
     \item \textit{BitBuffer512 \_uniqueCode} - Der eindeutige Wert, errechnet
         wie in \ref{uniqueCode}.
 \end{enumerate}
+
+Die Hauptmethode ist die statische Methode\\
+\textit{IEnumerable<(int Size, List<Romino> Rominos)> Romino.GetRominosUntilSize(int size)}
+welche für eine gegebene Größe alle Rominos aller Größen, bis zu dieser
+Größe ausgibt. Diese ruft intern parallelisiert für alle Rominos aus einer
+Generation die Methode \textit{IEnumerable<Romino> Romino.AddOneNotUnique()}
+auf.
+Diese Methode errechnet nach dem Verfahren aus \ref{addBlocks} die
+Rominos der nächsten Generation.
+Danach werden nach dem Verfahren aus \ref{dupl} die Duplikate entfernt.
+
+Die eindeutigen Werte aus \ref{uniqueCode} werden hierbei berechnet, ohne
+dass der Romino modifiziert wird, alle Modifikationen die an dem Romino
+gemacht werden müssten, um den Wert einer Permutation zu bestimmen, werden
+beim orientieren direkt in der Ausrechnung angewendet, ohne das Romino zu
+modifizieren. Erst wenn die eindeutige Rotation nach \ref{dupl} gefunden
+wurde, wird das Romino so modifiziert, dass es als diese Permutation
+dargestellt wird.
+
+\section{Quellcode}
+
+
 
 \end{document}
