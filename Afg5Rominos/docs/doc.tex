@@ -1,16 +1,44 @@
-\documentclass[12pt]{article}
-
-\usepackage[margin=2.5cm]{geometry}
-
-\usepackage[ngerman]{babel}
+\documentclass[a4paper,10pt,ngerman]{scrartcl}
+\usepackage{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
+
+% Die nächsten drei Felder bitte anpassen:
+\newcommand{\Aufgabe}{Aufgabe 5: Rominos} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
+\newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
+\newcommand{\Namen}{Nikolas Kilian \& Johannes von Stoephasius} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+
+% Fonts
 \usepackage{lmodern}
 \usepackage{inconsolata}
+%\usepackage{courier}
 
-\usepackage{xcolor}
+% Kopf- und Fußzeilen
+\usepackage{scrlayer-scrpage, lastpage}
+\setkomafont{pageheadfoot}{\large\textrm}
+\lohead{\Aufgabe}
+\rohead{Team-ID: \TeamID}
+\cfoot*{\thepage{}/\pageref{LastPage}}
+
+% Position des Titels
+\usepackage{titling}
+\setlength{\droptitle}{-1.0cm}
+
+% Für mathematische Befehle und Symbole
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Für Bilder
+\usepackage{graphicx}
+
+% Für Algorithmen
+\usepackage{algpseudocode}
+
+% Für Quelltext
 \usepackage{listings}
-\usepackage{courier}
+\usepackage{xcolor}
 
 %\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
 \definecolor{bluekeywords}{rgb}{0,0,1}
@@ -20,8 +48,8 @@
 \definecolor{types}{rgb}{0.17,0.57,0.68}
 \definecolor{background}{rgb}{0.95,0.95,0.95}
 
-\usepackage{listings}
-\lstset{language=[Sharp]C,
+\lstdefinelanguage{CSharp}{ % Better C# highlighting
+language=[Sharp]C,
 backgroundcolor=\color{background},
 captionpos=b,
 numbers=left, %Nummerierung
@@ -38,7 +66,6 @@ morekeywords={partial, var, value, get, set},
 keywordstyle=\color{bluekeywords},
 stringstyle=\color{redstrings},
 basicstyle=\ttfamily\small,
-extendedchars=true,
 literate=%
     {Ö}{{\"O}}1
     {Ä}{{\"A}}1
@@ -50,10 +77,35 @@ literate=%
     {~}{{\textasciitilde}}1
 }
 
-\usepackage{amsmath}
-
 \usepackage{tikz}
 \usetikzlibrary{calc}
+
+% Diese beiden Pakete müssen zuletzt geladen werden
+\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+
+\lstMakeShortInline[
+  language=CSharp,
+  columns=fixed,
+  basicstyle=\ttfamily
+  ,columns=fixed]|
+
+\lstnewenvironment{lstcs}
+    {\lstset{
+        language=CSharp,
+        basicstyle=\ttfamily,
+        breaklines=true,
+        columns=fullflexible
+    }}
+{}
+
+% Daten für die Titelseite
+\title{\textbf{\Huge\Aufgabe}}
+\author{\LARGE Team-ID: \LARGE \TeamID \\\\
+	    \LARGE Team-Name: \LARGE \TeamName \\\\
+	    \LARGE Bearbeiter dieser Aufgabe: \\ 
+	    \LARGE \Namen\\\\}
+\date{\LARGE\today}
 
 \newcommand{\cellsize}{0.5}
 \newcommand{\circlesize}{0.35}
@@ -106,7 +158,8 @@ literate=%
 
 \begin{document}
 
-\title{Aufgabe 5 - Rominos}
+\maketitle
+\tableofcontents
 
 \section{Lösungsidee}
 
@@ -711,71 +764,71 @@ Die Rominos werden in Form eines readonly structs \textit{Romino} gespeichert.
 Das struct beinhaltet
 
 \begin{enumerate}
-    \item \textit{Vector2Int[] Blocks} - 
+    \item |Vector2Int[] Blocks| - 
         Das Array mit allen Blöcken des Rominos.
-    \item \textit{List<Vector2Int> PossibleExtensions} - 
+    \item |List<Vector2Int> PossibleExtensions| - 
         Die Liste mit allen \\ Block-Additionsmöglichkeiten.
         Hierbei ist zu bemerken, dass die Größe der Liste konstant bleibt;
         es wird hier eine Liste statt einem Array verwendet, da bei der
         Erstellung die Größe unbekannt ist, und die Liste noch in ein Array
         zu konvertieren unnötig Rechenzeit kostet.
-    \item \textit{Vector2Int DiagonalRoot} - Die linke obere Ecke der 
+    \item |Vector2Int DiagonalRoot| - Die linke obere Ecke der 
         geschützten Diagonale.
-    \item \textit{Vector2Int Max} - Die rechte untere Ecke des Rominos.
+    \item |Vector2Int Max| - Die rechte untere Ecke des Rominos.
         Verwendet für korrigieren der Verschiebung ohne über alle Blöcke zu
         iterieren.
-    \item \textit{BitBuffer512 \_uniqueCode} - Der eindeutige Wert, errechnet
-        wie in \ref{uniqueCode}.
+    \item |BitBuffer512 \_uniqueCode| - Der eindeutige Wert, errechnet
+        wie in \cref{uniqueCode}.
 \end{enumerate}
 
 Die Hauptmethode ist die statische Methode\\
-\textit{IEnumerable<(int Size, List<Romino> Rominos)> Romino.GetRominosUntilSize(int size)}
+|IEnumerable<(int Size, List<Romino> Rominos)> Romino.GetRominosUntilSize(int size)|
 welche für eine gegebene Größe alle Rominos aller Größen, bis zu dieser
 Größe ausgibt. Diese ruft intern parallelisiert für alle Rominos aus einer
-Generation die Methode \textit{IEnumerable<Romino> Romino.AddOneNotUnique()}
+Generation die Methode |IEnumerable<Romino> Romino.AddOneNotUnique()|
 auf.
-Diese Methode errechnet nach dem Verfahren aus \ref{addBlocks} die
+Diese Methode errechnet nach dem Verfahren aus \cref{addBlocks} die
 Rominos der nächsten Generation.
-Danach werden nach dem Verfahren aus \ref{dupl} die Duplikate entfernt.
+Danach werden nach dem Verfahren aus \cref{dupl} die Duplikate entfernt.
 
-Die eindeutigen Werte aus \ref{uniqueCode} werden hierbei berechnet, ohne
+Die eindeutigen Werte aus \cref{uniqueCode} werden hierbei berechnet, ohne
 dass der Romino modifiziert wird, alle Modifikationen die an dem Romino
 gemacht werden müssten, um den Wert einer Permutation zu bestimmen, werden
 beim orientieren direkt in der Ausrechnung angewendet, ohne das Romino zu
-modifizieren. Erst wenn die eindeutige Rotation nach \ref{dupl} gefunden
+modifizieren. Erst wenn die eindeutige Rotation nach \cref{dupl} gefunden
 wurde, wird das Romino so modifiziert, dass es als diese Permutation
 dargestellt wird.
 
 \section{Quellcode}
 
-\subsection{\textit{readonly struct Vector2Int}}
+\subsection{Vector2Int}
 
-\textit{Vector2Int} ist ein 2-dimensionaler Vector von
-\textit{System.Int32}.
+|readonly struct Vector2Int| ist ein 2-dimensionaler Vector von
+|System.Int32|.
 
-\subsection{\textit{struct BitBuffer512}}
+\subsection{BitBuffer512}
 
-\textit{BitBuffer512} hält 512 bits an Daten,
+|struct BitBuffer512| hält 512 bits an Daten,
 wobei die individuellen Bits mit dem Indexer
-\textit{BitBuffer512[int bitIndex]} gelesen und geschrieben
-werden können. Weiterdem überlädt \textit{BitBuffer512}
+|BitBuffer512[int bitIndex]| gelesen und geschrieben
+werden können. Weiterdem überlädt |BitBuffer512|
 Vergleichsoperatoren, die 2 Instanzen wie eine 512 stellige
 unsignierte Binärzahlen vergleicht.
 Das struct wird zum speichern des eindeutigem Werts aus
-\ref{uniqueCode} verwendet, da der größte vorimplementierte
-Zahlentype, \textit{ulong} bereits mit 8er-Rominos komplett
-gefüllt wird. Im Vergleich kann \textit{BitBuffer512}
+\cref{uniqueCode} verwendet, da der größte vorimplementierte
+Zahlentype, |ulong| bereits mit 8er-Rominos komplett
+gefüllt wird. Im Vergleich kann |BitBuffer512|
 Rominos von bis zu 22 Blöcken speichern.
 
-\subsection{readonly struct Romino}
+\subsection{Romino}
 
-\textit{Romino} ist das Hertzstück des Codes; es speichert ein Romino ab,
-mit den in \ref{umsetzung} benannten Feldern. Dabei ist das gesamte struct
+|readonly struct Romino| ist das Hertzstück des Codes; es speichert ein Romino ab,
+mit den in \cref{umsetzung} benannten Feldern. Dabei ist das gesamte struct
 readonly, und auch die Listen/Arrays werden, auch wenn dies nicht explizit
 versichert ist, nie modifiziert, nach dem der Konstruktor durchgelaufen ist.
-Der Konstruktor orientiert hier das Romino nach dem Verfahren aus \ref{dupl}.
+Der Konstruktor orientiert hier das Romino nach dem Verfahren aus \cref{dupl}.
 
-\begin{lstlisting}
+\begin{lstcs}
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1096,6 +1149,6 @@ public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
     public readonly int CompareTo(Romino other) => _uniqueCode.CompareTo(other._uniqueCode);
 }
-\end{lstlisting}
+\end{lstcs}
 
 \end{document}

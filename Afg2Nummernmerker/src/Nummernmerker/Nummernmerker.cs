@@ -25,23 +25,31 @@
         public static NummerMerkingSolution MerkNummern(string text, int minSequenceLength, int maxSequenceLength) =>
             MerkNummern(new ArraySegment<bool>(text.ToCharArray().SelectF(x => x == '0')), minSequenceLength, maxSequenceLength);
 
-        public static NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
-            MerkNummern(new MerkedNummer(zeros, minSequenceLength, maxSequenceLength));
+        public static NummerMerkingSolution MerkNummern(in ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength)
+        {
+            MerkedNummer merkedNummer = new MerkedNummer(zeros, minSequenceLength, maxSequenceLength);
+            return MerkNummern(merkedNummer);
+        }
         #endregion
 
-        private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
+        private static NummerMerkingSolution MerkNummern(in MerkedNummer merkedNummer)
         {
+            // If the input has already been processed once, return previous result.
             if (MerkedNummers.TryGetValue(merkedNummer, out var optimalDistribution)) return optimalDistribution;
 
+            // Not enough digits => Fail.
             if (merkedNummer.Zeros.Count < merkedNummer.MinSequenceLength)
             {
                 return MerkedNummers[merkedNummer] = NummerMerkingSolution.Failure();
             }
 
             int nextGenerationSize =
+                // Calculate the length of the longest segment possible.
                 Math.Min(
+                    // Either the number of digits left,
                     merkedNummer.Zeros.Count,
-                    merkedNummer.MaxSequenceLength + 1)
+                    // or the max length of digits
+                    merkedNummer.MaxSequenceLength)
                 - merkedNummer.MinSequenceLength;
 
             if (nextGenerationSize <= 0)
@@ -65,7 +73,7 @@
                     ? NummerMerkingSolution.Failure()
                     : NummerMerkingSolution.Success(
                         subSolution.Distribution.PrecedeOne(length),
-                        subSolution.LeadingZerosHit + (((IList<bool>)merkedNummer.Zeros)[0] ? 1 : 0));
+                        subSolution.LeadingZerosHit + (merkedNummer.Zeros.ElementAtUnchecked(0) ? 1 : 0));
             }
 
             var elements = nextGeneration.WhereF(x => x.IsSuccessful);

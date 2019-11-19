@@ -1,16 +1,44 @@
-\documentclass[12pt]{article}
-
-\usepackage[margin=2.5cm]{geometry}
-
-\usepackage[ngerman]{babel}
+\documentclass[a4paper,10pt,ngerman]{scrartcl}
+\usepackage{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
+
+% Die nächsten drei Felder bitte anpassen:
+\newcommand{\Aufgabe}{Aufgabe 2: Nummernmerker} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
+\newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
+\newcommand{\Namen}{Nikolas Kilian} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+
+% Fonts
 \usepackage{lmodern}
 \usepackage{inconsolata}
+%\usepackage{courier}
 
-\usepackage{color}
+% Kopf- und Fußzeilen
+\usepackage{scrlayer-scrpage, lastpage}
+\setkomafont{pageheadfoot}{\large\textrm}
+\lohead{\Aufgabe}
+\rohead{Team-ID: \TeamID}
+\cfoot*{\thepage{}/\pageref{LastPage}}
+
+% Position des Titels
+\usepackage{titling}
+\setlength{\droptitle}{-1.0cm}
+
+% Für mathematische Befehle und Symbole
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Für Bilder
+\usepackage{graphicx}
+
+% Für Algorithmen
+\usepackage{algpseudocode}
+
+% Für Quelltext
 \usepackage{listings}
-\usepackage{courier}
+\usepackage{xcolor}
 
 %\setmonofont{Consolas} %to be used with XeLaTeX or LuaLaTeX
 \definecolor{bluekeywords}{rgb}{0,0,1}
@@ -20,8 +48,8 @@
 \definecolor{types}{rgb}{0.17,0.57,0.68}
 \definecolor{background}{rgb}{0.95,0.95,0.95}
 
-\usepackage{listings}
-\lstset{language=[Sharp]C,
+\lstdefinelanguage{CSharp}{ % Better C# highlighting
+language=[Sharp]C,
 backgroundcolor=\color{background},
 captionpos=b,
 numbers=left, %Nummerierung
@@ -49,18 +77,45 @@ literate=%
     {~}{{\textasciitilde}}1
 }
 
+% Diese beiden Pakete müssen zuletzt geladen werden
+\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+
+\lstMakeShortInline[
+  language=CSharp,
+  columns=fixed,
+  basicstyle=\ttfamily
+  ,columns=fixed]|
+
+\lstnewenvironment{lstcs}
+    {\lstset{
+        language=CSharp,
+        basicstyle=\ttfamily,
+        breaklines=true,
+        columns=fullflexible
+    }}
+{}
+
+% Daten für die Titelseite
+\title{\textbf{\Huge\Aufgabe}}
+\author{\LARGE Team-ID: \LARGE \TeamID \\\\
+	    \LARGE Team-Name: \LARGE \TeamName \\\\
+	    \LARGE Bearbeiter dieser Aufgabe: \\ 
+	    \LARGE \Namen\\\\}
+\date{\LARGE\today}
 
 \begin{document}
 
-\title{Aufgabe 2 - Nummernmerker}
+\maketitle
+\tableofcontents
 
-\section{Lösungsidee}
+\section{Lösungsidee} \label{idea}
 
 Um die optimale Aufteilung zu ermitteln,
 verwenden wir eine Variation des Knapsack-Algorithmus.
 Dieser funktioniert wie folgt:
 
-\begin{lstlisting}
+\begin{lstcs}
 TeileNummerAuf(nullstellen) {
     if ( <Bereits für gleiche Parameter aufgerufen> ) {
         return <Bereits errechnetes Ergebnis>;
@@ -73,7 +128,7 @@ TeileNummerAuf(nullstellen) {
     for (int i in 2..4) {
         subAufteilung = TeileNummerAuf(nullstellen.Skip(i));
 
-		if ( <subAufteilung Fehler produziert hat> ) continue;
+		    if ( <subAufteilung Fehler produziert hat> ) continue;
 		
         Möglichkeiten.Add([i].Concat(subAufteilung));
     }
@@ -84,33 +139,53 @@ TeileNummerAuf(nullstellen) {
 BewerteAufteilung(nullstellen, aufteilung) {
     return <Anzahl an führenden Nullstellen in der Aufteilung>;
 }
-\end{lstlisting}
+\end{lstcs}
 
-Hierbei werden bereits errechnete Ergebnisse global gespeichert, sodass bei mehreren Rechnungen nacheinander die Ergebnisse der vorigen Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
+Hierbei werden bereits errechnete Ergebnisse global gespeichert,
+sodass bei mehreren Rechnungen nacheinander die Ergebnisse der vorigen
+Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
+
+\subsection{Nochmmal in Worten}
+
+Der Algorithmus funktioniert also, indem einmal die ersten 2, 3 und dann 4
+Ziffern der Zahl abgetrennt werden, und daraufhin die übrigen Ziffern
+nocheinmal vom Algorithmus aufgeteilt werden.
+Jetzt, wo man 3 mögliche Aufteilungen hat, muss man nur noch die beste
+hiervon auswählen.
 
 \section{Umsetzung}
 
 Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit
-.NET Core 3.1 entschieden.
-Der Sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee);
-die Zentrale Methode die den Algorithmus ausführt hat die Signatur
-\textit{NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)}.
-Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen
-der einzelnen aufgeteilten Segmente.
+.NET Core 3.0 entschieden.
 
-Für das speicheren alter Ergebnisse wird ein struct \textit{MerkedNummer}
+Der Sourcecode ähnelt stark dem Pseudocode (siehe \cref{idea});
+die Zentrale Methode die den Algorithmus ausführt hat die Signatur\\
+|NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)|.\\
+Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen
+der einzelnen aufgeteilten Segmente; aus der Aufgabe heraus kommen hierbei
+für diese die Standardwerte 2 und 4.
+
+\subsection{Datenstruktur}
+
+Für das speicheren alter Ergebnisse wird ein struct |MerkedNummer|
 verwendet, welches die Eingaben für die Methode zwischenspeichert,
-und ein struct \textit{NummerMerkingSolution}, welches die Ergebnisse
+und ein struct |NummerMerkingSolution|, welches die Ergebnisse
 zwischenspeichert. Diese werden in einem
-\textit{System.Collections.Generics.Dictionary`2} aufeinander gemappt,
-sodass immer einer \textit{MerkedNummer} eine \textit{NummerMerkingSolution}
+|System.Collections.Generics.Dictionary`2| aufeinander gemappt,
+sodass immer einer |MerkedNummer| eine |NummerMerkingSolution|
 zugeordnet ist.
 
-Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes Array zurückgegeben, sondern eine Instanz des structs \textit{System.ArraySegment`1}. Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array, womit unnötige Array-Allocations verhindert werden, was Kosten des Garbage collectors spart.
+\subsection{Randinfo}
+
+Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes
+Array zurückgegeben, sondern eine Instanz des structs |System.ArraySegment`1|.
+Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array,
+womit unnötige Array-Allocations verhindert werden, was Kosten des
+Garbage collectors spart.
 
 \section{Beispiele}
 
-\begin{lstlisting}
+\begin{lstcs}
 Starting splitting of number 005480000005179734 with segments of length 2..4
   Digits:             18
 Results:
@@ -144,7 +219,7 @@ Results:
 
 \section{Quellcode}
 
-\begin{lstlisting}
+\begin{lstcs}
 private static readonly Dictionary<MerkedNummer, NummerMerkingSolution> MerkedNummers =
     new Dictionary<MerkedNummer, NummerMerkingSolution>();
 
@@ -209,6 +284,6 @@ private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
     NummerMerkingSolution bestSolution = elements.AggregateF((x, y) => x.LeadingZerosHit < y.LeadingZerosHit ? x : y);
     return MerkedNummers[merkedNummer] = bestSolution;
 }
-\end{lstlisting}
+\end{lstcs}
 
 \end{document}
