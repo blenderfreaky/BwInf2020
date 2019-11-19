@@ -77,7 +77,7 @@
 \section{Lösungsidee}
 Im Folgenden wird ''Weg'' als Alias für eine Menge von Tankstellen verwendet, von der man den günstigsten Preis um zur letzten Tankstelle zu kommen, abrufen kann. \\
 Der Algorithmus ist in 2 Teile geteilt, wobei der Nebenalgorithmus den günstigsten Preis eines Weges berechnet und der Hauptalgorithmus den insgesamt besten Weg zum Ziel findet.
-Die Hauptalgorithmus enthält eine Liste, die für jede Tankstelle den besten Weg (die wenigsten Stopps und der geringste Preis) zu ihr enthält. Jeder dieser Wege wird gebildet, indem für jede Tankstelle davor der beste Weg gefunden wird. Aus all diesen bereits berechneten Wegen wird jeweils ein neuer gebildet, indem die aktuell betrachtete Tankstelle angehangen wird, von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind. Die Günstigsten werden mit Hilfe vom Nebenalgorithmus gefunden. Diese Wege werden dann der Liste hinzugefügt und das Verfahren wird für die nächste Tankstelle wiederholt, bis das Ziel erreicht wird. \\
+Der Hauptalgorithmus enthält eine Liste, die für jede Tankstelle den besten Weg (die wenigsten Stopps und der geringste Preis) zu ihr enthält. Jeder dieser Wege wird gebildet, indem für jede Tankstelle davor der beste Weg gefunden wird. Aus all diesen bereits berechneten Wegen wird jeweils ein neuer gebildet, indem die aktuell betrachtete Tankstelle angehangen wird, von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind. Die Günstigsten werden mit Hilfe vom Nebenalgorithmus gefunden. Diese Wege werden dann der Liste hinzugefügt und das Verfahren wird für die nächste Tankstelle wiederholt, bis das Ziel erreicht wird. \\
 Der Nebenalgorithmus berechnet den besten Preis für einen Weg. Dafür werden die Tankstellen dem Preis entlang aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
 \newpage
 \section{Umsetzung}
@@ -88,9 +88,7 @@ Der Nebenalgorithmus berechnet den besten Preis für einen Weg. Dafür werden di
 		\item enthält die statische Klasse Urlaubsfahrt, die die statische Methode GetTrack enthält, die der Hauptalgorithmus ist
 		\item GetTrack erhält als Parameter:
 		 \begin{itemize}
-		 	\item die Streckenlänge
-		 	\item das Start-Benzin 
-		 	\item die Streckenlänge
+		 	\item die Strecke, die mit dem bereits im Tank vorhandenen Benzin zurückgelegt werden kann
 		 	\item die mit einer maximalen Tankfüllung zurückgelegt werden kann
 		 	\item eine Liste aller Tankstellen
 		\end{itemize}
@@ -121,6 +119,16 @@ Der Nebenalgorithmus berechnet den besten Preis für einen Weg. Dafür werden di
 	\end{itemize}
 \end{itemize}
 \subsubsection{Implementierung}
+\begin{lstlisting}
+GetTrack(float MitDemStartBenzinZurücklegbarerWeg, float MitVollemTankZurücklegbarerWeg, Liste<Tankstelle> AlleTankstellen)
+{
+	Liste<Weg> WegeZuAllenTankstellen = Weg.LeererWeg;
+	FürJede(Tankstelle Station in AlleTankstellen)
+	{
+		WegeZuAllenTankstellen.EntferneAlleFürDieGilt(der Abstand der letzten Tankstelle zu Station > MitVollemTankZurücklegbarerWeg);
+	}
+}
+\end{lstlisting}
 \section{Beispiele}
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
 
