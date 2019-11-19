@@ -702,7 +702,7 @@ bei den 3er-Rominos ist sie wie folgt plaziert:
 
 \end{center}
 
-\section{Umsetzung}
+\section{Umsetzung} \label{umsetzung}
 
 Zur Umsetzung haben wir den obigen Algorithmus in C\# 8.0 mit
 .NET Core 3.0 implementiert.
@@ -748,10 +748,14 @@ dargestellt wird.
 
 \section{Quellcode}
 
-\textit{readonly struct Vector2Int} ist ein 2-dimensionaler Vector von
+\subsection{\textit{readonly struct Vector2Int}}
+
+\textit{Vector2Int} ist ein 2-dimensionaler Vector von
 \textit{System.Int32}.
 
-\textit{struct BitBuffer512} hält 512 bits an Daten,
+\subsection{\textit{struct BitBuffer512}}
+
+\textit{BitBuffer512} hält 512 bits an Daten,
 wobei die individuellen Bits mit dem Indexer
 \textit{BitBuffer512[int bitIndex]} gelesen und geschrieben
 werden können. Weiterdem überlädt \textit{BitBuffer512}
@@ -762,6 +766,14 @@ Das struct wird zum speichern des eindeutigem Werts aus
 Zahlentype, \textit{ulong} bereits mit 8er-Rominos komplett
 gefüllt wird. Im Vergleich kann \textit{BitBuffer512}
 Rominos von bis zu 22 Blöcken speichern.
+
+\subsection{readonly struct Romino}
+
+\textit{Romino} ist das Hertzstück des Codes; es speichert ein Romino ab,
+mit den in \ref{umsetzung} benannten Feldern. Dabei ist das gesamte struct
+readonly, und auch die Listen/Arrays werden, auch wenn dies nicht explizit
+versichert ist, nie modifiziert, nach dem der Konstruktor durchgelaufen ist.
+Der Konstruktor orientiert hier das Romino nach dem Verfahren aus \ref{dupl}.
 
 \begin{lstlisting}
 using System;
@@ -863,12 +875,6 @@ public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
             yield return DiagonalRoot + new Vector2Int(1, 1);
         }
     }
-
-    /// <summary>
-    /// Gets this romino as ASCII-art.
-    /// For debugging.
-    /// </summary>
-    public string AsciiArt => string.Join(Environment.NewLine, ToAsciiArt(true, true));
 
     /// <summary>
     /// Initializes and orients a new instance of the <see cref="Romino"/> structure.
@@ -1038,20 +1044,7 @@ public readonly struct Romino : IEquatable<Romino>, IComparable<Romino>
     }
 
     private readonly BitBuffer512 CalculateUniqueCode()
-    {
-        var bits = new BitBuffer512();
-
-        // "Definitely very useful caching"
-        int length = Blocks.Length;
-
-        for (int i = 0; i < Blocks.Length; i++)
-        {
-            // Assign the relevant bit (2^((y * len) + x) = 1 << ((y * len) + x))
-            bits[(Blocks[i].Y * length) + Blocks[i].X] = true;
-        }
-
-        return bits;
-    }
+    { /* CalculateUniqueCode(x => x) with the parameter inlined */ }
 
     private readonly BitBuffer512 CalculateUniqueCode(Func<Vector2Int, Vector2Int> func)
     {
