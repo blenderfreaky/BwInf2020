@@ -77,6 +77,10 @@ literate=%
     {~}{{\textasciitilde}}1
 }
 
+% Diese beiden Pakete müssen zuletzt geladen werden
+\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+
 \lstMakeShortInline[
   language=CSharp,
   columns=fixed,
@@ -92,10 +96,6 @@ literate=%
     }}
 {}
 
-% Diese beiden Pakete müssen zuletzt geladen werden
-%\usepackage{hyperref} % Anklickbare Links im Dokument
-\usepackage{cleveref}
-
 % Daten für die Titelseite
 \title{\textbf{\Huge\Aufgabe}}
 \author{\LARGE Team-ID: \LARGE \TeamID \\\\
@@ -107,9 +107,9 @@ literate=%
 \begin{document}
 
 \maketitle
-%\tableofcontents
+\tableofcontents
 
-\section{Lösungsidee}
+\section{Lösungsidee} \label{idea}
 
 Um die optimale Aufteilung zu ermitteln,
 verwenden wir eine Variation des Knapsack-Algorithmus.
@@ -128,7 +128,7 @@ TeileNummerAuf(nullstellen) {
     for (int i in 2..4) {
         subAufteilung = TeileNummerAuf(nullstellen.Skip(i));
 
-		if ( <subAufteilung Fehler produziert hat> ) continue;
+		    if ( <subAufteilung Fehler produziert hat> ) continue;
 		
         Möglichkeiten.Add([i].Concat(subAufteilung));
     }
@@ -141,17 +141,31 @@ BewerteAufteilung(nullstellen, aufteilung) {
 }
 \end{lstcs}
 
-Hierbei werden bereits errechnete Ergebnisse global gespeichert, sodass bei mehreren Rechnungen nacheinander die Ergebnisse der vorigen Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
+Hierbei werden bereits errechnete Ergebnisse global gespeichert,
+sodass bei mehreren Rechnungen nacheinander die Ergebnisse der vorigen
+Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
+
+\subsection{Nochmmal in Worten}
+
+Der Algorithmus funktioniert also, indem einmal die ersten 2, 3 und dann 4
+Ziffern der Zahl abgetrennt werden, und daraufhin die übrigen Ziffern
+nocheinmal vom Algorithmus aufgeteilt werden.
+Jetzt, wo man 3 mögliche Aufteilungen hat, muss man nur noch die beste
+hiervon auswählen.
 
 \section{Umsetzung}
 
 Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit
-.NET Core 3.1 entschieden.
-Der Sourcecode ähnelt stark dem Pseudocode (siehe Lösungsidee);
-die Zentrale Methode die den Algorithmus ausführt hat die Signatur
-|NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)|.
+.NET Core 3.0 entschieden.
+
+Der Sourcecode ähnelt stark dem Pseudocode (siehe \cref{idea});
+die Zentrale Methode die den Algorithmus ausführt hat die Signatur\\
+|NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)|.\\
 Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen
-der einzelnen aufgeteilten Segmente.
+der einzelnen aufgeteilten Segmente; aus der Aufgabe heraus kommen hierbei
+für diese die Standardwerte 2 und 4.
+
+\subsection{Datenstruktur}
 
 Für das speicheren alter Ergebnisse wird ein struct |MerkedNummer|
 verwendet, welches die Eingaben für die Methode zwischenspeichert,
@@ -161,7 +175,13 @@ zwischenspeichert. Diese werden in einem
 sodass immer einer |MerkedNummer| eine |NummerMerkingSolution|
 zugeordnet ist.
 
-Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes Array zurückgegeben, sondern eine Instanz des structs \textit{System.ArraySegment`1}. Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array, womit unnötige Array-Allocations verhindert werden, was Kosten des Garbage collectors spart.
+\subsection{Randinfo}
+
+Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes
+Array zurückgegeben, sondern eine Instanz des structs |System.ArraySegment`1|.
+Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array,
+womit unnötige Array-Allocations verhindert werden, was Kosten des
+Garbage collectors spart.
 
 \section{Beispiele}
 

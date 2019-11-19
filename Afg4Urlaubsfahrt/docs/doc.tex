@@ -77,6 +77,10 @@ literate=%
     {~}{{\textasciitilde}}1
 }
 
+% Diese beiden Pakete müssen zuletzt geladen werden
+\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+
 \lstMakeShortInline[
   language=CSharp,
   columns=fixed,
@@ -91,10 +95,6 @@ literate=%
         columns=fullflexible
     }}
 {}
-
-% Diese beiden Pakete müssen zuletzt geladen werden
-%\usepackage{hyperref} % Anklickbare Links im Dokument
-\usepackage{cleveref}
 
 % Daten für die Titelseite
 \title{\textbf{\Huge\Aufgabe}}

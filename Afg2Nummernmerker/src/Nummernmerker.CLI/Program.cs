@@ -78,7 +78,8 @@
         {
             if (!bench)
             {
-                RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000); // Very big numbers produce a stack overflow
+                // Very big numbers produce a stack overflow => just use a bigger stack
+                RunWithStackSize(() => RunCore(numberText, minSequenceLength, maxSequenceLength), numberText.Length * 1000);
             }
             else
             {
@@ -94,6 +95,7 @@
             var thread = new Thread(new ThreadStart(action),  stackSize);
             thread.Start();
 
+            // Synchronize
             while (thread.IsAlive)
             {
                 Task.Delay(5);

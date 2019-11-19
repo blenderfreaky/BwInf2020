@@ -2,7 +2,7 @@
   "profiles": {
     "Nummernmerker.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--numberS \"03032030120300231006023050235020520350050325\""
+      "commandLineArgs": "--numberS \"00001111\""
     }
   }
 }
