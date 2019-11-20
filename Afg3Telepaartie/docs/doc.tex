@@ -8,7 +8,7 @@
 \newcommand{\Aufgabe}{Aufgabe 3: Telepaartie} % Aufgabennummer und Aufgabennamen angeben
 \newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
 \newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
-\newcommand{\Namen}{Johannes von Stoephasius} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+\newcommand{\Namen}{Johannes von Stoephasius \& Nikolas Kilian} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
  
 % Fonts
 \usepackage{lmodern}
@@ -148,9 +148,10 @@ Eine Generation ist eine Menge an unterschiedlichen Zuständen.
 
 Die Grundidee der Lösung basiert auf der Idee, nicht alle nicht-Endzustände zu ermitteln und diese optimal zu lösen, sondern invers alle Endzustände zu ermitteln und diese invers auf alle ihre Ursprungszustände zurückzuführen, diese Ursprungszustände wiederrum auf ihre eigenen Ursprungszustände zurückzuführen usw., wobei konstant überprüft wird, ob es nicht ''Abkürzungen'' im Sinne bereits gefundener Zustände gibt.
 
-\subsection{Finden aller Kinder eines Knotens} \label{alg:origin}
+\subsection{Finden aller Ursprungszustände} \label{alg:origin}
 
-Der Algoritmus findet für eien Zustand Z alle Zustände für die gilt, dass wenn auf sie alle möglichen Telepaartien angewendet eines der Ergebnisse Z ist. Dafür wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+Zum finden der Ursprungszustände \(origin(s)\) eines Zustands \(s \in \mathbb{S}_n\) wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist dabei bei einem Vergleich zweier Anzahlen die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+Diese Überprüfung wird für alle Kombinationen zweier Biber-Anzahlen durchgeführt, bis am Ende alle Ursprungszustände gefunden wurden.
 
 \subsection{Generieren der Endzustände} \label{alg:target}
 
