@@ -115,45 +115,156 @@ literate=%
 
 \subsection{Definitionen}
 
-Ein Zustand ist definiert als Menge von Behältern, wobei jedem Behälter eine nichtnegative ganzey Zahl zugeordnet werden kann, die der Anzahl an Bibern des Gefäßes entspricht.
+\paragraph{Zustand} \label{def:state}
+
+Ein Zustand ist definiert als Menge von Behältern, wobei jedem Behälter eine nichtnegative ganze Zahl zugeordnet werden kann, die der Anzahl an Bibern des Gefäßes entspricht.
 
 Weiter können die Behälter untereinander getauscht werden, da die Konstellation die selbe bleibt. Deshalb werden die Biber-Anzahlen eines Zustands immer nur im sortierten Zustand betrachtet, wobei hier aufsteigende Sortierung verwendet wird.
 
+Denotiere man die Menge aller Zustände mit Gesamtbiberzahl \(n\) als \(\mathbb{S}_n\).
+
+\paragraph{Endzustand} \label{def:target}
+
+Ein Endzustand ist jeder Zustand, der genau einen leeren Eimer enthält.
+
+Sind weniger, also keine, leere Eimer enthalten, so ist der Zustand kein Endstand laut der Aufgabenstellung.
+
+Sind mehr enthalten, so ist der Zustand nur durch Operationen auf einen anderen Endzustand zu erhalten, und somit nicht relevant. Zur Errmittlung dieser Endzustände siehe \cref{alg:target}.
+
+Denotiere man die Menge aller Endzustände mit Gesamtbiberzahl \(n\) als \(\mathbb{E}_n\).
+Dabei gilt: \(\mathbb{E}_n\subseteq\mathbb{S}_n\)
+
+\paragraph{Ursprungszustand} \label{def:origin}
+
+Ein Ursprungszustand von einem Zustand \(x\), ist jeder Zustand der mit einem einzelnen Telepaartieschritt zum Zustand \(x\) wird.
+
+Die Menge an Ursprungszuständen von \(x\) kann geschrieben werden als \(origin(x)\), mit \(origin : \mathbb{S}_n \to \mathbb{S}_n \).
+
+\paragraph{Generation} \label{def:generation}
+
+Eine Generation ist eine Menge an unterschiedlichen Zuständen.
+
 \subsection{Kernidee}
-Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zu den Anfangszuständen zu finden. In diesem Fall heißt das, dass ein Baum  aufgebaut wird, wobei die Knoten einzelne Zustände symbolisieren. Die Kinder eines Knotens sind alle möglichen Zustände, die mit dem 2. Nebenalgorithmus gefunden werden können. Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere, die vom 1. Nebenalgorithmus gefunden werden. Die Köpfe und damit der Return-Wert des Nebenalgorithmus sind alle Möglichen Zustände, bei denen genau ein Behälter 0 Elemente enthält. Nun werden mit dem 2. Teilalgorithmus alle Zustände gefunden, aus denen der aktuelle Zustand gebildet werden kann, woraus die neue Generation entsteht. Von den neuen Zuständen werden alle entfernt, die bereits gefunden wurden, sodass keine Dopplungen auftreten können. Auch auf diese neuen Zustände werden alle möglichen Operationen angewendet, wobei dies so lange wiederholt wird, bis keine neuen Zustände gefunden werden. Die Eltern dieser Generation ohne Zustände sind die Zustände, die am meisten Schritte brauchen, um in einen zulässigen Endzustand überführt zu werden.
-\subsection{1. Teilalgorithmus}
 
-\subsection{2. Teilalgorithmus}
+Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zu jedem Anfangszustand zu finden.
+Das heißt, dass ein Baum aufgebaut wird, wobei die Knoten einzelne Zustände symbolisieren.
+Hierbei sind die Kinder eines Knotens definiert als alle 
+Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere, die vom 1. Nebenalgorithmus gefunden werden. Die Köpfe und damit der Return-Wert des Nebenalgorithmus sind alle Möglichen Zustände, bei denen genau ein Behälter 0 Elemente enthält. Nun werden mit dem 2. Teilalgorithmus alle Zustände gefunden, aus denen der aktuelle Zustand gebildet werden kann, woraus die neue Generation entsteht. Von den neuen Zuständen werden alle entfernt, die bereits gefunden wurden, sodass keine Dopplungen auftreten können. Auch auf diese neuen Zustände werden alle möglichen Operationen angewendet, wobei dies so lange wiederholt wird, bis keine neuen Zustände gefunden werden. Die Eltern dieser Generation ohne Zustände sind die Zustände, die am meisten Schritte brauchen, um in einen zulässigen Endzustand überführt zu werden.
 
-Die Grundidee der Lösung basiert auf der Idee, nicht alle Anfangszustände optimal zu lösen, sondern alle Endzustande am suboptimalsten zu mischen.
+Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere. Diese Köpfe stellen die Endzustände dar. 
 
-Das heißt, dass wir einen Baum  aufbauen, wobei die Knoten einzelne Zustände symbolisieren.
-Die Kinder eines Knotens werden erzeugt, indem alle Zustände gesucht werden, die in einem Telepaartie Schritt zu diesem umgewandelt werden können. Zur Ermittelung dieser siehe \cref{childGen}.
+\subsection{Finden aller Kinder eines Knotens} \label{alg:origin}
 
-Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere. Diese Köpfe stellen die Endzustände dar. Ein Endzustand ist hierbei jeder Zustand, der genau einen leeren Eimer enthält. Sind weniger, also keine, enthalten, so ist der Zustand kein Endstand laut der Aufgabe. Sind mehr enthalten, so ist der Zustand nur durch Operationen auf einem Endzustand zu erhalten, und somit nicht relevant. Zur Errmittlung dieser Endzustände siehe \cref{endingStates}.
-
-%Die Köpfe und damit der Return-Wert des Nebenalgorithmus sind alle Möglichen Verteilungen von Bibern in den Behältern, wobei genau ein Behälter keine Elemente enthält. 
-Sind aus \cref{endingStates} die Endzustände errechnet, so kann der Hauptalgorithmus beginnen.
-Hierbei werden, mit dem Algorithmus aus \cref{childGen},  alle Zustände gefunden, aus denen der aktuelle Zustand gebildet werden kann, woraus die neue Generation entsteht.
-Von den neuen Zuständen werden alle entfernt, die bereits gefunden wurden, sodass keine Dopplungen auftreten können. Auch auf diese neuen Zustände werden alle möglichen Operationen angewendet, wobei dies so lange wiederholt wird, bis keine neuen Zustände gefunden werden. Zu diesem Zeitpunkt wurde der Fall gefunden, der am meisten Schritte braucht, um in einen zulässigen Endzustand überführt zu werden.
-
-\subsection{Finden aller Kinder eines Knotens} \label{childGen}
-
-\subsection{Generieren der Endzustände} \label{endingStates}
+\subsection{Generieren der Endzustände} \label{alg:target}
 
 Der Algoritmus findet für eien Zustand Z alle Zustände für die gilt, dass wenn auf sie alle möglichen Telepaartien angewendet eines der Ergebnisse Z ist. Dafür wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+
 \subsection{Hauptalgorithmus}
-Zuerst wird mit dem 1. Teilalgorithmus eine Liste an Zuständen gebildet, die alle möglichen Endzustände abbilden. Diese Liste, im Folgenden VaterListe genannt, enthält am Anfang jeder der folgenden Iterationensschritte die Zustände, deren Kinder gebildet werden. Weiter existiert eine Liste an Zuständen, im Folgenden AlleZuständeListe genannt, die am Ende jedes Iterationsschritts jeden bereits gefundenen Zustand enthält, weshalb alle Zustände aus VaterListe in sie kopiert werden. Die nun beginnende Iteration erzeugt mit dem 2. Teilalgorithmus angewendet auf jeden Zustand in Vaterliste eine Liste an Zuständen; die nächste Generation. Von diesen werden nun all die Zustände entfernt, die mehrfach existieren, um dopplungen zu vermeiden. Nun werden all die Zustände entfernt, die bereits in der AlleZuständeListe vorhanden sind. Die nun übrigen Elemente werden zur AlleZuständeListe hinzugefügt und bilden die neue Väterliste. War jedoch die Anzahl der übrigen Elemente gleich 0, so sind die Eltern dieser leeren Generation die Zustände, die die meisten Schritte brauchen, um einen Behälter zu leeeren.
+
+Sei die Generation \(Gen_{i+1}\) definiert als alle unterschiedliche Ursprungszustände aller Elemente aus \(Gen_i\), die in keiner vorherigen Generation \(Gen_k, k < i\) enthalten sind.
+
+Sei dabei \(Gen_0\) als Spezialfall gleich der Menge aller Endzustände für Gesamtbiberzahl \(n\).
+
+\[Gen_0 := \mathbb{E}_n\]
+\[Gen_{i+1} := \left\{ s \mid \left(\exists_{t \in Gen_i} : s \in origin(t)\right) \land \left(\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}\right) \right\}\]
+
+Der Algoritmus funktioniert dann, indem er nach und nach alle nicht-leeren Generationen ermittelt. Sei \(Gen_m\) die letzte nicht-leere Generation, so ist \(LLL(n) = m\).
+
+\subsection{Beweis}
+
+\subsubsection{Hilfssatz 1: Erreichen aller lösbaren Zustände} \label{proof:completeness}
+
+Wähle beliebig aber fest einen Zustand \(s\in\mathbb{S}_n\).
+Ist der Zustand lösbar, also durch wiederholte Telepaartie zu einem Endzustand überführbar, so gibt es eine Generation \(Gen_i\) aus \((Gen_i)_{i\in\mathbb{N}}\) mit \(s\in Gen_i\).
+
+\paragraph{Trivialer Fall}
+Gilt \(s\in\mathbb{E}_n\), so ist \(s\) lösbar mit 0 Telepaartieschritten. Da \(Gen_0 = \mathbb{E}_n\) gilt, gilt \(s \in Gen_0\).
+
+\paragraph{Beweis durch Widerspruch}
+
+Angenommen \(s \notin Gen_{i}\). Für alle \(i=1,2,...\).
+
+\begin{align*}
+    &&s \notin Gen_{i} &\iff \lnot\left(\left(\exists_{t \in Gen_{i-1}} : s \in origin(t)\right) \land \left(\forall_{i_0\in\mathbb{N}, i_0 < i}: s \notin Gen_{i_0}\right)\right) \\
+    && &\iff \lnot\left(\exists_{t \in Gen_{i-1}} : s \in origin(t)\right) \lor \lnot\left(\forall_{i_0\in\mathbb{N}, i_0 < i}: s \notin Gen_{i_0}\right) \\
+    && &\iff \left(\forall_{t \in Gen_{i-1}} : s \notin origin(t)\right) \lor \left(\exists_{i_0\in\mathbb{N}, i_0 < i}: s \in Gen_{i_0}\right)
+\end{align*}
+
+Angenommen es gilt \(\exists_{i_0\in\mathbb{N}, i_0 < i}: s \in Gen_{i_0}\). Wenn dies gilt, existiert ein \(i_0\) für welches gilt: \(s \in Gen_{i_0}\). Somit existiert eine Generation aus \((Gen_i)_{i\in\mathbb{N}}\) mit \(s \in Gen_{i_0}\).
+
+Smot können wir das Problem durch Redefinition \(i := i_0\) also reformulieren als:
+
+\begin{align*}
+    &&s \notin Gen_{i} 
+    &\iff \forall_{t \in Gen_{i-1}} : s \notin origin(t)
+\end{align*}
+
+Dies ist nun zu zeigen:
+
+\begin{align*}
+    s \notin Gen_{i}
+    &\iff \forall_{t \in Gen_i} : s \notin origin(t) \\
+    \intertext{Bemerkung: \(origin(origin(t)) = \left\{ s \mid \exists_{u \in origin(t)} : s \in origin(u) \right\}\)}
+    &\iff \forall_{t \in Gen_{i-1}} : s \notin origin(origin(t)) \\
+    &\iff \forall_{t \in Gen_{i-1}} : s \notin (origin \circ origin)(t) \\
+    &\iff \forall_{t \in Gen_{i-i}} : s \notin (\underbrace{origin \circ ... \circ origin}_{\text{i-mal verkettet}})(t) \\
+    &\iff \forall_{t \in \mathbb{E}_n} : s \notin (\underbrace{origin \circ ... \circ origin}_{\text{i-mal verkettet}})(t) \\
+\end{align*}
+
+Damit dies gilt, müsste \(s\) für keine Anzahl \(i\) an Telepaartieschritten zu einem Endzustand kommen. Somit müsste \(s\) also unlösbar sein. \(\Box\)
+
+\subsubsection{Korollar aus Hilfssatz 1: Maximale Mindestschrittzahl} \label{proof:maxminsteps}
+
+Wenn \(s \in Gen_i\) gilt, dann ist \(s\) in \(i\) oder weniger Telepaartieschritten zu einem Endzustand überführbar.
+
+\paragraph{Beweis}
+
+Aus \cref{proof:completeness} kann man ablesen, dass damit ein Zustand \(s\in\mathbb{S}_n\) lösbar ist, also ein \(Gen_i\) existiert mit \(s \in Gen_i\), gelten muss:
+
+\begin{align*}
+    &&\forall_{t \in Gen_i} : s \notin origin(t) 
+    &\iff \forall_{t \in \mathbb{E}_n} : s \notin (\underbrace{origin \circ ... \circ origin}_{\text{i-mal verkettet}})(t) \\ 
+    \iff&& \forall_{t \in Gen_i} : s \in origin(t) 
+    &\iff \exists_{t \in \mathbb{E}_n} : s \in (\underbrace{origin \circ ... \circ origin}_{\text{i-mal verkettet}})(t) \\ 
+\end{align*}
+
+Da laut Definition von \(origin\) die \(i\)-fache Selbstverkettung von \(origin\) alle Zustände sind, von denen aus der Parameter mit weniger als oder genau \(i\) Telepaartieschritten erreicht werden kann ist, ist der Endzustand \(t \in \mathbb{E}_n\) von \(s\) in weniger als oder genau \(i\) Schritten erreichbar. \(\Box\)
+
+\subsubsection{Hilfssatz 2: Eindeutigkeit} \label{proof:uniqueness}
+
+Für jeden lösbaren Zustand \(s \in \mathbb{S}_n\) gilt, dass \textit{genau ein} \(i\) existiert, für dass die Generation \(Gen_i\) mit \(s \in Gen_i\) existiert.
+
+\paragraph{Beweis}
+
+Ist der Zustand \(s\) lösbar, so existiert laut \cref{proof:completeness} ein \(i\) mit \(s \in Gen_i\). Aufgrund der Kondition \(\forall_{i_0\in\mathbb{N}, i_0 < i}: s \notin Gen_{i_0}\) in der Definition von \(Gen_i\) gilt, dass keine Generation \(Gen_j, j < i\) aus \((Gen_i)_{i\in\mathbb{N}}\) existiert, die \(s\) enthält. Andersherum gibt es auch keine späteren Generationen \(Gen_k, k > i\) mit \(s \in Gen_k\), da für diese dann ein \(i_0 = i\) mit \(s \in Gen_{i_0}\) existieren würde, was gegen die Definition von \(Gen_i\) verstößt. \(\Box\)
+
+\subsubsection{Hilfssatz 3: Minimalität der Schritte} \label{proof:minimality}
+
+Für jeden lösbaren Zustand \(s \in \mathbb{S}_n\) mit \(s \in Gen_i\) gilt, dass \(i = LLL(s)\).
+
+\paragraph{Beweis}
+
+Der Fall \(LLL(s) > i\) wird vom Korollar \cref{proof:maxminsteps} wiederlegt.
+
+Somit wäre nur noch zu zeigen das \(LLL(s) < i\) nicht gilt.
+
+Damit \(LLL(s) < i\) gilt, müsste es eine Schrittfolge geben, um \(s\) in einen Endzustand überzuführen, mit \(k < i\) Schritten.
+
+Die Generationen \(Gen_j\) mit \(0 \leq j < i\) enthalten zusammen alle Elemente von allen \(j\)-fachen Selbstverkettungen von \(origin\), also jeden Zustand der in genau \(i-1\) oder weniger Schritten zu einem Endzustand überführbar ist. Mit der Eindeutigkeit der Generationen \cref{proof:uniqueness} verbunden, ist also \(LLL(s) < i\) und \(s \in Gen_j\) äquivalent.
+
+Ist nun \(s \in Gen_i\), gilt laut \cref{proof:uniqueness}, dass \(s\) in keiner anderen Generation aus \((Gen_i)_{i\in\mathbb{N}}\), also auch keiner Generation \(Gen_j\) enthalten ist. Da \(LLL(s) < i \iff s \in Gen_j\) gilt, und da \(s \notin Gen_j\) gilt, gilt auch \(\lnot(LLL(s) < i) \iff LLL(s) \geq i\).
+
+Da \(LLL(s) \geq i\) gilt, gilt \(LLL(s) < i\) nicht. \(\Box\)
 
 \section{Umsetzung}
 
 \section{Beispiele}
 
-Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
+% Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
 
 \section{Quellcode}
 
-Unwichtige Teile des Programms sollen hier nicht abgedruckt werden. Dieser Teil sollte nicht mehr als 2–3 Seiten umfassen, maximal 10.
+% Unwichtige Teile des Programms sollen hier nicht abgedruckt werden. Dieser Teil sollte nicht mehr als 2–3 Seiten umfassen, maximal 10.
 
 \end{document}
 
