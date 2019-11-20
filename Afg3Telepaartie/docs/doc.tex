@@ -75,7 +75,13 @@
 \vspace{0.5cm}
 
 \section{Lösungsidee}
-Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zum Anfangszustand zu finden. In diesem Fall heißt das, dass wir einen Baum  aufbauen, wobei die Knoten einzelne Zustände symbolisieren. Die Kinder eines Knotens sind alle möglichen Operationen, die man auf den aktuellen Zustand anwenden kann. Der Baum hat nicht wie üblich nur einen Kopf, 
+\subsection{Definitionen}
+Ein Zustand ist definiert als Menge von Behältern, wobei jedem Behälter eine positive oder neutrale natürliche Zahl zugeordnet werden kann, die der Anzahl an Bibern des Gefäßes entspricht. Weiter können die Behälter untereinander getauscht werden, da die Konstellation die selbe bleibt. Deshalb werden die Biber-Anzahlen in einer Liste gespeichert, die stets aufsteigend sortiert ist.
+\subsection{Kernidee}
+Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zum Anfangszustand zu finden. In diesem Fall heißt das, dass wir einen Baum  aufbauen, wobei die Knoten einzelne Zustände symbolisieren. Die Kinder eines Knotens sind alle möglichen Zustände, die mit dem 2. Nebenalgorithmus gefunden werden können. Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere, die vom 1. Nebenalgorithmus gefunden werden. Die Köpfe und damit der Return-Wert des Nebenalgorithmus sind alle Möglichen Verteilungen von Bibern in den Behältern, wobei genau ein Behälter keine Elemente enthält. Nun werden mit dem 2. Teilalgorithmus alle Zustände gefunden, aus denen der aktuelle Zustand gebildet werden kann, woraus die neue Generation entsteht. Von den neuen Zuständen werden alle entfernt, die bereits gefunden wurden, sodass keine Dopplungen auftreten können. Auch auf diese neuen Zustände werden alle möglichen Operationen angewendet, wobei dies so lange wiederholt wird, bis keine neuen Zustände gefunden werden. Zu diesem Zeitpunkt wurde der Fall gefunden, der am meisten Schritte braucht, um in einen zulässigen Endzustand überführt zu werden.
+\subsection{1. Teilalgorithmus}
+\subsection{2. Teilalgorithmus}
+\subsection{Hauptalgorithmus}
 \section{Umsetzung}
 
 \section{Beispiele}
