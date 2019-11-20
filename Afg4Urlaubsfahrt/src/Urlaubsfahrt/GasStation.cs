@@ -5,12 +5,18 @@ namespace Urlaubsfahrt
 {
     public readonly struct GasStation : IEquatable<GasStation>
     {
+        /// <summary>
+        /// Represents the starting point, with a position of 0 and a price of 0.
+        /// </summary>
         public static readonly GasStation Home = new GasStation(0, 0);
 
+        /// <summary>
+        /// The price of gas at the station in €/km. Based on the car
+        /// </summary>
         public readonly double Price;
         public readonly double Position;
 
-        public GasStation(double price, double position)
+        public GasStation(double position, double price)
         {
             Price = price;
             Position = position;

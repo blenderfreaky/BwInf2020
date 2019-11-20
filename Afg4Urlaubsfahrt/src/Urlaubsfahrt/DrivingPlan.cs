@@ -13,7 +13,7 @@ namespace Urlaubsfahrt
 
         public DrivingPlan(List<(GasStation Station, double Distance)> stops) => Stops = stops;
 
-        public readonly double Price => Stops.Sum(x => x.Distance * x.Station.Price);
+        public readonly double PriceFor(Car car) => Stops.Sum(x => x.Distance * car.GetPriceForDistanceAt(x.Station));
 
         public readonly void Add(GasStation station, double distance) => Stops.Add((station, distance));
 
