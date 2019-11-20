@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 
 namespace Urlaubsfahrt
 {
@@ -14,14 +13,16 @@ namespace Urlaubsfahrt
 
         public DrivingPlan(List<(GasStation Station, double Distance)> stops) => Stops = stops;
 
-        public readonly double Price => Stops.Sum(x => x.Distance * x.Station.Price);
+        public readonly double PriceFor(Car car) => Stops.Sum(x => x.Distance * car.GetPriceForDistanceAt(x.Station));
 
         public readonly void Add(GasStation station, double distance) => Stops.Add((station, distance));
 
         public readonly void Sort() => Stops.Sort((x, y) => x.Station.Position.CompareTo(y.Station.Position));
 
         public override bool Equals(object? obj) => obj is DrivingPlan plan && Equals(plan);
+
         public bool Equals([AllowNull] DrivingPlan other) => Stops.SequenceEqual(other.Stops);
+
         public override int GetHashCode() => HashCode.Combine(Stops);
 
         public static bool operator ==(DrivingPlan left, DrivingPlan right) => left.Equals(right);

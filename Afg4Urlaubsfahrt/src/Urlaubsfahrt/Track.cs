@@ -3,7 +3,6 @@ namespace Urlaubsfahrt
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
@@ -19,37 +18,37 @@ namespace Urlaubsfahrt
 
         public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
 
-        public readonly double? GetCheapestPriceTo(GasStation destination, double startFuelLength, double tankLength) =>
-            GetCheapestPriceTo(destination.Position, startFuelLength, tankLength);
+        public readonly double? GetCheapestPriceTo(GasStation destination, Car car) =>
+            GetCheapestPriceTo(destination.Position, car);
 
-        public readonly double? GetCheapestPriceTo(double destination, double startFuelLength, double tankLength) =>
-            GetCheapestPathTo(destination, startFuelLength, tankLength)?.Price;
+        public readonly double? GetCheapestPriceTo(double destination, Car car) =>
+            GetCheapestPathTo(destination, car)?.PriceFor(car);
 
-        public readonly DrivingPlan? GetCheapestPathTo(double destination, double startFuelLength, double tankLength)
+        public readonly DrivingPlan? GetCheapestPathTo(double destination, Car car)
         {
             DrivingPlan drivingPlan = DrivingPlan.Empty;
 
             // If we can get to the destination on our tank already, we don't need to check for other options; it's already free.
-            if (destination < startFuelLength)
+            if (destination < car.StartingFuelDistance)
             {
                 drivingPlan.Add(GasStation.Home, destination);
                 return drivingPlan;
             }
 
             // Use up the entirety of the starting fuel
-            drivingPlan.Add(GasStation.Home, startFuelLength);
+            drivingPlan.Add(GasStation.Home, car.StartingFuelDistance);
 
             HashSet<Range> coveredRanges = new HashSet<Range>
             {
-                new Range(0, startFuelLength),
-                new Range(destination, destination + tankLength)
+                new Range(0, car.StartingFuelDistance),
+                new Range(destination, destination + car.TankDistance)
             };
 
             foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price))
             {
-                Range newRange = new Range(station.Position, station.Position + tankLength);
+                Range newRange = new Range(station.Position, station.Position + car.TankDistance);
 
-                double distance = tankLength;
+                double distance = car.TankDistance;
 
                 bool startHit = false, endHit = false;
 
