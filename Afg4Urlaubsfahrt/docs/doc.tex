@@ -195,7 +195,7 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 \end{itemize}
 
 \subsubsection{Implementierung}
-\begin{lstlisting}
+\begin{lstcs}
 GetTrack(float MitDemStartBenzinZurücklegbarerWeg, float MitVollemTankZurücklegbarerWeg, Liste<Tankstelle> AlleTankstellen)
 {
 	Liste<Weg> WegeZuAllenTankstellen = Weg.LeererWeg;
@@ -204,7 +204,7 @@ GetTrack(float MitDemStartBenzinZurücklegbarerWeg, float MitVollemTankZurückle
 		WegeZuAllenTankstellen.EntferneAlleFürDieGilt(der Abstand der letzten Tankstelle zu Station > MitVollemTankZurücklegbarerWeg);
 	}
 }
-\end{lstlisting}
+\end{lstcs}
 \section{Beispiele}
 
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!

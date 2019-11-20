@@ -75,12 +75,9 @@
 \vspace{0.5cm}
 
 \section{Lösungsidee}
-Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zum 
+Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zum Anfangszustand zu finden. In diesem Fall heißt das, dass wir einen Baum  aufbauen, wobei die Knoten einzelne Zustände symbolisieren. Die Kinder eines Knotens sind alle möglichen Operationen, die man auf den aktuellen Zustand anwenden kann. Der Baum hat nicht wie üblich nur einen Kopf, 
 \section{Umsetzung}
-Der Hauptalgorithmus liegt in der Urlaubsfahrt.cs in der Urlaubsfahrt-Klasse in der Funktion GetTack, die als Argumente die Streckenlänge, das Start-Benzin, die Strecke, die mit einer maximalen Tankfüllung zurückgelegt werden kann und eine Liste aller Tankstellen. Tankstellen sind in GasStation.cs in der Klasse GasStation dargestellt und enthalten den Preis und die Position. Die Klasse Track aus Track.cs  enthält eine Liste an Tankstellen und berechnet für diese Zusammensetzung an Tankstellen den besten Preis, egal an wie vielen Tankstellen gehalten wird. \\
-Die Hauptfunktion, GetTrack, enthält eine Liste, trackParts, die für jede Tankstelle den besten Track zu ihr enthält. Dieser wird gebildet, indem für jede Tankstelle davor der beste Track gefunden wird. Aus all diesen bereits berechneten Tracks wird jeweils ein neuer gebildet, indem , von denen zuerst die mit den wenigsten Stopps ausgewählt werden und dann die, die am günstigsten sind, falls es mehrere sind. Die Berechnung des Preises eines Abschnitts wird im nächsten Abschnitt erklärt. Dieser Lösungsweg findet das richtige Ergebnis, da eine ideale Lösung immer in 2 selbst auch wieder ideal lösbare Teilprobleme zerlegt werden kann. \\
-Der beste Preis eines Wegabschnitts wird mit Hilfe von Abdeckung gelöst. Dafür werden die Tankstellen dem Preis entlang aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Range definiert, die von der Tankstelle aus bis zur maximalen Tanklänge, oder wenn die Gesamt-Streckenlänge kürzer ist, bis zum Streckenende geht. Danach wird für die zweit-preiswerteste Tankstelle auch eine solche Range definiert, es sei denn, es gibt Überschneidungen mit einer bereits gefundenen Range. In diesem Fall wird die bereits gefundene Range erweitert. Dieses Verfahren wird so lange wiederholt, bis nur noch eine Range existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
-2
+
 \section{Beispiele}
 Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
 
