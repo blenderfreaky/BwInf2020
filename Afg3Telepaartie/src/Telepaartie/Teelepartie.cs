@@ -6,8 +6,14 @@
 
     public static class Teelepartie
     {
-        public static int LLL(int numberOfCups = 3, int numberOfItems = 15, Action<string> handleProgress = null)
+        public static int LLL(int numberOfCups = 3, int numberOfItems = 15, Action<string> handleProgress = null, List<int> Goal = null)
         {
+            State goal = new State(Goal);
+            if(Goal != null)
+            {
+                numberOfCups = Goal.Count;
+                numberOfItems = Goal.Sum();
+            }
             #region Funcs & Meth
             List<List<int>> GetEndings(int NumberOfCups, int NumberOfItems) =>
                 GetGoals(NumberOfCups - 1, NumberOfItems).Select(x => {; x.Insert(0, 0); return x; }).ToList();
@@ -50,8 +56,11 @@
                     .SelectMany(x => x.GetNextGen())
                     .Distinct()
                     .Except(allOlds.AsParallel()).ToList();
-
-                if (newChildos.Count == 0)
+                if(Goal != null)
+                {
+                    if (newChildos.Contains(goal)) return i + 1;
+                }
+                else if (newChildos.Count == 0)
                 {
                     handleProgress?.Invoke(Environment.NewLine);
                     foreach (var oldestChild in newDads
