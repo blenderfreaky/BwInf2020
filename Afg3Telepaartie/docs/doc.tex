@@ -170,6 +170,9 @@ Der Algoritmus funktioniert dann, indem er nach und nach alle nicht-leeren Gener
 
 \subsection{Beweis}
 
+Es existiert eine letzte nicht-leere Generation \(Gen_m\).
+Weiterdem gilt \(LLL(n) = m\).
+
 \subsubsection{Hilfssatz 1: Erreichen aller lösbaren Zustände} \label{proof:completeness}
 
 Wähle beliebig aber fest einen Zustand \(s\in\mathbb{S}_n\).
@@ -253,6 +256,37 @@ Die Generationen \(Gen_j\) mit \(0 \leq j < i\) enthalten zusammen alle Elemente
 Ist nun \(s \in Gen_i\), gilt laut \cref{proof:uniqueness}, dass \(s\) in keiner anderen Generation aus \((Gen_i)_{i\in\mathbb{N}}\), also auch keiner Generation \(Gen_j\) enthalten ist. Da \(LLL(s) < i \iff s \in Gen_j\) gilt, und da \(s \notin Gen_j\) gilt, gilt auch \(\lnot(LLL(s) < i) \iff LLL(s) \geq i\).
 
 Da \(LLL(s) \geq i\) gilt, gilt \(LLL(s) < i\) nicht. \(\Box\)
+
+\subsubsection{Hilfssatz 4: Garantie der Leerheit} \label{proof:termination}
+
+Die Serie \((Gen_i)_{i\in\mathbb{N}}\) ist bis inklusive zu einem Index \(m\) in keinem Element leer. Nach diesem Index ist sie in jedem Element leer.
+
+\paragraph{Beweis}
+
+Angenommen \(Gen_i = {}\).
+
+\begin{align*}
+    Gen_{i+1} :&= \left\{ s \mid \left(\exists_{t \in Gen_i} : s \in origin(t)\right) \land \left(\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}\right) \right\} \\
+    & = \{ s \mid (\underbrace{\exists_{t \in \{\}} : s \in origin(t)}_{\substack{\text{In der leeren Menge}\\\text{existieren keine Elemente.}\\\text{Erst Recht keine, die}\\\text{die Kondition erfüllen}}}) \land (\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}) \} \\
+    & = \{\} \\
+\end{align*}
+
+Somit gilt \(Gen_i = {} \implies Gen_{i+1} = {}\).
+
+Wäre vor einem Index \(m\) eine Generation leer, müssten somit auch folgende Generationen leer sein. Somit wäre \(m\) redefinierbar als der Index wo das erste leere Element vorkommt.
+
+Da nur eine endliche Menge an Zuständen \(s \in \mathbb{S}_n\) existiert, und da alle lösbaren Zustände, welche Teilmenge aller Zustände sind, laut \cref{proof:uniqueness} eindeutig genau einer Generation angehören, ist auch die Menge an nicht-leeren Generationen endlich.
+
+Da endlich viele nicht-leeren Generationen enthalten sein müssen, und da die Serie nicht zwischendrin leere Generationen enthalten kann, muss sie alle nicht-leeren Generationen bis zu einem Index \(m\) haben, und alle leeren ab diesem. \(\Box\)
+
+\subsubsection{Beweis}
+
+Laut \cref{proof:termination} existiert eine letzte, nicht-leere Generation \(Gen_m\).
+Da die letzte nicht-leere Menge existiert, ist bekannt, dass alle nicht-leeren Generation einen Index kleiner oder gleich \(m\) haben.
+Laut \cref{proof:minimality} gilt für alle \(s \in Gen_i\): \(LLL(s) = i\).
+Da alle Generation mit mehr als null Zuständen \(Gen_i\) einen Index \(i \leq m\) haben, ist die maximale \(LLL\) der maximale Index \(m\).
+
+Da die maximale \(LLL\) gleich dem Index \(m\) ist, ist \(L(n) = m\).
 
 \section{Umsetzung}
 
