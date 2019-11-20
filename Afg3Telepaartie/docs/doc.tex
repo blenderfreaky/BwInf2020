@@ -146,18 +146,15 @@ Eine Generation ist eine Menge an unterschiedlichen Zuständen.
 
 \subsection{Kernidee}
 
-Die Grundidee der Lösung basiert auf der Idee, vom Endzustand den idealen Weg zu jedem Anfangszustand zu finden.
-Das heißt, dass ein Baum aufgebaut wird, wobei die Knoten einzelne Zustände symbolisieren.
-Hierbei sind die Kinder eines Knotens definiert als alle 
-Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere, die vom 1. Nebenalgorithmus gefunden werden. Die Köpfe und damit der Return-Wert des Nebenalgorithmus sind alle Möglichen Zustände, bei denen genau ein Behälter 0 Elemente enthält. Nun werden mit dem 2. Teilalgorithmus alle Zustände gefunden, aus denen der aktuelle Zustand gebildet werden kann, woraus die neue Generation entsteht. Von den neuen Zuständen werden alle entfernt, die bereits gefunden wurden, sodass keine Dopplungen auftreten können. Auch auf diese neuen Zustände werden alle möglichen Operationen angewendet, wobei dies so lange wiederholt wird, bis keine neuen Zustände gefunden werden. Die Eltern dieser Generation ohne Zustände sind die Zustände, die am meisten Schritte brauchen, um in einen zulässigen Endzustand überführt zu werden.
-
-Der Baum hat nicht wie üblich nur einen Kopf, sondern mehrere. Diese Köpfe stellen die Endzustände dar. 
+Die Grundidee der Lösung basiert auf der Idee, nicht alle nicht-Endzustände zu ermitteln und diese optimal zu lösen, sondern invers alle Endzustände zu ermitteln und diese invers auf alle ihre Ursprungszustände zurückzuführen, diese Ursprungszustände wiederrum auf ihre eigenen Ursprungszustände zurückzuführen usw., wobei konstant überprüft wird, ob es nicht ''Abkürzungen'' im Sinne bereits gefundener Zustände gibt.
 
 \subsection{Finden aller Kinder eines Knotens} \label{alg:origin}
 
+Der Algoritmus findet für eien Zustand Z alle Zustände für die gilt, dass wenn auf sie alle möglichen Telepaartien angewendet eines der Ergebnisse Z ist. Dafür wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+
 \subsection{Generieren der Endzustände} \label{alg:target}
 
-Der Algoritmus findet für eien Zustand Z alle Zustände für die gilt, dass wenn auf sie alle möglichen Telepaartien angewendet eines der Ergebnisse Z ist. Dafür wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+TODO
 
 \subsection{Hauptalgorithmus}
 
