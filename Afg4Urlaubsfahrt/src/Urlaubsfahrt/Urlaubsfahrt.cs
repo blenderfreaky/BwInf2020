@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.InteropServices;
 
     public static class Urlaubsfahrt
     {
@@ -50,18 +51,26 @@
                     .ToList());
             }
 
-            Debug.Assert(optimalSubTracks
-                    .AllMinsBy(x => x.Stops.Count)
-                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), car)))
-                    .Where(x => x.Price.HasValue)
-                    .AllMinsBy(x => x.Price!.Value)
-                    .Select(x => x.Track)
-                    .Last()
-                    == optimalSubTracks.Last(),
-                    "Misordered paths");
+            //Debug.Assert(optimalSubTracks
+            //        .AllMinsBy(x => x.Stops.Count)
+            //        .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), car)))
+            //        .Where(x => x.Price.HasValue)
+            //        .AllMinsBy(x => x.Price!.Value)
+            //        .Select(x => x.Track)
+            //        .Last()
+            //        == optimalSubTracks.Last(),
+            //        "Misordered paths");
+
+            //return optimalSubTracks
+            //        .Last();
 
             return optimalSubTracks
-                    .Last();
+                .AllMinsBy(x => x.Stops.Count)
+                .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), car)))
+                .Where(x => x.Price.HasValue)
+                .AllMinsBy(x => x.Price!.Value)
+                .Select(x => x.Track)
+                .Last();
         }
     }
 }
