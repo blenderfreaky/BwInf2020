@@ -17,6 +17,7 @@ namespace Urlaubsfahrt
         }
 
         public override readonly bool Equals(object? obj) => obj is GasStation station && Equals(station);
+
         public readonly bool Equals([AllowNull] GasStation other) => Price == other.Price && Position == other.Position;
 
         public override readonly int GetHashCode() => HashCode.Combine(Price, Position);

@@ -16,15 +16,6 @@
 
             foreach (GasStation station in allStations)
             {
-                Console.WriteLine(station);
-
-                Console.WriteLine("--------------------------------");
-
-                foreach (var track in optimalSubTracks)
-                    Console.WriteLine(string.Join(' ', track.Stops));
-
-                Console.WriteLine("");
-
                 optimalSubTracks.RemoveAll(x =>
                     station.Position - x.LastStop.Position > tankLength);
 
@@ -41,20 +32,19 @@
                     .AllMinsBy(x => x.Price!.Value)
                     .Select(x => x.Track)
                     .ToList());
-
-                foreach (var track in optimalSubTracks)
-                    Console.WriteLine(string.Join(' ', track.Stops));
-
-                Console.WriteLine("");
-                Console.WriteLine("");
             }
 
-            return optimalSubTracks
+            Debug.Assert(optimalSubTracks
                     .AllMinsBy(x => x.Stops.Count)
                     .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), startFuelLength, tankLength)))
                     .Where(x => x.Price.HasValue)
                     .AllMinsBy(x => x.Price!.Value)
                     .Select(x => x.Track)
+                    .Last()
+                    == optimalSubTracks.Last(),
+                    "Misordered paths");
+
+            return optimalSubTracks
                     .Last();
         }
     }
