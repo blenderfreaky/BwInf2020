@@ -41,12 +41,17 @@
 
         public override readonly bool Equals(object? obj) => obj is Range range && Equals(range);
 
-        public readonly bool Equals([AllowNull] Range other) => Start == other.Start && End == other.End;
+        public readonly bool Equals([AllowNull] Range other) =>
+            Start == other.Start && End == other.End;
+
+        public static bool IsNaR(Range range) => double.IsNaN(range.Start) && double.IsNaN(range.End);
 
         public override readonly int GetHashCode() => HashCode.Combine(Start, End);
 
         public static bool operator ==(in Range left, in Range right) => left.Equals(right);
 
         public static bool operator !=(in Range left, in Range right) => !(left == right);
+
+        public override readonly string ToString() => $"[{Start}..{End}]";
     }
 }

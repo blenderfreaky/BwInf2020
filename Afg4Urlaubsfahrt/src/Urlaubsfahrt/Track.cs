@@ -45,15 +45,17 @@ namespace Urlaubsfahrt
                 new Range(destination, destination + tankLength)
             };
 
-            foreach (GasStation station in Stops.OrderBy(x => x.Price))
+            foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price))
             {
                 Range newRange = new Range(station.Position, station.Position + tankLength);
 
-                double distance = newRange.Length;
+                double distance = tankLength;
+
+                bool startHit = false, endHit = false;
 
                 foreach (var coveredRange in coveredRanges.ToList())
                 {
-                    // Check whether the start and end point collide with the given range.
+                    // Check whether the start and end poin                                                                                                                                                  t collide with the given range.
                     bool containsStart = coveredRange.Contains(newRange.Start);
                     bool containsEnd = coveredRange.Contains(newRange.End);
 
@@ -64,30 +66,38 @@ namespace Urlaubsfahrt
                         break;
                     }
 
+                    if (!containsStart && !containsEnd) continue;
+
                     coveredRanges.Remove(coveredRange);
 
                     if (containsStart)
                     {
+                        if (startHit) throw new InvalidOperationException();
+                        startHit = true;
+
+                        distance -= coveredRange.End - newRange.Start;
                         newRange = new Range(coveredRange.Start, newRange.End);
-                        distance = newRange.End - coveredRange.End;
                     }
                     else if (containsEnd)
                     {
+                        if (endHit) throw new InvalidOperationException();
+                        endHit = true;
+
+                        distance -= newRange.End - coveredRange.Start;
                         newRange = new Range(newRange.Start, coveredRange.End);
-                        distance = coveredRange.Start - newRange.Start;
                     }
 
-                    if (newRange.Length == 0)
+                    if (newRange.Length == 0 || distance == 0)
                     {
                         newRange = Range.NaR;
                         break;
                     }
                 }
 
-                if (newRange == Range.NaR) continue;
+                if (Range.IsNaR(newRange)) continue;
 
                 coveredRanges.Add(newRange);
-                drivingPlan.Add(station, newRange.Length);
+                drivingPlan.Add(station, distance);
 
                 // If range spans the entire path, then the track is covered.
                 if (newRange.Start == 0 && newRange.End >= destination)

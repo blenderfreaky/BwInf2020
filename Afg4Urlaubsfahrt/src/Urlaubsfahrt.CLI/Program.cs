@@ -35,7 +35,7 @@
                 string[] values = lines[i]
                     .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                allStations.Add(new GasStation(double.Parse(values[1]), double.Parse(values[0])));
+                allStations.Add(new GasStation(double.Parse(values[1]) * (usage / 100), double.Parse(values[0])));
             }
             allStations.Add(new GasStation(0, trackLength));
 
@@ -46,6 +46,7 @@
             var drivingPlan = track.GetCheapestPathTo(trackLength, startFuel / usage * 100, fuelLength);
 
             Console.WriteLine(string.Join(' ', drivingPlan.Value.Stops));
+            Console.WriteLine("Stops: " + drivingPlan.Value.Stops.Count);
             Console.WriteLine("Price: " + drivingPlan.Value.Price);
         }
     }
