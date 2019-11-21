@@ -37,6 +37,11 @@
             // If the input has already been processed once, return previous result.
             if (MerkedNummers.TryGetValue(merkedNummer, out var optimalDistribution)) return optimalDistribution;
 
+            if (merkedNummer.Zeros.Count == 0)
+            {
+                return MerkedNummers[merkedNummer] = NummerMerkingSolution.Empty();
+            }
+
             // Not enough digits => Fail.
             if (merkedNummer.Zeros.Count < merkedNummer.MinSequenceLength)
             {

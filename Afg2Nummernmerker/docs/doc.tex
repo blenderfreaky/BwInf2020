@@ -121,11 +121,15 @@ TeileNummerAuf(nullstellen) {
         return <Bereits errechnetes Ergebnis>;
     }
     
+    if ( <Null Stellen bekommen> ) {
+      return [];
+    }
+
     if ( <Zu wenig Stellen zum aufteilen> ) {
     	return <Fehler>;
     }
 
-    for (int i in 2..4) {
+    for (int i from 2 to 4) {
         subAufteilung = TeileNummerAuf(nullstellen.Skip(i));
 
 		    if ( <subAufteilung Fehler produziert hat> ) continue;
@@ -152,6 +156,7 @@ Ziffern der Zahl abgetrennt werden, und daraufhin die übrigen Ziffern
 nocheinmal vom Algorithmus aufgeteilt werden.
 Jetzt, wo man 3 mögliche Aufteilungen hat, muss man nur noch die beste
 hiervon auswählen.
+Sind null Zahlen aufzuteilen, so wird eine leere Aufteilung zurückgegeben.
 
 \section{Umsetzung}
 
@@ -185,32 +190,37 @@ Garbage collectors spart.
 
 \section{Beispiele}
 
-\begin{lstcs}
-Starting splitting of number 005480000005179734 with segments of length 2..4
+\begin{lstlisting}
+Starting splitting of number 005480000005179734
+    with segments of length 2..4
   Digits:             18
 Results:
   Leading zeros hit:  2
   Final distribution: 0054 8000 0005 1797
 
-Starting splitting of number 03495929533790154412660 with segments of length 2..4
+Starting splitting of number 03495929533790154412660
+    with segments of length 2..4
   Digits:             23
 Results:
   Leading zeros hit:  1
   Final distribution: 0349 5929 5337 9015 441 26
 
-Starting splitting of number 5319974879022725607620179 with segments of length 2..4
+Starting splitting of number 5319974879022725607620179
+    with segments of length 2..4
   Digits:             25
 Results:
   Leading zeros hit:  0
   Final distribution: 5319 9748 7902 2725 6076 201
 
-Starting splitting of number 9088761051699482789038331267 with segments of length 2..4
+Starting splitting of number 9088761051699482789038331267
+    with segments of length 2..4
   Digits:             28
 Results:
   Leading zeros hit:  0
   Final distribution: 9088 7610 5169 9482 7890 3833 12
 
-Starting splitting of number 011000000011000100111111101011 with segments of length 2..4
+Starting splitting of number 011000000011000100111111101011
+    with segments of length 2..4
   Digits:             30
 Results:
   Leading zeros hit:  3

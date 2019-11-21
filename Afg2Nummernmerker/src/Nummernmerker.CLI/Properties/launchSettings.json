@@ -2,7 +2,7 @@
   "profiles": {
     "Nummernmerker.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--numberS \"00001111\""
+      "commandLineArgs": "--benchmark"
     }
   }
 }

@@ -10,28 +10,28 @@
 
     public class Options
     {
-        [Option('f', "file", Required = false, HelpText = "The input file to evaluate.")]
+        [Option('f', "file", SetName = "File", HelpText = "The input file to evaluate.")]
         public string File { get; set; }
 
-        [Option('s', "numberS", Required = false, HelpText = "The number to split as a string. Can contain letters, number is split soley based on the '0' character. May be any size including sizes > " + nameof(Int64.MaxValue))]
+        [Option('s', "numberS", SetName = "NumberS", HelpText = "The number to split as a string. Can contain letters, number is split soley based on the '0' character. May be any size including sizes > " + nameof(Int64.MaxValue))]
         public string NumberString { get; set; }
 
-        [Option('n', "number", Required = false, HelpText = "The number to split. Must be smaller or equal to " + nameof(Int64.MaxValue))]
+        [Option('n', "number", SetName = "Number", HelpText = "The number to split. Must be smaller or equal to " + nameof(Int64.MaxValue))]
         public long? Number { get; set; }
 
-        [Option('l', "leastDigits", Required = false, Default = 2, HelpText = "The lowest number of digits that can be used consecutiely.")]
+        [Option('l', "leastDigits", Default = 2, SetName = "Bench", HelpText = "The lowest number of digits that can be used consecutiely.")]
         public int MinSequenceLength { get; set; }
 
-        [Option('m', "mostDigits", Required = false, Default = 4, HelpText = "The highest number of digits that can be used consecutively without splitting.")]
+        [Option('m', "mostDigits", Default = 4, SetName = "Bench", HelpText = "The highest number of digits that can be used consecutively without splitting.")]
         public int MaxSequenceLength { get; set; }
 
-        [Option('b', "benchmark", Required = false, HelpText = "Whether to run a benchmark.")]
+        [Option('b', "benchmark", SetName = "Bench", HelpText = "Whether to run a benchmark.")]
         public bool Benchmark { get; set; }
 
-        [Option('d', "benchmarkDigits", Required = false, Default = 1000, HelpText = "The amount of digits to benchmark with random numbers with.")]
+        [Option('d', "benchmarkDigits", Default = 1000, SetName = "Bench", HelpText = "The amount of digits to benchmark with random numbers with.")]
         public int BenchmarkForLength { get; set; }
 
-        [Option('p', "benchmarkZeroPropability", Required = false, Default = 0.5, HelpText = "The propability a digits in the benchmark is going to be zero.")]
+        [Option('p', "benchmarkZeroPropability", Default = 0.5, SetName = "Bench", HelpText = "The propability a digits in the benchmark is going to be zero.")]
         public double BenchmarkZeroPropability { get; set; }
     }
 
@@ -92,6 +92,7 @@
 
         private static void RunWithStackSize(Action action, int stackSize)
         {
+            //action();return;
             var thread = new Thread(new ThreadStart(action),  stackSize);
             thread.Start();
 
@@ -110,8 +111,16 @@
             var result = Nummernmerker.MerkNummern(numberText, minSequenceLength, maxSequenceLength);
 
             Console.WriteLine("Results: ");
-            Console.WriteLine("  Leading zeros hit:  " + result.LeadingZerosHit);
-            Console.WriteLine("  Final distribution: " + string.Join(' ', result.ApplyDistribution(numberText)));
+
+            if (result.IsSuccessful)
+            {
+                Console.WriteLine("  Leading zeros hit:  " + result.LeadingZerosHit);
+                Console.WriteLine("  Final distribution: " + string.Join(' ', result.ApplyDistribution(numberText)));
+            }
+            else
+            {
+                Console.WriteLine("  Failure");
+            }
         }
     }
 }
