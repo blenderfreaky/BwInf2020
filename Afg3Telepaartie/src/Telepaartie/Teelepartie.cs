@@ -6,12 +6,18 @@
 
     public static class Teelepartie
     {
-        public static int LLL(int numberOfCups = 3, int numberOfItems = 15, Action<string> handleProgress = null, List<int> Goal = null)
+        public static int LLL(
+            int numberOfCups = 3,
+            int numberOfItems = 15,
+            Action<string>? handleProgress = null,
+            IEnumerable<int>? Goal = null)
         {
-            State goal = new State(Goal);
+            State? goal = null;
             if(Goal != null)
             {
-                numberOfCups = Goal.Count;
+                goal = new State(Goal);
+                Goal = Goal.OrderBy(x => x);
+                numberOfCups = Goal.Count();
                 numberOfItems = Goal.Sum();
             }
             #region Funcs & Meth
@@ -56,7 +62,7 @@
                     .SelectMany(x => x.GetNextGen())
                     .Distinct()
                     .Except(allOlds.AsParallel()).ToList();
-                if(Goal != null)
+                if(goal != null)
                 {
                     if (newChildos.Contains(goal)) return i + 1;
                 }

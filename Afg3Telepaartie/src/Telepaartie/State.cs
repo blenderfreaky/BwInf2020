@@ -11,7 +11,7 @@ namespace Telepaartie
         public IReadOnlyList<int> Buckets { get; }
         private readonly int _hashCode;
 
-        public State(List<int> end, State daddy = null)
+        public State(IEnumerable<int> end, State daddy = null)
         {
             List<int> temp = end.ToList();
             temp.Sort();
