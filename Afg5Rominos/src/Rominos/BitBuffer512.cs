@@ -3,7 +3,7 @@
 
 // Add these to support bigger Rominos. Slightly affects performance.
 //#define _8ULong // 22 size rominos
-//#define _4ULong // 16 size rominos
+#define _4ULong // 16 size rominos
 // Else         // 11 size rominos
 
 // Here be dragons
@@ -21,15 +21,16 @@ namespace Rominos
     /// Implements methods for assigning and reading certain bits, and
     /// overloads operators for comparison.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Pack = 1, Size =
-#if _8ULong
-        64
-#elif _4ULong
-        32
-#else
-        16
-#endif
-    )]
+    //    [StructLayout(LayoutKind.Explicit, Pack = 1, Size =
+    //#if _8ULong
+    //        64
+    //#elif _4ULong
+    //        32
+    //#else
+    //        16
+    //#endif
+    //    )]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
 #if !DEBUG_BitBuffer512
     [DebuggerStepThrough]
 #endif
@@ -69,22 +70,22 @@ namespace Rominos
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(64)] private ulong _h;
+        /* [FieldOffset(64)] */ private ulong _h;
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(56)] private ulong _g;
+        /* [FieldOffset(56)] */ private ulong _g;
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(48)] private ulong _f;
+        /* [FieldOffset(48)] */ private ulong _f;
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(32)] private ulong _e;
+        /* [FieldOffset(32)] */ private ulong _e;
 #endif
 
 #if _4ULong
@@ -92,23 +93,23 @@ namespace Rominos
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
 
-        [FieldOffset(24)] private ulong _d;
+        /* [FieldOffset(24)] */ private ulong _d;
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(16)] private ulong _c;
+        /* [FieldOffset(16)] */ private ulong _c;
 #endif
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(8)] private ulong _b;
+        /* [FieldOffset(8)] */ private ulong _b;
 
 #if !DEBUG_BitBuffer512
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        [FieldOffset(0)] private ulong _a;
+        /* [FieldOffset(0)] */ private ulong _a;
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore RCS1169 // Make field read-only.
 

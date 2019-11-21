@@ -2,7 +2,7 @@
   "profiles": {
     "Rominos.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--size 5 --highlightPossibleExtensions --highlightDiagonalBlockade --targetFile rominos.txt"
+      "commandLineArgs": "--size 12 --highlightPossibleExtensions --highlightDiagonalBlockade --stopwatch"
     }
   }
 }
