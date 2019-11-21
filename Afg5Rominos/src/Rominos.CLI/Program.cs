@@ -24,6 +24,9 @@
 
         [Option('s', "stopwatch", Required = false, HelpText = "Whether to supress output other than number of rominos found in order to measure calculation time.")]
         public bool Stopwatch { get; set; }
+
+        [Option('l', "latex", Required = false, HelpText = "Whether to output latex code.")]
+        public bool Latex { get; set; }
     }
 
     public static class Program
@@ -36,9 +39,9 @@
 
         private static readonly object _padlockRunWithOptions = new object();
 
-        public static void RunWithOptions(Options options)
+        public static void RunWithOptions(Options o)
         {
-            if (options.Size > 10)
+            if (o.Size > 10)
             {
                 Console.WriteLine("Sizes greater then 10 are, altough supported, very resource intensive. If you have less then 32GB RAM, I'd advise against running.");
                 Console.WriteLine("Continue? Y/N");
@@ -46,13 +49,13 @@
                 if (Console.ReadLine().StartsWith("N", StringComparison.OrdinalIgnoreCase)) return;
             }
 
-            if (options.Stopwatch)
+            if (o.Stopwatch)
             {
                 Console.WriteLine("Starting");
 
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
-                foreach (var rom in Romino.GetRominosUntilSize(options.Size)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Count);
+                foreach (var rom in Romino.GetRominosUntilSize(o.Size)) Console.WriteLine(rom.Size + " done - " + rom.Rominos.Count);
                 stopwatch.Stop();
                 Console.WriteLine("Done " + stopwatch.ElapsedMilliseconds + "ms");
 
@@ -64,9 +67,9 @@
             FileStream? fileStream = null;
             StreamWriter? fileStreamWriter = null;
 
-            if (options.TargetFilePath != null)
+            if (o.TargetFilePath != null)
             {
-                fileStream = new FileStream(options.TargetFilePath, FileMode.OpenOrCreate);
+                fileStream = new FileStream(o.TargetFilePath, FileMode.OpenOrCreate);
                 fileStreamWriter = new StreamWriter(fileStream);
 
                 Console.SetOut(fileStreamWriter);
@@ -78,28 +81,60 @@
 
             Task worker = Task.Run(() => { });
 
-            foreach (var rominoSizeClass in Romino.GetRominosUntilSize(options.Size))
+            foreach (var rominoSizeClass in Romino.GetRominosUntilSize(o.Size))
             {
                 //worker.ContinueWith(_ =>
                 {
                     lock (_padlockRunWithOptions)
                     {
-                        Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks ({rominoSizeClass.Rominos.Count}) \n"
-                            + (options.TargetFilePath == null ? "\tLoading..." : string.Empty));
+                        if (!o.Latex)
+                        {
+                            Console.WriteLine($"Rominos with {rominoSizeClass.Size} blocks ({rominoSizeClass.Rominos.Count}) \n"
+                                + (o.TargetFilePath == null ? "\tLoading..." : string.Empty));
+                        }
 
-                        if (options.TargetFilePath != null)
+                        if (o.TargetFilePath != null)
                         {
                             ConsoleWriteTo(consoleOut, $"Calculated Rominos with size {rominoSizeClass.Size} ({rominoSizeClass.Rominos.Count})");
                         }
 
+                        if (o.Latex)
+                        {
+                            Console.WriteLine($"\\subsection{{Rominos of size {rominoSizeClass.Size} ({rominoSizeClass.Rominos.Count})}}");
+                            Console.WriteLine();
+                            Console.WriteLine("\\begin{center}");
+
+                            int i = 0;
+
+                            foreach (var romino in rominoSizeClass.Rominos)
+                            {
+                                Console.WriteLine("\\begin{minipage}{0.23\\textwidth}");
+                                Console.WriteLine(string.Join(Environment.NewLine, romino.ToLatex(o.HighlightDiagonalBlockade, o.HighlightPossibleExtensions)));
+                                Console.WriteLine("\\end{minipage}");
+
+                                i++;
+
+                                if ((i % 4) == 0)
+                                {
+                                    i = 0;
+                                    Console.WriteLine();
+                                }
+                            }
+
+                            Console.WriteLine("\\end{center}");
+                            Console.WriteLine();
+
+                            continue;
+                        }
+
                         string[][] text = rominoSizeClass.Rominos
-                            .Select(x => x.ToAsciiArt(options.HighlightDiagonalBlockade, options.HighlightPossibleExtensions).ToArray())
-                            .Take(50)
+                            .Select(x => x.ToAsciiArt(o.HighlightDiagonalBlockade, o.HighlightPossibleExtensions).ToArray())
+                            //.Take(50)
                             .ToArray();
 
                         int bufferWidth = Math.Min(Console.BufferWidth, 200);
 
-                        if (options.TargetFilePath == null)
+                        if (o.TargetFilePath == null)
                         {
                             Console.SetCursorPosition(0, Console.CursorTop - 1);
                             Console.WriteLine(new string(' ', bufferWidth));

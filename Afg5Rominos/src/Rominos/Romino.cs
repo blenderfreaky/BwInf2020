@@ -373,6 +373,50 @@
                 buffer.Clear();
             }
         }
+
+
+        private static readonly Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char> LatexChars = new Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char>
+        {
+            [(false, false, false)] = 'w',
+            [(false, false, true)] = 'c',
+            [(false, true, false)] = 'd',
+            [(true, false, false)] = 'b',
+            [(true, true, false)] = 'C',
+        };
+
+        public readonly IEnumerable<string> ToLatex(bool highlightDiagonalBlockade = false, bool highlightPossibleExtensions = false)
+        {
+            bool[,] blocks = GetBlock2DArray();
+
+            var buffer = new StringBuilder();
+
+            buffer.AppendLine("\\printmatrix{}{{");
+
+            for (int i = -1; i <= blocks.GetLength(0); i++)
+            {
+                buffer.Append("    {");
+
+                for (int j = -1; j <= blocks.GetLength(1); j++)
+                {
+                    Vector2Int vec = new Vector2Int(i, j);
+
+                    bool block = i >= 0 && j >= 0 && i < blocks.GetLength(0) && j < blocks.GetLength(1) && blocks[i, j];
+
+                    bool diagonalBlockade = highlightDiagonalBlockade && DiagonalRootBlockade.Contains(vec);
+                    bool possibleExtension = highlightPossibleExtensions && PossibleExtensions.Contains(vec);
+
+                    if (j >= 0) buffer.Append(',');
+                    buffer.Append(LatexChars[(block, diagonalBlockade, possibleExtension)]);
+                }
+
+                buffer.Append('}');
+                buffer.Append(i < blocks.GetLength(0) ? "," :( "%" + Environment.NewLine + "}}"));
+
+                yield return buffer.ToString();
+
+                buffer.Clear();
+            }
+        }
         #endregion
 
         #region Overrides and Interface Implementations
