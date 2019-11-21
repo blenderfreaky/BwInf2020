@@ -7,13 +7,13 @@
     using System.Collections.Generic;
 
     public class Options
-    {[Option('c', "Cups", Required = false, Default = null, HelpText = "Die Anzahl der Tassen")]
+    {[Option('c', "Cups", Required = false, SetName ="Adv", Default = null, HelpText = "Die Anzahl der Tassen")]
         public int? Cups { get; set; }
 
-        [Option('e', "Elements", Required = false, Default = null, HelpText = "Die Anzahl aller Elemente.")]
+        [Option('e', "Elements", Required = false, SetName ="Adv", Default = null, HelpText = "Die Anzahl aller Elemente.")]
         public int? Elements { get; set; }
 
-        [Option('l', "List", Required = false, Default = null, Separator = ',', HelpText = "Wenn nur ein bestimmter Fall abgedeckt werden soll")]
+        [Option('l', "List", Required = false, SetName ="Eas", Default = null, Separator = ',', HelpText = "Wenn nur ein bestimmter Fall abgedeckt werden soll")]
         public IList<int>? List { get; set; }
 
         [Option('v', "verbose", Required = false, Default = false, HelpText = "Ausgabe der aktuellen Iteration")]
@@ -34,14 +34,8 @@
             string input = string.Empty;
             o.List = o.List?.Count==0 ? null : o.List;
 
-            if((o.List != null) && (o.Elements != null || o.Cups != null))
+            if(!((o.Elements != null && o.Cups != null) || o.List != null))
             {
-                Console.WriteLine("You dumb bitch");
-            }
-            else if(!((o.Elements != null && o.Cups != null) || o.List != null))
-            {
-                
-
                 crinsch0:
                 Console.Write("Wollen sie die benötigten Operationen für einen Verteilung von Bibern erfahren oder die maximal benötigten Operationen für eine Anzahl an Bibern. \"flase\" für eine Biber-Anzahl, \"true\" oder Enter für eine gegebene Verteilung. ");
                 input = Console.ReadLine();
