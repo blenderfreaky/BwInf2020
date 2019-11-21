@@ -26,12 +26,10 @@
     {
         public static void Main(string[] args)
         {
-            if(args.Length == 0) args = "-c 3 -e 100 -s -v".Split(' ');
-            //if(args.Length == 0) args = "-l 21,19,34 -v".Split(' ');
-            Parser.Default.ParseArguments<Options>(args).WithParsed(KrinschBoye);
+            Parser.Default.ParseArguments<Options>(args).WithParsed(RunWithOpts);
         }
 
-        private static void KrinschBoye(Options o)
+        private static void RunWithOpts(Options o)
         {
             string input = string.Empty;
             o.List = o.List?.Count==0 ? null : o.List;
