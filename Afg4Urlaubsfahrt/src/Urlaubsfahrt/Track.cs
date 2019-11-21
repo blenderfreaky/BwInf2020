@@ -64,7 +64,7 @@ namespace Urlaubsfahrt
                         newRange = Range.NaR;
                         break;
                     }
-
+ 
                     if (!containsStart && !containsEnd) continue;
 
                     coveredRanges.Remove(coveredRange);

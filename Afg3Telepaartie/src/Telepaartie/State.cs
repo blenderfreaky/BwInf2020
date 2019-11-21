@@ -6,29 +6,36 @@ namespace Telepaartie
 
     public class State : IEquatable<State>
     {
-        public int Iterations { get => Daddy == null ? 0 : (Daddy.Iterations + 1); }
-        public State Daddy { get; }
+        public int Iterations => Parent == null ? 0 : (Parent.Iterations + 1);
+        public State? Parent { get; }
         public IReadOnlyList<int> Buckets { get; }
         private readonly int _hashCode;
 
-        public State(IEnumerable<int> end, State daddy = null)
+        public State(IEnumerable<int> unsortedBuckets, State? parent = null)
         {
-            List<int> temp = end.ToList();
-            temp.Sort();
-            Buckets = temp;
-            Daddy = daddy;
+            if (unsortedBuckets.Any(x => x < 0)) throw new ArgumentException(nameof(unsortedBuckets));
+
+            Buckets = unsortedBuckets.OrderBy(x => x).ToList();
+            Parent = parent;
             _hashCode = CalculateHashCode();
         }
 
-        private static State ReverseTeelepartie(State daddy, int first, int second)
+        private State(List<int> sortedBuckets, State? parent = null)
         {
-            List<int> temp = daddy.Buckets.ToList();
+            Buckets = sortedBuckets;
+            Parent = parent;
+            _hashCode = CalculateHashCode();
+        }
+
+        private State ReverseTeelepartie(int first, int second)
+        {
+            List<int> temp = new List<int>(Buckets);
 
             temp[first] /= 2;
             temp[second] += temp[first];
             temp.Sort();
 
-            return new State(temp, daddy);
+            return new State(temp, this);
         }
 
         public IEnumerable<State> GetNextGen()
@@ -37,9 +44,9 @@ namespace Telepaartie
             {
                 for (int u = 0; u < Buckets.Count; u++)
                 {
-                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0 && i != u)
+                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0)
                     {
-                        yield return ReverseTeelepartie(this, i, u);
+                        yield return ReverseTeelepartie(i, u);
                     }
                 }
             }
@@ -49,23 +56,26 @@ namespace Telepaartie
             Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
 
         #region Overrides and Interface Implementations
-        public override bool Equals(object obj) => obj is State state && Equals(state);
+
+        public override bool Equals(object? obj) => obj is State state && Equals(state);
 
         public bool Equals(State state)
         {
             if (state == null) return false;
-            if (state.Buckets.Count != Buckets.Count) throw new ArgumentException();
+            if (state.Buckets.Count != Buckets.Count) return false;
 
             for (int i = 0; i < Buckets.Count; i++)
             {
                 if (state.Buckets[i] != Buckets[i]) return false;
             }
+
             return true;
         }
 
         public override int GetHashCode() => _hashCode;
 
         public override string ToString() => "State (Iter:" + Iterations + ") {" + string.Join(';', Buckets) + "}";
-        #endregion
+
+        #endregion Overrides and Interface Implementations
     }
 }
