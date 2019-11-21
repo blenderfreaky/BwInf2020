@@ -294,8 +294,65 @@ Da die maximale \(LLL\) gleich dem Index \(m\) ist, ist \(L(n) = m\).
 \section{Umsetzung}
 
 \section{Beispiele}
+Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen. Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Telepaartie.CLI --help| aus.\\
+Für die Verteilung 2, 4, 7 ist die Ausgabe:
+\begin{lstcs}
+./Telepaartie.CLI -l 2,4,7 -v
+Starting iteration 1
+FERTIG!
+Man benötigt 2 Telepaartie-Schritte
+Die Berechnung dauerte 0:00 Minuten.
+\end{lstcs}
+Für die Verteilung 3, 5, 7 ist die Ausgabe:
+\begin{lstcs}
+./Telepaartie.CLI -l 3,5,7 -v
+Starting iteration 2
+FERTIG!
+Man benötigt 3 Telepaartie-Schritte
+Die Berechnung dauerte 0:00 Minuten.
+\end{lstcs}
+Für die Verteilung 80, 64, 32 ist die Ausgabe:
+\begin{lstcs}
+./Telepaartie.CLI -l 80,64,32 -v
+Starting iteration 1
+FERTIG!
+Man benötigt 2 Telepaartie-Schritte
+Die Berechnung dauerte 0:00 Minuten.
+\end{lstcs}
+./Telepaartie.CLI -c 3 -e 100 -v
+Starting iteration 7
 
-% Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
+--------------
+
+State (Iter:8) {31;32;37}
+State (Iter:7) {5;31;64}
+State (Iter:6) {10;31;59}
+State (Iter:5) {10;28;62}
+State (Iter:4) {20;28;52}
+State (Iter:3) {8;40;52}
+State (Iter:2) {16;32;52}
+State (Iter:1) {32;32;36}
+State (Iter:0) {0;36;64}
+
+--------------
+
+State (Iter:8) {5;32;63}
+State (Iter:7) {5;31;64}
+State (Iter:6) {10;31;59}
+State (Iter:5) {10;28;62}
+State (Iter:4) {20;28;52}
+State (Iter:3) {8;40;52}
+State (Iter:2) {16;32;52}
+State (Iter:1) {32;32;36}
+State (Iter:0) {0;36;64}
+
+--------------
+
+
+FERTIG!
+Man benötigt 8 Telepaartie-Schritte
+Die Berechnung dauerte 0:00 Minuten.
+
 
 \section{Quellcode}
 
