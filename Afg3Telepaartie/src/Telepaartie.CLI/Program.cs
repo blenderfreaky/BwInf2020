@@ -66,11 +66,11 @@
                     o.Elements = ParseInteractive("Wie viele Elemente sollen verteilt werden? ENTER für 15. ", int.TryParse, 15);
 
                     o.Cups = ParseInteractive("Auf wie viele Behälter sollen die Biber aufgeteilt werden? ENTER für 3. ", int.TryParse, 3);
-
-                    o.Verbose = ParseInteractive("Soll bei der Berechnung der aktuelle Zustand ausgegeben werden? ENTER für nein. (y/n) ", TryParseBool, false);
-
-                    o.Stopwatch = ParseInteractive("Soll nach der Berechnung die benötigte Zeit ausgegeben werden? ENTER für ja. (y/n) ", TryParseBool, false);
                 }
+
+                o.Verbose = ParseInteractive("Soll bei der Berechnung der aktuelle Zustand ausgegeben werden? ENTER für nein. (y/n) ", TryParseBool, false);
+
+                o.Stopwatch = ParseInteractive("Soll nach der Berechnung die benötigte Zeit ausgegeben werden? ENTER für ja. (y/n) ", TryParseBool, false);
             }
 
             if (o.Cups != null && o.Elements != null)
