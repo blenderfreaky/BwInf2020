@@ -7,9 +7,12 @@ namespace Telepaartie
 
     public class State : IEquatable<State>
     {
-        public int Iterations => Parent == null ? 0 : (Parent.Iterations + 1);
+        public int Depth => Parent == null ? 0 : (Parent.Depth + 1);
+
         public State? Parent { get; }
+
         public int[] Buckets { get; }
+
         private readonly int _hashCode;
 
         public State(IEnumerable<int> unsortedBuckets, State? parent = null)
@@ -42,15 +45,18 @@ namespace Telepaartie
             return new State(temp, this);
         }
 
-        public IEnumerable<State> GetNextGen()
+        public IEnumerable<State> Origins()
         {
+            // Finden jeder Kombination
             for (int i = 0; i < Buckets.Length; i++)
             {
-                for (int u = 0; u <= i; u++)    //Finden jeder Kombination
+                for (int u = 0; u <= i; u++)
                 {
-                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0) //Zulässige Werte rausfiltern
+                    // Zulässige Werte rausfiltern
+                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0)
                     {
-                        yield return ReverseTeelepartie(i, u);  //und die bearbeitete Version zurückgeben
+                        // und die bearbeitete Version zurückgeben
+                        yield return ReverseTeelepartie(i, u);
                     }
 
                     if (Buckets[u] % 2 == 0 && Buckets[u] > 0)
@@ -73,15 +79,20 @@ namespace Telepaartie
             }
         }
 
-        public static IEnumerable<List<int>> AllPossibleStates(int numberOfCups, int numberOfItems, int max)
+        public static IEnumerable<List<int>> AllPossibleStates(int numberOfCups, int numberOfItems, int previousMax)
         {
             if (numberOfCups < 1) yield break;
             if (numberOfCups == 1) yield return new List<int> { numberOfItems };
 
+            // Die Elementanzahl die mindestens dem aktuellen Behälter hinzugefügt werden muss
             int min = ((numberOfItems - 1) / numberOfCups) + 1;
 
-            for (int i = min; i < Math.Min(max + 1, numberOfItems); i++)
+            // Die Elementanzahl die maximal dem aktuellen Behälter hinzugefügt werden kann
+            int max = Math.Min(previousMax + 1, numberOfItems);
+
+            for (int i = min; i < max; i++)
             {
+                // Finden aller Möglichen Kombinationen für den Rest der Biber und der Behälteranzahl -1
                 foreach (var state in AllPossibleStates(numberOfCups - 1, numberOfItems - i, i))
                 {
                     state.Add(i);
@@ -109,7 +120,7 @@ namespace Telepaartie
 
         public override int GetHashCode() => _hashCode;
 
-        public override string ToString() => "State (Iter:" + Iterations + ") {" + string.Join(';', Buckets) + "}";
+        public override string ToString() => "State (Depth:" + Depth + ") {" + string.Join(';', Buckets) + "}";
 
         #endregion Overrides and Interface Implementations
     }

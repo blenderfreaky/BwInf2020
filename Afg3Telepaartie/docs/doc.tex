@@ -341,23 +341,29 @@ Da alle Generation mit mehr als null Zuständen \(Gen_i\) einen Index \(i \leq m
 Da die maximale \(LLL\) gleich dem Index \(m\) ist, ist \(L(n) = m\).
 
 \section{Umsetzung}
+
 Zur Umsetzung haben wir den obigen Algorithmus in C\# 8.0 mit
 .NET Core 3.0 implementiert.\\
 Die Zustände werden in Form einer |public class| State gespeichert.
 Die |class| beinhaltet
 
 \begin{enumerate}
-    \item |int Iterations| - 
-        Eine Funktion zur Errechnung der Itertation des States.
+    \item |int Depthations| - 
+        Eine Property zur Errechnung der Generationsnummer des Zustands.
     \item |State? Parent| - 
-        Der Vater des State; ist der State ein Endzustand, so ist Parent |null|.
-    \item |IReadOnlyList<int> Buckets| - Die Liste an Biberanzahlen.
+        Der ''Vater'' des Zustands; also der Zustand, von der Zustand Ursprungszustand ist.
+        Ist der Zustand ein Endzustand, so ist Parent |null|.
+    \item |int[] Buckets| - Die Biberanzahlen.
 \end{enumerate}
-Die wichtigsten Methoden aus der |class| State sind |public IEnumerable<State> GetNextGen()| und |private State ReverseTeelepartie(int first, int second)|, wobei |GetNextGen()| alle möglichen Zustände findet, auf die Telepaartie angewendet unter anderem der aktuelle Zustand heraus kommen würde und |ReverseTeelepartie(int first, int second)| die gefundenen Zustände berechnet. \\
-Die allgemeine Berechnung erfolgt in der |public class| Teelepartie. Hier ist die wichtigste Methode |private static int LLLCore(int numberOfCups, int numberOfItems, State? goal, Action<string>? writeLine)|, die entweder für nur einen gegebenen Fall oder für eine Anzahl von Bibern die Anzahl von nötigen Operationen berechnet.
+
+Die wichtigsten Methoden aus der |class| State sind |public IEnumerable<State> Origins()| und |private State ReverseTeelepartie(int first, int second)|, wobei |Origins()| alle Ursprungszustände des Zustands ermittelt, und |ReverseTeelepartie(int first, int second)| dabei intern einen neuen Zustand berechnet, der den Zustand vor der Telepaartie beschreibt. 
+
+Die allgemeine Berechnung erfolgt in der |public static class| Telepartie. Hier ist die wichtigste Methode |private static int LLLCore(int numberOfCups, int numberOfItems, State? goal, Action<string>? writeLine)|, die entweder für nur einen gegebenen Fall oder für eine Anzahl von Bibern die Anzahl von nötigen Operationen berechnet.
+
 \section{Beispiele}
-Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen. Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Telepaartie.CLI --help| aus.\\
-\vspace{0.5cm}
+
+Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen. Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Telepaartie.CLI --help| aus.
+
 Für die Verteilung 2, 4, 7 ist die Ausgabe:
 \begin{lstcs}
 ./Telepaartie.CLI -l 2,4,7 -v
@@ -388,27 +394,27 @@ Starting iteration 8
 
 --------------
 
-State (Iter:8) {31;32;37}
-State (Iter:7) {5;31;64}
-State (Iter:6) {10;31;59}
-State (Iter:5) {10;28;62}
-State (Iter:4) {20;28;52}
-State (Iter:3) {8;40;52}
-State (Iter:2) {16;32;52}
-State (Iter:1) {32;32;36}
-State (Iter:0) {0;36;64}
+State (Depth:8) {31;32;37}
+State (Depth:7) {5;31;64}
+State (Depth:6) {10;31;59}
+State (Depth:5) {10;28;62}
+State (Depth:4) {20;28;52}
+State (Depth:3) {8;40;52}
+State (Depth:2) {16;32;52}
+State (Depth:1) {32;32;36}
+State (Depth:0) {0;36;64}
 
 --------------
 
-State (Iter:8) {5;32;63}
-State (Iter:7) {5;31;64}
-State (Iter:6) {10;31;59}
-State (Iter:5) {10;28;62}
-State (Iter:4) {20;28;52}
-State (Iter:3) {8;40;52}
-State (Iter:2) {16;32;52}
-State (Iter:1) {32;32;36}
-State (Iter:0) {0;36;64}
+State (Depth:8) {5;32;63}
+State (Depth:7) {5;31;64}
+State (Depth:6) {10;31;59}
+State (Depth:5) {10;28;62}
+State (Depth:4) {20;28;52}
+State (Depth:3) {8;40;52}
+State (Depth:2) {16;32;52}
+State (Depth:1) {32;32;36}
+State (Depth:0) {0;36;64}
 
 --------------
 
@@ -423,1114 +429,1118 @@ Starting iteration 8
 
 --------------
 
-State (Iter:7) {1;117;191;291}
-State (Iter:6) {2;117;191;290}
-State (Iter:5) {4;117;189;290}
-State (Iter:4) {4;173;189;234}
-State (Iter:3) {8;173;189;230}
-State (Iter:2) {8;16;230;346}
-State (Iter:1) {16;16;222;346}
-State (Iter:0) {0;32;222;346}
-
---------------
-
-State (Iter:7) {3;109;198;290}
-State (Iter:6) {6;106;198;290}
-State (Iter:5) {6;184;198;212}
-State (Iter:4) {12;178;198;212}
-State (Iter:3) {12;20;212;356}
-State (Iter:2) {8;24;212;356}
-State (Iter:1) {16;16;212;356}
-State (Iter:0) {0;32;212;356}
-
---------------
-
-State (Iter:7) {23;94;202;281}
-State (Iter:6) {23;187;188;202}
-State (Iter:5) {14;23;187;376}
-State (Iter:4) {9;28;187;376}
-State (Iter:3) {9;56;159;376}
-State (Iter:2) {9;103;112;376}
-State (Iter:1) {18;103;103;376}
-State (Iter:0) {0;18;206;376}
-
---------------
-
-State (Iter:7) {1;82;200;317}
-State (Iter:6) {2;82;200;316}
-State (Iter:5) {4;82;200;314}
-State (Iter:4) {4;164;200;232}
-State (Iter:3) {4;68;200;328}
-State (Iter:2) {4;132;136;328}
-State (Iter:1) {4;4;264;328}
-State (Iter:0) {0;8;264;328}
-
---------------
-
-State (Iter:7) {3;110;201;286}
-State (Iter:6) {6;107;201;286}
-State (Iter:5) {12;107;201;280}
-State (Iter:4) {12;79;107;402}
-State (Iter:3) {24;67;107;402}
-State (Iter:2) {24;40;134;402}
-State (Iter:1) {24;40;268;268}
-State (Iter:0) {0;24;40;536}
-
---------------
-
-State (Iter:7) {29;71;89;411}
-State (Iter:6) {29;89;142;340}
-State (Iter:5) {29;89;198;284}
-State (Iter:4) {58;89;198;255}
-State (Iter:3) {31;116;198;255}
-State (Iter:2) {62;85;198;255}
-State (Iter:1) {62;170;170;198}
-State (Iter:0) {0;62;198;340}
-
---------------
-
-State (Iter:7) {50;105;172;273}
-State (Iter:6) {100;105;172;223}
-State (Iter:5) {100;118;172;210}
-State (Iter:4) {72;118;200;210}
-State (Iter:3) {72;82;210;236}
-State (Iter:2) {82;144;164;210}
-State (Iter:1) {62;164;164;210}
-State (Iter:0) {0;62;210;328}
-
---------------
-
-State (Iter:7) {65;90;111;334}
-State (Iter:6) {21;65;180;334}
-State (Iter:5) {21;115;130;334}
-State (Iter:4) {42;109;115;334}
-State (Iter:3) {6;42;218;334}
-State (Iter:2) {12;36;218;334}
-State (Iter:1) {24;24;218;334}
-State (Iter:0) {0;48;218;334}
-
---------------
-
-State (Iter:7) {6;37;196;361}
-State (Iter:6) {12;31;196;361}
-State (Iter:5) {12;31;165;392}
-State (Iter:4) {24;31;165;380}
-State (Iter:3) {24;62;134;380}
-State (Iter:2) {24;72;124;380}
-State (Iter:1) {48;48;124;380}
-State (Iter:0) {0;96;124;380}
-
---------------
-
-State (Iter:7) {33;85;103;379}
-State (Iter:6) {33;85;206;276}
-State (Iter:5) {33;121;170;276}
-State (Iter:4) {33;106;121;340}
-State (Iter:3) {33;106;219;242}
-State (Iter:2) {66;73;219;242}
-State (Iter:1) {66;146;146;242}
-State (Iter:0) {0;66;242;292}
-
---------------
-
-State (Iter:7) {1;120;196;283}
-State (Iter:6) {2;120;196;282}
-State (Iter:5) {2;76;240;282}
-State (Iter:4) {4;76;240;280}
-State (Iter:3) {8;76;236;280}
-State (Iter:2) {16;76;228;280}
-State (Iter:1) {16;152;152;280}
-State (Iter:0) {0;16;280;304}
-
---------------
-
-State (Iter:7) {58;71;106;365}
-State (Iter:6) {58;106;142;294}
-State (Iter:5) {58;142;188;212}
-State (Iter:4) {116;130;142;212}
-State (Iter:3) {26;130;212;232}
-State (Iter:2) {52;104;212;232}
-State (Iter:1) {104;104;160;232}
-State (Iter:0) {0;160;208;232}
-
---------------
-
-State (Iter:7) {9;86;114;391}
-State (Iter:6) {18;77;114;391}
-State (Iter:5) {18;77;228;277}
-State (Iter:4) {18;49;77;456}
-State (Iter:3) {36;49;59;456}
-State (Iter:2) {13;59;72;456}
-State (Iter:1) {26;59;59;456}
-State (Iter:0) {0;26;118;456}
-
---------------
-
-State (Iter:7) {47;53;133;367}
-State (Iter:6) {53;86;94;367}
-State (Iter:5) {53;86;188;273}
-State (Iter:4) {86;106;135;273}
-State (Iter:3) {86;135;167;212}
-State (Iter:2) {45;86;135;334}
-State (Iter:1) {86;90;90;334}
-State (Iter:0) {0;86;180;334}
-
---------------
-
-State (Iter:7) {17;98;194;291}
-State (Iter:6) {34;98;177;291}
-State (Iter:5) {34;98;114;354}
-State (Iter:4) {68;98;114;320}
-State (Iter:3) {98;114;136;252}
-State (Iter:2) {38;114;196;252}
-State (Iter:1) {76;76;196;252}
-State (Iter:0) {0;152;196;252}
-
---------------
-
-State (Iter:7) {9;96;194;301}
-State (Iter:6) {9;96;107;388}
-State (Iter:5) {18;87;107;388}
-State (Iter:4) {36;87;89;388}
-State (Iter:3) {51;72;89;388}
-State (Iter:2) {17;51;144;388}
-State (Iter:1) {34;34;144;388}
-State (Iter:0) {0;68;144;388}
-
---------------
-
-State (Iter:7) {9;101;158;332}
-State (Iter:6) {9;57;202;332}
-State (Iter:5) {18;48;202;332}
-State (Iter:4) {36;48;202;314}
-State (Iter:3) {12;72;202;314}
-State (Iter:2) {24;72;202;302}
-State (Iter:1) {48;48;202;302}
-State (Iter:0) {0;96;202;302}
-
---------------
-
-State (Iter:7) {18;57;191;334}
-State (Iter:6) {18;114;134;334}
-State (Iter:5) {18;134;220;228}
-State (Iter:4) {8;18;134;440}
-State (Iter:3) {8;36;116;440}
-State (Iter:2) {8;72;80;440}
-State (Iter:1) {16;72;72;440}
-State (Iter:0) {0;16;144;440}
-
---------------
-
-State (Iter:7) {18;106;111;365}
-State (Iter:6) {36;88;111;365}
-State (Iter:5) {72;75;88;365}
-State (Iter:4) {13;72;150;365}
-State (Iter:3) {13;78;144;365}
-State (Iter:2) {26;78;131;365}
-State (Iter:1) {52;52;131;365}
-State (Iter:0) {0;104;131;365}
-
---------------
-
-State (Iter:7) {13;134;170;283}
-State (Iter:6) {13;36;268;283}
-State (Iter:5) {13;15;36;536}
-State (Iter:4) {15;26;36;523}
-State (Iter:3) {26;30;36;508}
-State (Iter:2) {10;30;52;508}
-State (Iter:1) {20;20;52;508}
-State (Iter:0) {0;40;52;508}
-
---------------
-
-State (Iter:7) {2;41;157;400}
-State (Iter:6) {4;41;157;398}
-State (Iter:5) {8;41;153;398}
-State (Iter:4) {16;41;153;390}
-State (Iter:3) {32;41;137;390}
-State (Iter:2) {41;64;105;390}
-State (Iter:1) {41;41;128;390}
-State (Iter:0) {0;82;128;390}
-
---------------
-
-State (Iter:7) {17;82;183;318}
-State (Iter:6) {34;82;166;318}
-State (Iter:5) {48;68;166;318}
-State (Iter:4) {20;96;166;318}
-State (Iter:3) {20;96;152;332}
-State (Iter:2) {40;76;152;332}
-State (Iter:1) {40;152;152;256}
-State (Iter:0) {0;40;256;304}
-
---------------
-
-State (Iter:7) {1;99;181;319}
-State (Iter:6) {1;82;198;319}
-State (Iter:5) {2;82;198;318}
-State (Iter:4) {2;82;120;396}
-State (Iter:3) {4;80;120;396}
-State (Iter:2) {4;80;240;276}
-State (Iter:1) {4;160;160;276}
-State (Iter:0) {0;4;276;320}
-
---------------
-
-State (Iter:7) {7;37;239;317}
-State (Iter:6) {7;37;78;478}
-State (Iter:5) {7;37;156;400}
-State (Iter:4) {7;74;156;363}
-State (Iter:3) {7;148;156;289}
-State (Iter:2) {7;8;289;296}
-State (Iter:1) {8;14;289;289}
-State (Iter:0) {0;8;14;578}
-
---------------
-
-State (Iter:7) {5;67;143;385}
-State (Iter:6) {5;134;143;318}
-State (Iter:5) {5;143;184;268}
-State (Iter:4) {5;41;268;286}
-State (Iter:3) {5;18;41;536}
-State (Iter:2) {5;36;41;518}
-State (Iter:1) {5;5;72;518}
-State (Iter:0) {0;10;72;518}
-
---------------
-
-State (Iter:7) {9;59;197;335}
-State (Iter:6) {9;118;197;276}
-State (Iter:5) {18;118;188;276}
-State (Iter:4) {18;158;188;236}
-State (Iter:3) {18;30;236;316}
-State (Iter:2) {12;36;236;316}
-State (Iter:1) {24;24;236;316}
-State (Iter:0) {0;48;236;316}
-
---------------
-
-State (Iter:7) {5;122;151;322}
-State (Iter:6) {5;122;171;302}
-State (Iter:5) {5;122;131;342}
-State (Iter:4) {5;122;211;262}
-State (Iter:3) {5;89;244;262}
-State (Iter:2) {5;173;178;244}
-State (Iter:1) {5;5;244;346}
-State (Iter:0) {0;10;244;346}
-
---------------
-
-State (Iter:7) {13;85;107;395}
-State (Iter:6) {13;107;170;310}
-State (Iter:5) {13;63;214;310}
-State (Iter:4) {13;63;96;428}
-State (Iter:3) {13;96;126;365}
-State (Iter:2) {13;96;239;252}
-State (Iter:1) {13;13;96;478}
-State (Iter:0) {0;26;96;478}
-
---------------
-
-State (Iter:7) {67;71;129;333}
-State (Iter:6) {4;129;134;333}
-State (Iter:5) {4;129;199;268}
-State (Iter:4) {4;139;199;258}
-State (Iter:3) {4;60;258;278}
-State (Iter:2) {4;20;60;516}
-State (Iter:1) {4;40;40;516}
-State (Iter:0) {0;4;80;516}
-
---------------
-
-State (Iter:7) {35;71;197;297}
-State (Iter:6) {35;126;142;297}
-State (Iter:5) {35;142;171;252}
-State (Iter:4) {29;35;252;284}
-State (Iter:3) {29;32;35;504}
-State (Iter:2) {29;35;64;472}
-State (Iter:1) {29;29;70;472}
-State (Iter:0) {0;58;70;472}
-
---------------
-
-State (Iter:7) {1;99;219;281}
-State (Iter:6) {1;120;198;281}
-State (Iter:5) {2;119;198;281}
-State (Iter:4) {2;79;238;281}
-State (Iter:3) {2;158;159;281}
-State (Iter:2) {1;2;281;316}
-State (Iter:1) {2;2;281;315}
-State (Iter:0) {0;4;281;315}
-
---------------
-
-State (Iter:7) {23;89;131;357}
-State (Iter:6) {46;89;108;357}
-State (Iter:5) {89;92;108;311}
-State (Iter:4) {19;92;178;311}
-State (Iter:3) {19;92;133;356}
-State (Iter:2) {38;92;114;356}
-State (Iter:1) {76;76;92;356}
-State (Iter:0) {0;92;152;356}
-
---------------
-
-State (Iter:7) {3;35;197;365}
-State (Iter:6) {3;35;168;394}
-State (Iter:5) {6;35;168;391}
-State (Iter:4) {12;29;168;391}
-State (Iter:3) {24;29;168;379}
-State (Iter:2) {29;48;144;379}
-State (Iter:1) {29;96;96;379}
-State (Iter:0) {0;29;192;379}
-
---------------
-
-State (Iter:7) {13;55;183;349}
-State (Iter:6) {26;55;170;349}
-State (Iter:5) {26;55;179;340}
-State (Iter:4) {29;52;179;340}
-State (Iter:3) {29;104;179;288}
-State (Iter:2) {29;179;184;208}
-State (Iter:1) {29;29;184;358}
-State (Iter:0) {0;58;184;358}
-
---------------
-
-State (Iter:7) {13;107;157;323}
-State (Iter:6) {13;107;166;314}
-State (Iter:5) {13;107;148;332}
-State (Iter:4) {26;107;135;332}
-State (Iter:3) {26;135;214;225}
-State (Iter:2) {26;90;214;270}
-State (Iter:1) {26;180;180;214}
-State (Iter:0) {0;26;214;360}
-
---------------
-
-State (Iter:7) {3;73;202;322}
-State (Iter:6) {6;73;202;319}
-State (Iter:5) {6;73;117;404}
-State (Iter:4) {12;73;111;404}
-State (Iter:3) {24;61;111;404}
-State (Iter:2) {37;48;111;404}
-State (Iter:1) {48;74;74;404}
-State (Iter:0) {0;48;148;404}
-
---------------
-
-State (Iter:7) {13;89;207;291}
-State (Iter:6) {26;89;194;291}
-State (Iter:5) {26;178;194;202}
-State (Iter:4) {52;176;178;194}
-State (Iter:3) {104;124;178;194}
-State (Iter:2) {54;104;194;248}
-State (Iter:1) {54;54;104;388}
-State (Iter:0) {0;104;108;388}
-
---------------
-
-State (Iter:7) {27;46;53;474}
-State (Iter:6) {19;53;54;474}
-State (Iter:5) {35;38;53;474}
-State (Iter:4) {18;38;70;474}
-State (Iter:3) {36;38;70;456}
-State (Iter:2) {34;38;72;456}
-State (Iter:1) {38;38;68;456}
-State (Iter:0) {0;68;76;456}
-
---------------
-
-State (Iter:7) {45;85;151;319}
-State (Iter:6) {45;151;170;234}
-State (Iter:5) {45;64;151;340}
-State (Iter:4) {64;90;106;340}
-State (Iter:3) {26;106;128;340}
-State (Iter:2) {26;106;212;256}
-State (Iter:1) {26;150;212;212}
-State (Iter:0) {0;26;150;424}
-
---------------
-
-State (Iter:7) {13;31;183;373}
-State (Iter:6) {18;26;183;373}
-State (Iter:5) {26;36;165;373}
-State (Iter:4) {26;36;208;330}
-State (Iter:3) {36;52;208;304}
-State (Iter:2) {36;104;208;252}
-State (Iter:1) {36;148;208;208}
-State (Iter:0) {0;36;148;416}
-
---------------
-
-State (Iter:7) {53;71;236;240}
-State (Iter:6) {53;142;165;240}
-State (Iter:5) {23;53;240;284}
-State (Iter:4) {23;44;53;480}
-State (Iter:3) {21;46;53;480}
-State (Iter:2) {7;21;92;480}
-State (Iter:1) {14;14;92;480}
-State (Iter:0) {0;28;92;480}
-
---------------
-
-State (Iter:7) {1;89;224;286}
-State (Iter:6) {2;89;224;285}
-State (Iter:5) {4;89;224;283}
-State (Iter:4) {8;89;220;283}
-State (Iter:3) {8;178;194;220}
-State (Iter:2) {16;178;194;212}
-State (Iter:1) {16;16;212;356}
-State (Iter:0) {0;32;212;356}
-
---------------
-
-State (Iter:7) {19;74;181;326}
-State (Iter:6) {19;74;145;362}
-State (Iter:5) {19;145;148;288}
-State (Iter:4) {3;19;288;290}
-State (Iter:3) {6;16;288;290}
-State (Iter:2) {2;6;16;576}
-State (Iter:1) {4;4;16;576}
-State (Iter:0) {0;8;16;576}
-
---------------
-
-State (Iter:7) {29;107;151;313}
-State (Iter:6) {29;107;162;302}
-State (Iter:5) {29;162;195;214}
-State (Iter:4) {29;52;195;324}
-State (Iter:3) {52;58;166;324}
-State (Iter:2) {52;108;116;324}
-State (Iter:1) {52;116;216;216}
-State (Iter:0) {0;52;116;432}
-
---------------
-
-State (Iter:7) {1;119;169;311}
-State (Iter:6) {2;119;169;310}
-State (Iter:5) {4;119;169;308}
-State (Iter:4) {4;119;139;338}
-State (Iter:3) {8;119;135;338}
-State (Iter:2) {8;16;238;338}
-State (Iter:1) {16;16;238;330}
-State (Iter:0) {0;32;238;330}
-
---------------
-
-State (Iter:7) {9;92;158;341}
-State (Iter:6) {9;158;184;249}
-State (Iter:5) {9;91;184;316}
-State (Iter:4) {9;91;132;368}
-State (Iter:3) {9;91;236;264}
-State (Iter:2) {9;173;182;236}
-State (Iter:1) {9;9;236;346}
-State (Iter:0) {0;18;236;346}
-
---------------
-
-State (Iter:7) {3;53;199;345}
-State (Iter:6) {6;50;199;345}
-State (Iter:5) {12;50;199;339}
-State (Iter:4) {12;100;149;339}
-State (Iter:3) {24;100;137;339}
-State (Iter:2) {48;100;113;339}
-State (Iter:1) {48;100;226;226}
-State (Iter:0) {0;48;100;452}
-
---------------
-
-State (Iter:7) {2;81;200;317}
-State (Iter:6) {2;81;117;400}
-State (Iter:5) {4;81;115;400}
-State (Iter:4) {4;115;162;319}
-State (Iter:3) {4;162;204;230}
-State (Iter:2) {4;68;204;324}
-State (Iter:1) {4;136;136;324}
-State (Iter:0) {0;4;272;324}
-
---------------
-
-State (Iter:7) {9;79;127;385}
-State (Iter:6) {9;127;158;306}
-State (Iter:5) {18;127;149;306}
-State (Iter:4) {18;149;179;254}
-State (Iter:3) {36;149;161;254}
-State (Iter:2) {12;36;254;298}
-State (Iter:1) {24;24;254;298}
-State (Iter:0) {0;48;254;298}
-
---------------
-
-State (Iter:7) {11;102;200;287}
-State (Iter:6) {11;185;200;204}
-State (Iter:5) {22;174;200;204}
-State (Iter:4) {22;26;204;348}
-State (Iter:3) {22;52;178;348}
-State (Iter:2) {22;104;126;348}
-State (Iter:1) {44;104;104;348}
-State (Iter:0) {0;44;208;348}
-
---------------
-
-State (Iter:7) {1;156;200;243}
-State (Iter:6) {1;43;156;400}
-State (Iter:5) {2;42;156;400}
-State (Iter:4) {4;40;156;400}
-State (Iter:3) {8;40;152;400}
-State (Iter:2) {16;32;152;400}
-State (Iter:1) {32;32;136;400}
-State (Iter:0) {0;64;136;400}
-
---------------
-
-State (Iter:7) {43;59;141;357}
-State (Iter:6) {43;59;216;282}
-State (Iter:5) {59;86;173;282}
-State (Iter:4) {27;118;173;282}
-State (Iter:3) {27;109;118;346}
-State (Iter:2) {9;27;218;346}
-State (Iter:1) {18;18;218;346}
-State (Iter:0) {0;36;218;346}
-
---------------
-
-State (Iter:7) {5;124;142;329}
-State (Iter:6) {10;124;137;329}
-State (Iter:5) {10;13;248;329}
-State (Iter:4) {13;20;238;329}
-State (Iter:3) {13;20;91;476}
-State (Iter:2) {20;26;78;476}
-State (Iter:1) {20;52;52;476}
-State (Iter:0) {0;20;104;476}
-
---------------
-
-State (Iter:7) {1;99;161;339}
-State (Iter:6) {2;99;161;338}
-State (Iter:5) {4;99;159;338}
-State (Iter:4) {4;60;198;338}
-State (Iter:3) {8;56;198;338}
-State (Iter:2) {16;48;198;338}
-State (Iter:1) {32;32;198;338}
-State (Iter:0) {0;64;198;338}
-
---------------
-
-State (Iter:7) {7;78;122;393}
-State (Iter:6) {14;78;115;393}
-State (Iter:5) {28;78;101;393}
-State (Iter:4) {56;73;78;393}
-State (Iter:3) {73;78;112;337}
-State (Iter:2) {39;78;146;337}
-State (Iter:1) {78;78;107;337}
-State (Iter:0) {0;107;156;337}
-
---------------
-
-State (Iter:7) {8;15;197;380}
-State (Iter:6) {15;16;189;380}
-State (Iter:5) {15;32;189;364}
-State (Iter:4) {15;64;189;332}
-State (Iter:3) {15;64;143;378}
-State (Iter:2) {30;64;128;378}
-State (Iter:1) {30;128;128;314}
-State (Iter:0) {0;30;256;314}
-
---------------
-
-State (Iter:7) {6;83;200;311}
-State (Iter:6) {12;83;200;305}
-State (Iter:5) {12;166;200;222}
-State (Iter:4) {12;56;200;332}
-State (Iter:3) {12;56;132;400}
-State (Iter:2) {24;44;132;400}
-State (Iter:1) {24;88;88;400}
-State (Iter:0) {0;24;176;400}
-
---------------
-
-State (Iter:7) {3;113;198;286}
-State (Iter:6) {6;113;198;283}
-State (Iter:5) {6;85;226;283}
-State (Iter:4) {12;79;226;283}
-State (Iter:3) {12;158;204;226}
-State (Iter:2) {12;68;204;316}
-State (Iter:1) {12;136;136;316}
-State (Iter:0) {0;12;272;316}
-
---------------
-
-State (Iter:7) {17;65;183;335}
-State (Iter:6) {34;65;166;335}
-State (Iter:5) {31;68;166;335}
-State (Iter:4) {62;68;135;335}
-State (Iter:3) {62;67;136;335}
-State (Iter:2) {62;134;136;268}
-State (Iter:1) {2;62;268;268}
-State (Iter:0) {0;2;62;536}
-
---------------
-
-State (Iter:7) {35;57;251;257}
-State (Iter:6) {6;35;57;502}
-State (Iter:5) {12;35;57;496}
-State (Iter:4) {24;35;57;484}
-State (Iter:3) {35;48;57;460}
-State (Iter:2) {13;57;70;460}
-State (Iter:1) {13;13;114;460}
-State (Iter:0) {0;26;114;460}
-
---------------
-
-State (Iter:7) {17;58;166;359}
-State (Iter:6) {17;108;116;359}
-State (Iter:5) {34;91;116;359}
-State (Iter:4) {34;91;232;243}
-State (Iter:3) {68;91;209;232}
-State (Iter:2) {23;68;91;418}
-State (Iter:1) {23;23;136;418}
-State (Iter:0) {0;46;136;418}
-
---------------
-
-State (Iter:7) {5;31;179;385}
-State (Iter:6) {10;31;179;380}
-State (Iter:5) {10;62;148;380}
-State (Iter:4) {10;86;124;380}
-State (Iter:3) {10;86;248;256}
-State (Iter:2) {10;162;172;256}
-State (Iter:1) {10;10;256;324}
-State (Iter:0) {0;20;256;324}
-
---------------
-
-State (Iter:7) {19;41;181;359}
-State (Iter:6) {22;38;181;359}
-State (Iter:5) {38;44;159;359}
-State (Iter:4) {38;88;159;315}
-State (Iter:3) {38;71;176;315}
-State (Iter:2) {38;105;142;315}
-State (Iter:1) {38;142;210;210}
-State (Iter:0) {0;38;142;420}
-
---------------
-
-State (Iter:7) {3;47;201;349}
-State (Iter:6) {6;47;201;346}
-State (Iter:5) {6;47;145;402}
-State (Iter:4) {12;47;145;396}
-State (Iter:3) {12;94;98;396}
-State (Iter:2) {4;12;188;396}
-State (Iter:1) {8;8;188;396}
-State (Iter:0) {0;16;188;396}
-
---------------
-
-State (Iter:7) {11;153;189;247}
-State (Iter:6) {11;36;247;306}
-State (Iter:5) {11;36;59;494}
-State (Iter:4) {11;59;72;458}
-State (Iter:3) {22;48;72;458}
-State (Iter:2) {22;48;144;386}
-State (Iter:1) {22;96;96;386}
-State (Iter:0) {0;22;192;386}
-
---------------
-
-State (Iter:7) {1;89;200;310}
-State (Iter:6) {2;89;199;310}
-State (Iter:5) {4;89;199;308}
-State (Iter:4) {8;89;195;308}
-State (Iter:3) {8;89;113;390}
-State (Iter:2) {16;89;105;390}
-State (Iter:1) {32;89;89;390}
-State (Iter:0) {0;32;178;390}
-
---------------
-
-State (Iter:7) {29;34;142;395}
-State (Iter:6) {5;58;142;395}
-State (Iter:5) {5;116;142;337}
-State (Iter:4) {5;116;195;284}
-State (Iter:3) {5;79;232;284}
-State (Iter:2) {5;153;158;284}
-State (Iter:1) {5;5;284;306}
-State (Iter:0) {0;10;284;306}
-
---------------
-
-State (Iter:7) {3;77;197;323}
-State (Iter:6) {6;77;194;323}
-State (Iter:5) {6;77;129;388}
-State (Iter:4) {12;77;123;388}
-State (Iter:3) {24;65;123;388}
-State (Iter:2) {41;48;123;388}
-State (Iter:1) {48;82;82;388}
-State (Iter:0) {0;48;164;388}
-
---------------
-
-State (Iter:7) {43;49;59;449}
-State (Iter:6) {16;49;86;449}
-State (Iter:5) {16;49;172;363}
-State (Iter:4) {32;33;172;363}
-State (Iter:3) {32;66;172;330}
-State (Iter:2) {32;132;172;264}
-State (Iter:1) {32;40;264;264}
-State (Iter:0) {0;32;40;528}
-
---------------
-
-State (Iter:7) {67;167;181;185}
-State (Iter:6) {100;134;181;185}
-State (Iter:5) {47;100;185;268}
-State (Iter:4) {94;100;138;268}
-State (Iter:3) {44;100;188;268}
-State (Iter:2) {44;88;200;268}
-State (Iter:1) {88;88;200;224}
-State (Iter:0) {0;176;200;224}
-
---------------
-
-State (Iter:7) {53;71;134;342}
-State (Iter:6) {53;134;142;271}
-State (Iter:5) {106;134;142;218}
-State (Iter:4) {112;134;142;212}
-State (Iter:3) {8;112;212;268}
-State (Iter:2) {8;56;112;424}
-State (Iter:1) {8;112;112;368}
-State (Iter:0) {0;8;224;368}
-
---------------
-
-State (Iter:7) {1;77;177;345}
-State (Iter:6) {1;77;168;354}
-State (Iter:5) {1;77;186;336}
-State (Iter:4) {1;77;150;372}
-State (Iter:3) {2;77;150;371}
-State (Iter:2) {4;75;150;371}
-State (Iter:1) {4;150;150;296}
-State (Iter:0) {0;4;296;300}
-
---------------
-
-State (Iter:7) {3;74;197;326}
-State (Iter:6) {6;74;197;323}
-State (Iter:5) {12;68;197;323}
-State (Iter:4) {24;56;197;323}
-State (Iter:3) {32;48;197;323}
-State (Iter:2) {32;96;149;323}
-State (Iter:1) {64;64;149;323}
-State (Iter:0) {0;128;149;323}
-
---------------
-
-State (Iter:7) {70;95;101;334}
-State (Iter:6) {25;101;140;334}
-State (Iter:5) {50;101;115;334}
-State (Iter:4) {50;101;219;230}
-State (Iter:3) {50;129;202;219}
-State (Iter:2) {50;73;219;258}
-State (Iter:1) {50;146;146;258}
-State (Iter:0) {0;50;258;292}
-
---------------
-
-State (Iter:7) {28;47;124;401}
-State (Iter:6) {28;77;94;401}
-State (Iter:5) {28;77;188;307}
-State (Iter:4) {28;77;119;376}
-State (Iter:3) {56;77;91;376}
-State (Iter:2) {21;91;112;376}
-State (Iter:1) {42;91;91;376}
-State (Iter:0) {0;42;182;376}
-
---------------
-
-State (Iter:7) {1;101;177;321}
-State (Iter:6) {1;101;144;354}
-State (Iter:5) {2;100;144;354}
-State (Iter:4) {4;100;144;352}
-State (Iter:3) {8;96;144;352}
-State (Iter:2) {8;96;208;288}
-State (Iter:1) {8;192;192;208}
-State (Iter:0) {0;8;208;384}
-
---------------
-
-State (Iter:7) {65;90;146;299}
-State (Iter:6) {65;146;180;209}
-State (Iter:5) {130;144;146;180}
-State (Iter:4) {36;130;146;288}
-State (Iter:3) {72;94;146;288}
-State (Iter:2) {22;144;146;288}
-State (Iter:1) {2;22;288;288}
-State (Iter:0) {0;2;22;576}
-
---------------
-
-State (Iter:7) {7;120;146;327}
-State (Iter:6) {14;113;146;327}
-State (Iter:5) {14;146;214;226}
-State (Iter:4) {28;132;214;226}
-State (Iter:3) {56;132;198;214}
-State (Iter:2) {16;56;132;396}
-State (Iter:1) {16;56;264;264}
-State (Iter:0) {0;16;56;528}
-
---------------
-
-State (Iter:7) {9;149;197;245}
-State (Iter:6) {18;149;197;236}
-State (Iter:5) {18;39;149;394}
-State (Iter:4) {18;78;110;394}
-State (Iter:3) {18;78;220;284}
-State (Iter:2) {18;142;156;284}
-State (Iter:1) {14;18;284;284}
-State (Iter:0) {0;14;18;568}
-
---------------
-
-State (Iter:7) {1;79;199;321}
-State (Iter:6) {2;79;199;320}
-State (Iter:5) {4;79;197;320}
-State (Iter:4) {8;79;197;316}
-State (Iter:3) {16;79;189;316}
-State (Iter:2) {32;63;189;316}
-State (Iter:1) {32;126;126;316}
-State (Iter:0) {0;32;252;316}
-
---------------
-
-State (Iter:7) {45;85;168;302}
-State (Iter:6) {45;85;134;336}
-State (Iter:5) {40;90;134;336}
-State (Iter:4) {80;90;134;296}
-State (Iter:3) {54;90;160;296}
-State (Iter:2) {36;108;160;296}
-State (Iter:1) {72;72;160;296}
-State (Iter:0) {0;144;160;296}
-
---------------
-
-State (Iter:7) {4;43;205;348}
-State (Iter:6) {4;86;205;305}
-State (Iter:5) {4;172;205;219}
-State (Iter:4) {4;33;219;344}
-State (Iter:3) {4;66;186;344}
-State (Iter:2) {8;62;186;344}
-State (Iter:1) {8;124;124;344}
-State (Iter:0) {0;8;248;344}
-
---------------
-
-State (Iter:7) {1;121;158;320}
-State (Iter:6) {2;121;158;319}
-State (Iter:5) {2;158;198;242}
-State (Iter:4) {4;158;198;240}
-State (Iter:3) {4;40;240;316}
-State (Iter:2) {4;80;240;276}
-State (Iter:1) {4;160;160;276}
-State (Iter:0) {0;4;276;320}
-
---------------
-
-State (Iter:7) {7;97;183;313}
-State (Iter:6) {7;86;194;313}
-State (Iter:5) {7;172;194;227}
-State (Iter:4) {14;165;194;227}
-State (Iter:3) {14;33;165;388}
-State (Iter:2) {14;66;132;388}
-State (Iter:1) {14;132;132;322}
-State (Iter:0) {0;14;264;322}
-
---------------
-
-State (Iter:7) {61;113;127;299}
-State (Iter:6) {61;127;186;226}
-State (Iter:5) {122;125;127;226}
-State (Iter:4) {104;125;127;244}
-State (Iter:3) {2;104;244;250}
-State (Iter:2) {2;6;104;488}
-State (Iter:1) {4;4;104;488}
-State (Iter:0) {0;8;104;488}
-
---------------
-
-State (Iter:7) {15;37;205;343}
-State (Iter:6) {15;74;205;306}
-State (Iter:5) {30;74;190;306}
-State (Iter:4) {44;60;190;306}
-State (Iter:3) {16;88;190;306}
-State (Iter:2) {16;102;176;306}
-State (Iter:1) {16;176;204;204}
-State (Iter:0) {0;16;176;408}
-
---------------
-
-State (Iter:7) {9;96;106;389}
-State (Iter:6) {9;96;212;283}
-State (Iter:5) {9;71;96;424}
-State (Iter:4) {9;25;142;424}
-State (Iter:3) {18;25;133;424}
-State (Iter:2) {18;25;266;291}
-State (Iter:1) {18;50;266;266}
-State (Iter:0) {0;18;50;532}
-
---------------
-
-State (Iter:7) {57;71;81;391}
-State (Iter:6) {57;71;162;310}
-State (Iter:5) {57;91;142;310}
-State (Iter:4) {91;114;142;253}
-State (Iter:3) {23;142;182;253}
-State (Iter:2) {23;71;142;364}
-State (Iter:1) {23;142;142;293}
-State (Iter:0) {0;23;284;293}
-
---------------
-
-State (Iter:7) {42;74;181;303}
-State (Iter:6) {42;148;181;229}
-State (Iter:5) {42;81;181;296}
-State (Iter:4) {39;84;181;296}
-State (Iter:3) {39;168;181;212}
-State (Iter:2) {13;39;212;336}
-State (Iter:1) {26;26;212;336}
-State (Iter:0) {0;52;212;336}
-
---------------
-
-State (Iter:7) {13;41;159;387}
-State (Iter:6) {13;82;118;387}
-State (Iter:5) {26;82;105;387}
-State (Iter:4) {26;82;210;282}
-State (Iter:3) {26;128;164;282}
-State (Iter:2) {26;36;256;282}
-State (Iter:1) {26;26;36;512}
-State (Iter:0) {0;36;52;512}
-
---------------
-
-State (Iter:7) {1;79;197;323}
-State (Iter:6) {1;79;126;394}
-State (Iter:5) {2;79;126;393}
-State (Iter:4) {2;79;252;267}
-State (Iter:3) {2;158;188;252}
-State (Iter:2) {2;94;188;316}
-State (Iter:1) {2;188;188;222}
-State (Iter:0) {0;2;222;376}
-
---------------
-
-State (Iter:7) {9;98;155;338}
-State (Iter:6) {9;155;196;240}
-State (Iter:5) {9;85;196;310}
-State (Iter:4) {9;111;170;310}
-State (Iter:3) {18;102;170;310}
-State (Iter:2) {18;68;204;310}
-State (Iter:1) {18;136;136;310}
-State (Iter:0) {0;18;272;310}
-
---------------
-
-State (Iter:7) {3;112;198;287}
-State (Iter:6) {6;112;198;284}
-State (Iter:5) {12;106;198;284}
-State (Iter:4) {12;178;198;212}
-State (Iter:3) {12;20;212;356}
-State (Iter:2) {8;24;212;356}
-State (Iter:1) {16;16;212;356}
-State (Iter:0) {0;32;212;356}
-
---------------
-
-State (Iter:7) {1;163;200;236}
-State (Iter:6) {2;163;200;235}
-State (Iter:5) {2;35;163;400}
-State (Iter:4) {2;70;128;400}
-State (Iter:3) {4;68;128;400}
-State (Iter:2) {8;64;128;400}
-State (Iter:1) {8;128;128;336}
-State (Iter:0) {0;8;256;336}
-
---------------
-
-State (Iter:7) {17;83;163;337}
-State (Iter:6) {34;83;146;337}
-State (Iter:5) {68;83;112;337}
-State (Iter:4) {44;83;136;337}
-State (Iter:3) {83;88;92;337}
-State (Iter:2) {83;92;176;249}
-State (Iter:1) {92;166;166;176}
-State (Iter:0) {0;92;176;332}
-
---------------
-
-State (Iter:7) {6;19;219;356}
-State (Iter:6) {6;38;219;337}
-State (Iter:5) {12;32;219;337}
-State (Iter:4) {24;32;207;337}
-State (Iter:3) {24;32;130;414}
-State (Iter:2) {24;32;260;284}
-State (Iter:1) {24;24;32;520}
-State (Iter:0) {0;32;48;520}
-
---------------
-
-State (Iter:7) {25;173;185;217}
-State (Iter:6) {50;160;173;217}
-State (Iter:5) {100;123;160;217}
-State (Iter:4) {60;123;200;217}
-State (Iter:3) {63;120;200;217}
-State (Iter:2) {63;80;217;240}
-State (Iter:1) {63;160;160;217}
-State (Iter:0) {0;63;217;320}
-
---------------
-
-State (Iter:7) {7;122;193;278}
-State (Iter:6) {7;85;122;386}
-State (Iter:5) {14;85;115;386}
-State (Iter:4) {28;85;115;372}
-State (Iter:3) {56;57;115;372}
-State (Iter:2) {56;58;114;372}
-State (Iter:1) {56;56;116;372}
-State (Iter:0) {0;112;116;372}
-
---------------
-
-State (Iter:7) {6;31;202;361}
-State (Iter:6) {12;31;196;361}
-State (Iter:5) {12;31;165;392}
-State (Iter:4) {24;31;165;380}
-State (Iter:3) {24;62;134;380}
-State (Iter:2) {24;72;124;380}
-State (Iter:1) {48;48;124;380}
-State (Iter:0) {0;96;124;380}
-
---------------
-
-State (Iter:7) {1;89;221;289}
-State (Iter:6) {2;88;221;289}
-State (Iter:5) {4;88;221;287}
-State (Iter:4) {8;88;221;283}
-State (Iter:3) {16;80;221;283}
-State (Iter:2) {32;64;221;283}
-State (Iter:1) {64;64;189;283}
-State (Iter:0) {0;128;189;283}
-
---------------
-
-State (Iter:7) {5;31;193;371}
-State (Iter:6) {5;31;178;386}
-State (Iter:5) {10;31;178;381}
-State (Iter:4) {10;62;147;381}
-State (Iter:3) {20;52;147;381}
-State (Iter:2) {40;52;127;381}
-State (Iter:1) {40;52;254;254}
-State (Iter:0) {0;40;52;508}
+State (Depth:7) {1;117;191;291}
+State (Depth:6) {2;117;191;290}
+State (Depth:5) {4;117;189;290}
+State (Depth:4) {4;173;189;234}
+State (Depth:3) {8;173;189;230}
+State (Depth:2) {8;16;230;346}
+State (Depth:1) {16;16;222;346}
+State (Depth:0) {0;32;222;346}
+
+--------------
+
+State (Depth:7) {3;109;198;290}
+State (Depth:6) {6;106;198;290}
+State (Depth:5) {6;184;198;212}
+State (Depth:4) {12;178;198;212}
+State (Depth:3) {12;20;212;356}
+State (Depth:2) {8;24;212;356}
+State (Depth:1) {16;16;212;356}
+State (Depth:0) {0;32;212;356}
+
+--------------
+
+State (Depth:7) {23;94;202;281}
+State (Depth:6) {23;187;188;202}
+State (Depth:5) {14;23;187;376}
+State (Depth:4) {9;28;187;376}
+State (Depth:3) {9;56;159;376}
+State (Depth:2) {9;103;112;376}
+State (Depth:1) {18;103;103;376}
+State (Depth:0) {0;18;206;376}
+
+--------------
+\end{lstcs}
+
+- Einige Ergebnisse der Kürze halber ausgelassen -
+
+% State (Depth:7) {1;82;200;317}
+% State (Depth:6) {2;82;200;316}
+% State (Depth:5) {4;82;200;314}
+% State (Depth:4) {4;164;200;232}
+% State (Depth:3) {4;68;200;328}
+% State (Depth:2) {4;132;136;328}
+% State (Depth:1) {4;4;264;328}
+% State (Depth:0) {0;8;264;328}
+
+% --------------
+
+% State (Depth:7) {3;110;201;286}
+% State (Depth:6) {6;107;201;286}
+% State (Depth:5) {12;107;201;280}
+% State (Depth:4) {12;79;107;402}
+% State (Depth:3) {24;67;107;402}
+% State (Depth:2) {24;40;134;402}
+% State (Depth:1) {24;40;268;268}
+% State (Depth:0) {0;24;40;536}
+
+% --------------
+
+% State (Depth:7) {29;71;89;411}
+% State (Depth:6) {29;89;142;340}
+% State (Depth:5) {29;89;198;284}
+% State (Depth:4) {58;89;198;255}
+% State (Depth:3) {31;116;198;255}
+% State (Depth:2) {62;85;198;255}
+% State (Depth:1) {62;170;170;198}
+% State (Depth:0) {0;62;198;340}
+
+% --------------
+
+% State (Depth:7) {50;105;172;273}
+% State (Depth:6) {100;105;172;223}
+% State (Depth:5) {100;118;172;210}
+% State (Depth:4) {72;118;200;210}
+% State (Depth:3) {72;82;210;236}
+% State (Depth:2) {82;144;164;210}
+% State (Depth:1) {62;164;164;210}
+% State (Depth:0) {0;62;210;328}
+
+% --------------
+
+% State (Depth:7) {65;90;111;334}
+% State (Depth:6) {21;65;180;334}
+% State (Depth:5) {21;115;130;334}
+% State (Depth:4) {42;109;115;334}
+% State (Depth:3) {6;42;218;334}
+% State (Depth:2) {12;36;218;334}
+% State (Depth:1) {24;24;218;334}
+% State (Depth:0) {0;48;218;334}
+
+% --------------
+
+% State (Depth:7) {6;37;196;361}
+% State (Depth:6) {12;31;196;361}
+% State (Depth:5) {12;31;165;392}
+% State (Depth:4) {24;31;165;380}
+% State (Depth:3) {24;62;134;380}
+% State (Depth:2) {24;72;124;380}
+% State (Depth:1) {48;48;124;380}
+% State (Depth:0) {0;96;124;380}
+
+% --------------
+
+% State (Depth:7) {33;85;103;379}
+% State (Depth:6) {33;85;206;276}
+% State (Depth:5) {33;121;170;276}
+% State (Depth:4) {33;106;121;340}
+% State (Depth:3) {33;106;219;242}
+% State (Depth:2) {66;73;219;242}
+% State (Depth:1) {66;146;146;242}
+% State (Depth:0) {0;66;242;292}
+
+% --------------
+
+% State (Depth:7) {1;120;196;283}
+% State (Depth:6) {2;120;196;282}
+% State (Depth:5) {2;76;240;282}
+% State (Depth:4) {4;76;240;280}
+% State (Depth:3) {8;76;236;280}
+% State (Depth:2) {16;76;228;280}
+% State (Depth:1) {16;152;152;280}
+% State (Depth:0) {0;16;280;304}
+
+% --------------
+
+% State (Depth:7) {58;71;106;365}
+% State (Depth:6) {58;106;142;294}
+% State (Depth:5) {58;142;188;212}
+% State (Depth:4) {116;130;142;212}
+% State (Depth:3) {26;130;212;232}
+% State (Depth:2) {52;104;212;232}
+% State (Depth:1) {104;104;160;232}
+% State (Depth:0) {0;160;208;232}
+
+% --------------
+
+% State (Depth:7) {9;86;114;391}
+% State (Depth:6) {18;77;114;391}
+% State (Depth:5) {18;77;228;277}
+% State (Depth:4) {18;49;77;456}
+% State (Depth:3) {36;49;59;456}
+% State (Depth:2) {13;59;72;456}
+% State (Depth:1) {26;59;59;456}
+% State (Depth:0) {0;26;118;456}
+
+% --------------
+
+% State (Depth:7) {47;53;133;367}
+% State (Depth:6) {53;86;94;367}
+% State (Depth:5) {53;86;188;273}
+% State (Depth:4) {86;106;135;273}
+% State (Depth:3) {86;135;167;212}
+% State (Depth:2) {45;86;135;334}
+% State (Depth:1) {86;90;90;334}
+% State (Depth:0) {0;86;180;334}
+
+% --------------
+
+% State (Depth:7) {17;98;194;291}
+% State (Depth:6) {34;98;177;291}
+% State (Depth:5) {34;98;114;354}
+% State (Depth:4) {68;98;114;320}
+% State (Depth:3) {98;114;136;252}
+% State (Depth:2) {38;114;196;252}
+% State (Depth:1) {76;76;196;252}
+% State (Depth:0) {0;152;196;252}
+
+% --------------
+
+% State (Depth:7) {9;96;194;301}
+% State (Depth:6) {9;96;107;388}
+% State (Depth:5) {18;87;107;388}
+% State (Depth:4) {36;87;89;388}
+% State (Depth:3) {51;72;89;388}
+% State (Depth:2) {17;51;144;388}
+% State (Depth:1) {34;34;144;388}
+% State (Depth:0) {0;68;144;388}
+
+% --------------
+
+% State (Depth:7) {9;101;158;332}
+% State (Depth:6) {9;57;202;332}
+% State (Depth:5) {18;48;202;332}
+% State (Depth:4) {36;48;202;314}
+% State (Depth:3) {12;72;202;314}
+% State (Depth:2) {24;72;202;302}
+% State (Depth:1) {48;48;202;302}
+% State (Depth:0) {0;96;202;302}
+
+% --------------
+
+% State (Depth:7) {18;57;191;334}
+% State (Depth:6) {18;114;134;334}
+% State (Depth:5) {18;134;220;228}
+% State (Depth:4) {8;18;134;440}
+% State (Depth:3) {8;36;116;440}
+% State (Depth:2) {8;72;80;440}
+% State (Depth:1) {16;72;72;440}
+% State (Depth:0) {0;16;144;440}
+
+% --------------
+
+% State (Depth:7) {18;106;111;365}
+% State (Depth:6) {36;88;111;365}
+% State (Depth:5) {72;75;88;365}
+% State (Depth:4) {13;72;150;365}
+% State (Depth:3) {13;78;144;365}
+% State (Depth:2) {26;78;131;365}
+% State (Depth:1) {52;52;131;365}
+% State (Depth:0) {0;104;131;365}
+
+% --------------
+
+% State (Depth:7) {13;134;170;283}
+% State (Depth:6) {13;36;268;283}
+% State (Depth:5) {13;15;36;536}
+% State (Depth:4) {15;26;36;523}
+% State (Depth:3) {26;30;36;508}
+% State (Depth:2) {10;30;52;508}
+% State (Depth:1) {20;20;52;508}
+% State (Depth:0) {0;40;52;508}
+
+% --------------
+
+% State (Depth:7) {2;41;157;400}
+% State (Depth:6) {4;41;157;398}
+% State (Depth:5) {8;41;153;398}
+% State (Depth:4) {16;41;153;390}
+% State (Depth:3) {32;41;137;390}
+% State (Depth:2) {41;64;105;390}
+% State (Depth:1) {41;41;128;390}
+% State (Depth:0) {0;82;128;390}
+
+% --------------
+
+% State (Depth:7) {17;82;183;318}
+% State (Depth:6) {34;82;166;318}
+% State (Depth:5) {48;68;166;318}
+% State (Depth:4) {20;96;166;318}
+% State (Depth:3) {20;96;152;332}
+% State (Depth:2) {40;76;152;332}
+% State (Depth:1) {40;152;152;256}
+% State (Depth:0) {0;40;256;304}
+
+% --------------
+
+% State (Depth:7) {1;99;181;319}
+% State (Depth:6) {1;82;198;319}
+% State (Depth:5) {2;82;198;318}
+% State (Depth:4) {2;82;120;396}
+% State (Depth:3) {4;80;120;396}
+% State (Depth:2) {4;80;240;276}
+% State (Depth:1) {4;160;160;276}
+% State (Depth:0) {0;4;276;320}
+
+% --------------
+
+% State (Depth:7) {7;37;239;317}
+% State (Depth:6) {7;37;78;478}
+% State (Depth:5) {7;37;156;400}
+% State (Depth:4) {7;74;156;363}
+% State (Depth:3) {7;148;156;289}
+% State (Depth:2) {7;8;289;296}
+% State (Depth:1) {8;14;289;289}
+% State (Depth:0) {0;8;14;578}
+
+% --------------
+
+% State (Depth:7) {5;67;143;385}
+% State (Depth:6) {5;134;143;318}
+% State (Depth:5) {5;143;184;268}
+% State (Depth:4) {5;41;268;286}
+% State (Depth:3) {5;18;41;536}
+% State (Depth:2) {5;36;41;518}
+% State (Depth:1) {5;5;72;518}
+% State (Depth:0) {0;10;72;518}
+
+% --------------
+
+% State (Depth:7) {9;59;197;335}
+% State (Depth:6) {9;118;197;276}
+% State (Depth:5) {18;118;188;276}
+% State (Depth:4) {18;158;188;236}
+% State (Depth:3) {18;30;236;316}
+% State (Depth:2) {12;36;236;316}
+% State (Depth:1) {24;24;236;316}
+% State (Depth:0) {0;48;236;316}
+
+% --------------
+
+% State (Depth:7) {5;122;151;322}
+% State (Depth:6) {5;122;171;302}
+% State (Depth:5) {5;122;131;342}
+% State (Depth:4) {5;122;211;262}
+% State (Depth:3) {5;89;244;262}
+% State (Depth:2) {5;173;178;244}
+% State (Depth:1) {5;5;244;346}
+% State (Depth:0) {0;10;244;346}
+
+% --------------
+
+% State (Depth:7) {13;85;107;395}
+% State (Depth:6) {13;107;170;310}
+% State (Depth:5) {13;63;214;310}
+% State (Depth:4) {13;63;96;428}
+% State (Depth:3) {13;96;126;365}
+% State (Depth:2) {13;96;239;252}
+% State (Depth:1) {13;13;96;478}
+% State (Depth:0) {0;26;96;478}
+
+% --------------
+
+% State (Depth:7) {67;71;129;333}
+% State (Depth:6) {4;129;134;333}
+% State (Depth:5) {4;129;199;268}
+% State (Depth:4) {4;139;199;258}
+% State (Depth:3) {4;60;258;278}
+% State (Depth:2) {4;20;60;516}
+% State (Depth:1) {4;40;40;516}
+% State (Depth:0) {0;4;80;516}
+
+% --------------
+
+% State (Depth:7) {35;71;197;297}
+% State (Depth:6) {35;126;142;297}
+% State (Depth:5) {35;142;171;252}
+% State (Depth:4) {29;35;252;284}
+% State (Depth:3) {29;32;35;504}
+% State (Depth:2) {29;35;64;472}
+% State (Depth:1) {29;29;70;472}
+% State (Depth:0) {0;58;70;472}
+
+% --------------
+
+% State (Depth:7) {1;99;219;281}
+% State (Depth:6) {1;120;198;281}
+% State (Depth:5) {2;119;198;281}
+% State (Depth:4) {2;79;238;281}
+% State (Depth:3) {2;158;159;281}
+% State (Depth:2) {1;2;281;316}
+% State (Depth:1) {2;2;281;315}
+% State (Depth:0) {0;4;281;315}
+
+% --------------
+
+% State (Depth:7) {23;89;131;357}
+% State (Depth:6) {46;89;108;357}
+% State (Depth:5) {89;92;108;311}
+% State (Depth:4) {19;92;178;311}
+% State (Depth:3) {19;92;133;356}
+% State (Depth:2) {38;92;114;356}
+% State (Depth:1) {76;76;92;356}
+% State (Depth:0) {0;92;152;356}
+
+% --------------
+
+% State (Depth:7) {3;35;197;365}
+% State (Depth:6) {3;35;168;394}
+% State (Depth:5) {6;35;168;391}
+% State (Depth:4) {12;29;168;391}
+% State (Depth:3) {24;29;168;379}
+% State (Depth:2) {29;48;144;379}
+% State (Depth:1) {29;96;96;379}
+% State (Depth:0) {0;29;192;379}
+
+% --------------
+
+% State (Depth:7) {13;55;183;349}
+% State (Depth:6) {26;55;170;349}
+% State (Depth:5) {26;55;179;340}
+% State (Depth:4) {29;52;179;340}
+% State (Depth:3) {29;104;179;288}
+% State (Depth:2) {29;179;184;208}
+% State (Depth:1) {29;29;184;358}
+% State (Depth:0) {0;58;184;358}
+
+% --------------
+
+% State (Depth:7) {13;107;157;323}
+% State (Depth:6) {13;107;166;314}
+% State (Depth:5) {13;107;148;332}
+% State (Depth:4) {26;107;135;332}
+% State (Depth:3) {26;135;214;225}
+% State (Depth:2) {26;90;214;270}
+% State (Depth:1) {26;180;180;214}
+% State (Depth:0) {0;26;214;360}
+
+% --------------
+
+% State (Depth:7) {3;73;202;322}
+% State (Depth:6) {6;73;202;319}
+% State (Depth:5) {6;73;117;404}
+% State (Depth:4) {12;73;111;404}
+% State (Depth:3) {24;61;111;404}
+% State (Depth:2) {37;48;111;404}
+% State (Depth:1) {48;74;74;404}
+% State (Depth:0) {0;48;148;404}
+
+% --------------
+
+% State (Depth:7) {13;89;207;291}
+% State (Depth:6) {26;89;194;291}
+% State (Depth:5) {26;178;194;202}
+% State (Depth:4) {52;176;178;194}
+% State (Depth:3) {104;124;178;194}
+% State (Depth:2) {54;104;194;248}
+% State (Depth:1) {54;54;104;388}
+% State (Depth:0) {0;104;108;388}
+
+% --------------
+
+% State (Depth:7) {27;46;53;474}
+% State (Depth:6) {19;53;54;474}
+% State (Depth:5) {35;38;53;474}
+% State (Depth:4) {18;38;70;474}
+% State (Depth:3) {36;38;70;456}
+% State (Depth:2) {34;38;72;456}
+% State (Depth:1) {38;38;68;456}
+% State (Depth:0) {0;68;76;456}
+
+% --------------
+
+% State (Depth:7) {45;85;151;319}
+% State (Depth:6) {45;151;170;234}
+% State (Depth:5) {45;64;151;340}
+% State (Depth:4) {64;90;106;340}
+% State (Depth:3) {26;106;128;340}
+% State (Depth:2) {26;106;212;256}
+% State (Depth:1) {26;150;212;212}
+% State (Depth:0) {0;26;150;424}
+
+% --------------
+
+% State (Depth:7) {13;31;183;373}
+% State (Depth:6) {18;26;183;373}
+% State (Depth:5) {26;36;165;373}
+% State (Depth:4) {26;36;208;330}
+% State (Depth:3) {36;52;208;304}
+% State (Depth:2) {36;104;208;252}
+% State (Depth:1) {36;148;208;208}
+% State (Depth:0) {0;36;148;416}
+
+% --------------
+
+% State (Depth:7) {53;71;236;240}
+% State (Depth:6) {53;142;165;240}
+% State (Depth:5) {23;53;240;284}
+% State (Depth:4) {23;44;53;480}
+% State (Depth:3) {21;46;53;480}
+% State (Depth:2) {7;21;92;480}
+% State (Depth:1) {14;14;92;480}
+% State (Depth:0) {0;28;92;480}
+
+% --------------
+
+% State (Depth:7) {1;89;224;286}
+% State (Depth:6) {2;89;224;285}
+% State (Depth:5) {4;89;224;283}
+% State (Depth:4) {8;89;220;283}
+% State (Depth:3) {8;178;194;220}
+% State (Depth:2) {16;178;194;212}
+% State (Depth:1) {16;16;212;356}
+% State (Depth:0) {0;32;212;356}
+
+% --------------
+
+% State (Depth:7) {19;74;181;326}
+% State (Depth:6) {19;74;145;362}
+% State (Depth:5) {19;145;148;288}
+% State (Depth:4) {3;19;288;290}
+% State (Depth:3) {6;16;288;290}
+% State (Depth:2) {2;6;16;576}
+% State (Depth:1) {4;4;16;576}
+% State (Depth:0) {0;8;16;576}
+
+% --------------
+
+% State (Depth:7) {29;107;151;313}
+% State (Depth:6) {29;107;162;302}
+% State (Depth:5) {29;162;195;214}
+% State (Depth:4) {29;52;195;324}
+% State (Depth:3) {52;58;166;324}
+% State (Depth:2) {52;108;116;324}
+% State (Depth:1) {52;116;216;216}
+% State (Depth:0) {0;52;116;432}
+
+% --------------
+
+% State (Depth:7) {1;119;169;311}
+% State (Depth:6) {2;119;169;310}
+% State (Depth:5) {4;119;169;308}
+% State (Depth:4) {4;119;139;338}
+% State (Depth:3) {8;119;135;338}
+% State (Depth:2) {8;16;238;338}
+% State (Depth:1) {16;16;238;330}
+% State (Depth:0) {0;32;238;330}
+
+% --------------
+
+% State (Depth:7) {9;92;158;341}
+% State (Depth:6) {9;158;184;249}
+% State (Depth:5) {9;91;184;316}
+% State (Depth:4) {9;91;132;368}
+% State (Depth:3) {9;91;236;264}
+% State (Depth:2) {9;173;182;236}
+% State (Depth:1) {9;9;236;346}
+% State (Depth:0) {0;18;236;346}
+
+% --------------
+
+% State (Depth:7) {3;53;199;345}
+% State (Depth:6) {6;50;199;345}
+% State (Depth:5) {12;50;199;339}
+% State (Depth:4) {12;100;149;339}
+% State (Depth:3) {24;100;137;339}
+% State (Depth:2) {48;100;113;339}
+% State (Depth:1) {48;100;226;226}
+% State (Depth:0) {0;48;100;452}
+
+% --------------
+
+% State (Depth:7) {2;81;200;317}
+% State (Depth:6) {2;81;117;400}
+% State (Depth:5) {4;81;115;400}
+% State (Depth:4) {4;115;162;319}
+% State (Depth:3) {4;162;204;230}
+% State (Depth:2) {4;68;204;324}
+% State (Depth:1) {4;136;136;324}
+% State (Depth:0) {0;4;272;324}
+
+% --------------
+
+% State (Depth:7) {9;79;127;385}
+% State (Depth:6) {9;127;158;306}
+% State (Depth:5) {18;127;149;306}
+% State (Depth:4) {18;149;179;254}
+% State (Depth:3) {36;149;161;254}
+% State (Depth:2) {12;36;254;298}
+% State (Depth:1) {24;24;254;298}
+% State (Depth:0) {0;48;254;298}
+
+% --------------
+
+% State (Depth:7) {11;102;200;287}
+% State (Depth:6) {11;185;200;204}
+% State (Depth:5) {22;174;200;204}
+% State (Depth:4) {22;26;204;348}
+% State (Depth:3) {22;52;178;348}
+% State (Depth:2) {22;104;126;348}
+% State (Depth:1) {44;104;104;348}
+% State (Depth:0) {0;44;208;348}
+
+% --------------
+
+% State (Depth:7) {1;156;200;243}
+% State (Depth:6) {1;43;156;400}
+% State (Depth:5) {2;42;156;400}
+% State (Depth:4) {4;40;156;400}
+% State (Depth:3) {8;40;152;400}
+% State (Depth:2) {16;32;152;400}
+% State (Depth:1) {32;32;136;400}
+% State (Depth:0) {0;64;136;400}
+
+% --------------
+
+% State (Depth:7) {43;59;141;357}
+% State (Depth:6) {43;59;216;282}
+% State (Depth:5) {59;86;173;282}
+% State (Depth:4) {27;118;173;282}
+% State (Depth:3) {27;109;118;346}
+% State (Depth:2) {9;27;218;346}
+% State (Depth:1) {18;18;218;346}
+% State (Depth:0) {0;36;218;346}
+
+% --------------
+
+% State (Depth:7) {5;124;142;329}
+% State (Depth:6) {10;124;137;329}
+% State (Depth:5) {10;13;248;329}
+% State (Depth:4) {13;20;238;329}
+% State (Depth:3) {13;20;91;476}
+% State (Depth:2) {20;26;78;476}
+% State (Depth:1) {20;52;52;476}
+% State (Depth:0) {0;20;104;476}
+
+% --------------
+
+% State (Depth:7) {1;99;161;339}
+% State (Depth:6) {2;99;161;338}
+% State (Depth:5) {4;99;159;338}
+% State (Depth:4) {4;60;198;338}
+% State (Depth:3) {8;56;198;338}
+% State (Depth:2) {16;48;198;338}
+% State (Depth:1) {32;32;198;338}
+% State (Depth:0) {0;64;198;338}
+
+% --------------
+
+% State (Depth:7) {7;78;122;393}
+% State (Depth:6) {14;78;115;393}
+% State (Depth:5) {28;78;101;393}
+% State (Depth:4) {56;73;78;393}
+% State (Depth:3) {73;78;112;337}
+% State (Depth:2) {39;78;146;337}
+% State (Depth:1) {78;78;107;337}
+% State (Depth:0) {0;107;156;337}
+
+% --------------
+
+% State (Depth:7) {8;15;197;380}
+% State (Depth:6) {15;16;189;380}
+% State (Depth:5) {15;32;189;364}
+% State (Depth:4) {15;64;189;332}
+% State (Depth:3) {15;64;143;378}
+% State (Depth:2) {30;64;128;378}
+% State (Depth:1) {30;128;128;314}
+% State (Depth:0) {0;30;256;314}
+
+% --------------
+
+% State (Depth:7) {6;83;200;311}
+% State (Depth:6) {12;83;200;305}
+% State (Depth:5) {12;166;200;222}
+% State (Depth:4) {12;56;200;332}
+% State (Depth:3) {12;56;132;400}
+% State (Depth:2) {24;44;132;400}
+% State (Depth:1) {24;88;88;400}
+% State (Depth:0) {0;24;176;400}
+
+% --------------
+
+% State (Depth:7) {3;113;198;286}
+% State (Depth:6) {6;113;198;283}
+% State (Depth:5) {6;85;226;283}
+% State (Depth:4) {12;79;226;283}
+% State (Depth:3) {12;158;204;226}
+% State (Depth:2) {12;68;204;316}
+% State (Depth:1) {12;136;136;316}
+% State (Depth:0) {0;12;272;316}
+
+% --------------
+
+% State (Depth:7) {17;65;183;335}
+% State (Depth:6) {34;65;166;335}
+% State (Depth:5) {31;68;166;335}
+% State (Depth:4) {62;68;135;335}
+% State (Depth:3) {62;67;136;335}
+% State (Depth:2) {62;134;136;268}
+% State (Depth:1) {2;62;268;268}
+% State (Depth:0) {0;2;62;536}
+
+% --------------
+
+% State (Depth:7) {35;57;251;257}
+% State (Depth:6) {6;35;57;502}
+% State (Depth:5) {12;35;57;496}
+% State (Depth:4) {24;35;57;484}
+% State (Depth:3) {35;48;57;460}
+% State (Depth:2) {13;57;70;460}
+% State (Depth:1) {13;13;114;460}
+% State (Depth:0) {0;26;114;460}
+
+% --------------
+
+% State (Depth:7) {17;58;166;359}
+% State (Depth:6) {17;108;116;359}
+% State (Depth:5) {34;91;116;359}
+% State (Depth:4) {34;91;232;243}
+% State (Depth:3) {68;91;209;232}
+% State (Depth:2) {23;68;91;418}
+% State (Depth:1) {23;23;136;418}
+% State (Depth:0) {0;46;136;418}
+
+% --------------
+
+% State (Depth:7) {5;31;179;385}
+% State (Depth:6) {10;31;179;380}
+% State (Depth:5) {10;62;148;380}
+% State (Depth:4) {10;86;124;380}
+% State (Depth:3) {10;86;248;256}
+% State (Depth:2) {10;162;172;256}
+% State (Depth:1) {10;10;256;324}
+% State (Depth:0) {0;20;256;324}
+
+% --------------
+
+% State (Depth:7) {19;41;181;359}
+% State (Depth:6) {22;38;181;359}
+% State (Depth:5) {38;44;159;359}
+% State (Depth:4) {38;88;159;315}
+% State (Depth:3) {38;71;176;315}
+% State (Depth:2) {38;105;142;315}
+% State (Depth:1) {38;142;210;210}
+% State (Depth:0) {0;38;142;420}
+
+% --------------
+
+% State (Depth:7) {3;47;201;349}
+% State (Depth:6) {6;47;201;346}
+% State (Depth:5) {6;47;145;402}
+% State (Depth:4) {12;47;145;396}
+% State (Depth:3) {12;94;98;396}
+% State (Depth:2) {4;12;188;396}
+% State (Depth:1) {8;8;188;396}
+% State (Depth:0) {0;16;188;396}
+
+% --------------
+
+% State (Depth:7) {11;153;189;247}
+% State (Depth:6) {11;36;247;306}
+% State (Depth:5) {11;36;59;494}
+% State (Depth:4) {11;59;72;458}
+% State (Depth:3) {22;48;72;458}
+% State (Depth:2) {22;48;144;386}
+% State (Depth:1) {22;96;96;386}
+% State (Depth:0) {0;22;192;386}
+
+% --------------
+
+% State (Depth:7) {1;89;200;310}
+% State (Depth:6) {2;89;199;310}
+% State (Depth:5) {4;89;199;308}
+% State (Depth:4) {8;89;195;308}
+% State (Depth:3) {8;89;113;390}
+% State (Depth:2) {16;89;105;390}
+% State (Depth:1) {32;89;89;390}
+% State (Depth:0) {0;32;178;390}
+
+% --------------
+
+% State (Depth:7) {29;34;142;395}
+% State (Depth:6) {5;58;142;395}
+% State (Depth:5) {5;116;142;337}
+% State (Depth:4) {5;116;195;284}
+% State (Depth:3) {5;79;232;284}
+% State (Depth:2) {5;153;158;284}
+% State (Depth:1) {5;5;284;306}
+% State (Depth:0) {0;10;284;306}
+
+% --------------
+
+% State (Depth:7) {3;77;197;323}
+% State (Depth:6) {6;77;194;323}
+% State (Depth:5) {6;77;129;388}
+% State (Depth:4) {12;77;123;388}
+% State (Depth:3) {24;65;123;388}
+% State (Depth:2) {41;48;123;388}
+% State (Depth:1) {48;82;82;388}
+% State (Depth:0) {0;48;164;388}
+
+% --------------
+
+% State (Depth:7) {43;49;59;449}
+% State (Depth:6) {16;49;86;449}
+% State (Depth:5) {16;49;172;363}
+% State (Depth:4) {32;33;172;363}
+% State (Depth:3) {32;66;172;330}
+% State (Depth:2) {32;132;172;264}
+% State (Depth:1) {32;40;264;264}
+% State (Depth:0) {0;32;40;528}
+
+% --------------
+
+% State (Depth:7) {67;167;181;185}
+% State (Depth:6) {100;134;181;185}
+% State (Depth:5) {47;100;185;268}
+% State (Depth:4) {94;100;138;268}
+% State (Depth:3) {44;100;188;268}
+% State (Depth:2) {44;88;200;268}
+% State (Depth:1) {88;88;200;224}
+% State (Depth:0) {0;176;200;224}
+
+% --------------
+
+% State (Depth:7) {53;71;134;342}
+% State (Depth:6) {53;134;142;271}
+% State (Depth:5) {106;134;142;218}
+% State (Depth:4) {112;134;142;212}
+% State (Depth:3) {8;112;212;268}
+% State (Depth:2) {8;56;112;424}
+% State (Depth:1) {8;112;112;368}
+% State (Depth:0) {0;8;224;368}
+
+% --------------
+
+% State (Depth:7) {1;77;177;345}
+% State (Depth:6) {1;77;168;354}
+% State (Depth:5) {1;77;186;336}
+% State (Depth:4) {1;77;150;372}
+% State (Depth:3) {2;77;150;371}
+% State (Depth:2) {4;75;150;371}
+% State (Depth:1) {4;150;150;296}
+% State (Depth:0) {0;4;296;300}
+
+% --------------
+
+% State (Depth:7) {3;74;197;326}
+% State (Depth:6) {6;74;197;323}
+% State (Depth:5) {12;68;197;323}
+% State (Depth:4) {24;56;197;323}
+% State (Depth:3) {32;48;197;323}
+% State (Depth:2) {32;96;149;323}
+% State (Depth:1) {64;64;149;323}
+% State (Depth:0) {0;128;149;323}
+
+% --------------
+
+% State (Depth:7) {70;95;101;334}
+% State (Depth:6) {25;101;140;334}
+% State (Depth:5) {50;101;115;334}
+% State (Depth:4) {50;101;219;230}
+% State (Depth:3) {50;129;202;219}
+% State (Depth:2) {50;73;219;258}
+% State (Depth:1) {50;146;146;258}
+% State (Depth:0) {0;50;258;292}
+
+% --------------
+
+% State (Depth:7) {28;47;124;401}
+% State (Depth:6) {28;77;94;401}
+% State (Depth:5) {28;77;188;307}
+% State (Depth:4) {28;77;119;376}
+% State (Depth:3) {56;77;91;376}
+% State (Depth:2) {21;91;112;376}
+% State (Depth:1) {42;91;91;376}
+% State (Depth:0) {0;42;182;376}
+
+% --------------
+
+% State (Depth:7) {1;101;177;321}
+% State (Depth:6) {1;101;144;354}
+% State (Depth:5) {2;100;144;354}
+% State (Depth:4) {4;100;144;352}
+% State (Depth:3) {8;96;144;352}
+% State (Depth:2) {8;96;208;288}
+% State (Depth:1) {8;192;192;208}
+% State (Depth:0) {0;8;208;384}
+
+% --------------
+
+% State (Depth:7) {65;90;146;299}
+% State (Depth:6) {65;146;180;209}
+% State (Depth:5) {130;144;146;180}
+% State (Depth:4) {36;130;146;288}
+% State (Depth:3) {72;94;146;288}
+% State (Depth:2) {22;144;146;288}
+% State (Depth:1) {2;22;288;288}
+% State (Depth:0) {0;2;22;576}
+
+% --------------
+
+% State (Depth:7) {7;120;146;327}
+% State (Depth:6) {14;113;146;327}
+% State (Depth:5) {14;146;214;226}
+% State (Depth:4) {28;132;214;226}
+% State (Depth:3) {56;132;198;214}
+% State (Depth:2) {16;56;132;396}
+% State (Depth:1) {16;56;264;264}
+% State (Depth:0) {0;16;56;528}
+
+% --------------
+
+% State (Depth:7) {9;149;197;245}
+% State (Depth:6) {18;149;197;236}
+% State (Depth:5) {18;39;149;394}
+% State (Depth:4) {18;78;110;394}
+% State (Depth:3) {18;78;220;284}
+% State (Depth:2) {18;142;156;284}
+% State (Depth:1) {14;18;284;284}
+% State (Depth:0) {0;14;18;568}
+
+% --------------
+
+% State (Depth:7) {1;79;199;321}
+% State (Depth:6) {2;79;199;320}
+% State (Depth:5) {4;79;197;320}
+% State (Depth:4) {8;79;197;316}
+% State (Depth:3) {16;79;189;316}
+% State (Depth:2) {32;63;189;316}
+% State (Depth:1) {32;126;126;316}
+% State (Depth:0) {0;32;252;316}
+
+% --------------
+
+% State (Depth:7) {45;85;168;302}
+% State (Depth:6) {45;85;134;336}
+% State (Depth:5) {40;90;134;336}
+% State (Depth:4) {80;90;134;296}
+% State (Depth:3) {54;90;160;296}
+% State (Depth:2) {36;108;160;296}
+% State (Depth:1) {72;72;160;296}
+% State (Depth:0) {0;144;160;296}
+
+% --------------
+
+% State (Depth:7) {4;43;205;348}
+% State (Depth:6) {4;86;205;305}
+% State (Depth:5) {4;172;205;219}
+% State (Depth:4) {4;33;219;344}
+% State (Depth:3) {4;66;186;344}
+% State (Depth:2) {8;62;186;344}
+% State (Depth:1) {8;124;124;344}
+% State (Depth:0) {0;8;248;344}
+
+% --------------
+
+% State (Depth:7) {1;121;158;320}
+% State (Depth:6) {2;121;158;319}
+% State (Depth:5) {2;158;198;242}
+% State (Depth:4) {4;158;198;240}
+% State (Depth:3) {4;40;240;316}
+% State (Depth:2) {4;80;240;276}
+% State (Depth:1) {4;160;160;276}
+% State (Depth:0) {0;4;276;320}
+
+% --------------
+
+% State (Depth:7) {7;97;183;313}
+% State (Depth:6) {7;86;194;313}
+% State (Depth:5) {7;172;194;227}
+% State (Depth:4) {14;165;194;227}
+% State (Depth:3) {14;33;165;388}
+% State (Depth:2) {14;66;132;388}
+% State (Depth:1) {14;132;132;322}
+% State (Depth:0) {0;14;264;322}
+
+% --------------
+
+% State (Depth:7) {61;113;127;299}
+% State (Depth:6) {61;127;186;226}
+% State (Depth:5) {122;125;127;226}
+% State (Depth:4) {104;125;127;244}
+% State (Depth:3) {2;104;244;250}
+% State (Depth:2) {2;6;104;488}
+% State (Depth:1) {4;4;104;488}
+% State (Depth:0) {0;8;104;488}
+
+% --------------
+
+% State (Depth:7) {15;37;205;343}
+% State (Depth:6) {15;74;205;306}
+% State (Depth:5) {30;74;190;306}
+% State (Depth:4) {44;60;190;306}
+% State (Depth:3) {16;88;190;306}
+% State (Depth:2) {16;102;176;306}
+% State (Depth:1) {16;176;204;204}
+% State (Depth:0) {0;16;176;408}
+
+% --------------
+
+% State (Depth:7) {9;96;106;389}
+% State (Depth:6) {9;96;212;283}
+% State (Depth:5) {9;71;96;424}
+% State (Depth:4) {9;25;142;424}
+% State (Depth:3) {18;25;133;424}
+% State (Depth:2) {18;25;266;291}
+% State (Depth:1) {18;50;266;266}
+% State (Depth:0) {0;18;50;532}
+
+% --------------
+
+% State (Depth:7) {57;71;81;391}
+% State (Depth:6) {57;71;162;310}
+% State (Depth:5) {57;91;142;310}
+% State (Depth:4) {91;114;142;253}
+% State (Depth:3) {23;142;182;253}
+% State (Depth:2) {23;71;142;364}
+% State (Depth:1) {23;142;142;293}
+% State (Depth:0) {0;23;284;293}
+
+% --------------
+
+% State (Depth:7) {42;74;181;303}
+% State (Depth:6) {42;148;181;229}
+% State (Depth:5) {42;81;181;296}
+% State (Depth:4) {39;84;181;296}
+% State (Depth:3) {39;168;181;212}
+% State (Depth:2) {13;39;212;336}
+% State (Depth:1) {26;26;212;336}
+% State (Depth:0) {0;52;212;336}
+
+% --------------
+
+% State (Depth:7) {13;41;159;387}
+% State (Depth:6) {13;82;118;387}
+% State (Depth:5) {26;82;105;387}
+% State (Depth:4) {26;82;210;282}
+% State (Depth:3) {26;128;164;282}
+% State (Depth:2) {26;36;256;282}
+% State (Depth:1) {26;26;36;512}
+% State (Depth:0) {0;36;52;512}
+
+% --------------
+
+% State (Depth:7) {1;79;197;323}
+% State (Depth:6) {1;79;126;394}
+% State (Depth:5) {2;79;126;393}
+% State (Depth:4) {2;79;252;267}
+% State (Depth:3) {2;158;188;252}
+% State (Depth:2) {2;94;188;316}
+% State (Depth:1) {2;188;188;222}
+% State (Depth:0) {0;2;222;376}
+
+% --------------
+
+% State (Depth:7) {9;98;155;338}
+% State (Depth:6) {9;155;196;240}
+% State (Depth:5) {9;85;196;310}
+% State (Depth:4) {9;111;170;310}
+% State (Depth:3) {18;102;170;310}
+% State (Depth:2) {18;68;204;310}
+% State (Depth:1) {18;136;136;310}
+% State (Depth:0) {0;18;272;310}
+
+% --------------
+
+% State (Depth:7) {3;112;198;287}
+% State (Depth:6) {6;112;198;284}
+% State (Depth:5) {12;106;198;284}
+% State (Depth:4) {12;178;198;212}
+% State (Depth:3) {12;20;212;356}
+% State (Depth:2) {8;24;212;356}
+% State (Depth:1) {16;16;212;356}
+% State (Depth:0) {0;32;212;356}
+
+% --------------
+
+% State (Depth:7) {1;163;200;236}
+% State (Depth:6) {2;163;200;235}
+% State (Depth:5) {2;35;163;400}
+% State (Depth:4) {2;70;128;400}
+% State (Depth:3) {4;68;128;400}
+% State (Depth:2) {8;64;128;400}
+% State (Depth:1) {8;128;128;336}
+% State (Depth:0) {0;8;256;336}
+
+% --------------
+
+% State (Depth:7) {17;83;163;337}
+% State (Depth:6) {34;83;146;337}
+% State (Depth:5) {68;83;112;337}
+% State (Depth:4) {44;83;136;337}
+% State (Depth:3) {83;88;92;337}
+% State (Depth:2) {83;92;176;249}
+% State (Depth:1) {92;166;166;176}
+% State (Depth:0) {0;92;176;332}
+
+% --------------
+
+% State (Depth:7) {6;19;219;356}
+% State (Depth:6) {6;38;219;337}
+% State (Depth:5) {12;32;219;337}
+% State (Depth:4) {24;32;207;337}
+% State (Depth:3) {24;32;130;414}
+% State (Depth:2) {24;32;260;284}
+% State (Depth:1) {24;24;32;520}
+% State (Depth:0) {0;32;48;520}
+
+% --------------
+
+% State (Depth:7) {25;173;185;217}
+% State (Depth:6) {50;160;173;217}
+% State (Depth:5) {100;123;160;217}
+% State (Depth:4) {60;123;200;217}
+% State (Depth:3) {63;120;200;217}
+% State (Depth:2) {63;80;217;240}
+% State (Depth:1) {63;160;160;217}
+% State (Depth:0) {0;63;217;320}
+
+\begin{lstcs}
+--------------
+
+State (Depth:7) {7;122;193;278}
+State (Depth:6) {7;85;122;386}
+State (Depth:5) {14;85;115;386}
+State (Depth:4) {28;85;115;372}
+State (Depth:3) {56;57;115;372}
+State (Depth:2) {56;58;114;372}
+State (Depth:1) {56;56;116;372}
+State (Depth:0) {0;112;116;372}
+
+--------------
+
+State (Depth:7) {6;31;202;361}
+State (Depth:6) {12;31;196;361}
+State (Depth:5) {12;31;165;392}
+State (Depth:4) {24;31;165;380}
+State (Depth:3) {24;62;134;380}
+State (Depth:2) {24;72;124;380}
+State (Depth:1) {48;48;124;380}
+State (Depth:0) {0;96;124;380}
+
+--------------
+
+State (Depth:7) {1;89;221;289}
+State (Depth:6) {2;88;221;289}
+State (Depth:5) {4;88;221;287}
+State (Depth:4) {8;88;221;283}
+State (Depth:3) {16;80;221;283}
+State (Depth:2) {32;64;221;283}
+State (Depth:1) {64;64;189;283}
+State (Depth:0) {0;128;189;283}
+
+--------------
+
+State (Depth:7) {5;31;193;371}
+State (Depth:6) {5;31;178;386}
+State (Depth:5) {10;31;178;381}
+State (Depth:4) {10;62;147;381}
+State (Depth:3) {20;52;147;381}
+State (Depth:2) {40;52;127;381}
+State (Depth:1) {40;52;254;254}
+State (Depth:0) {0;40;52;508}
 
 --------------
 
@@ -1545,129 +1555,129 @@ Starting iteration 15
 
 --------------
 
-State (Iter:14) {125;1558;3317}
-State (Iter:13) {250;1558;3192}
-State (Iter:12) {250;1634;3116}
-State (Iter:11) {500;1384;3116}
-State (Iter:10) {500;1732;2768}
-State (Iter:9) {1000;1232;2768}
-State (Iter:8) {232;2000;2768}
-State (Iter:7) {464;1768;2768}
-State (Iter:6) {928;1304;2768}
-State (Iter:5) {1304;1840;1856}
-State (Iter:4) {552;1840;2608}
-State (Iter:3) {1104;1840;2056}
-State (Iter:2) {736;2056;2208}
-State (Iter:1) {1472;1472;2056}
-State (Iter:0) {0;2056;2944}
+State (Depth:14) {125;1558;3317}
+State (Depth:13) {250;1558;3192}
+State (Depth:12) {250;1634;3116}
+State (Depth:11) {500;1384;3116}
+State (Depth:10) {500;1732;2768}
+State (Depth:9) {1000;1232;2768}
+State (Depth:8) {232;2000;2768}
+State (Depth:7) {464;1768;2768}
+State (Depth:6) {928;1304;2768}
+State (Depth:5) {1304;1840;1856}
+State (Depth:4) {552;1840;2608}
+State (Depth:3) {1104;1840;2056}
+State (Depth:2) {736;2056;2208}
+State (Depth:1) {1472;1472;2056}
+State (Depth:0) {0;2056;2944}
 
 --------------
 
-State (Iter:14) {125;1849;3026}
-State (Iter:13) {250;1849;2901}
-State (Iter:12) {500;1599;2901}
-State (Iter:11) {1000;1099;2901}
-State (Iter:10) {1000;1802;2198}
-State (Iter:9) {396;1000;3604}
-State (Iter:8) {792;1000;3208}
-State (Iter:7) {208;1584;3208}
-State (Iter:6) {416;1376;3208}
-State (Iter:5) {832;960;3208}
-State (Iter:4) {128;1664;3208}
-State (Iter:3) {256;1536;3208}
-State (Iter:2) {512;1536;2952}
-State (Iter:1) {1024;1024;2952}
-State (Iter:0) {0;2048;2952}
+State (Depth:14) {125;1849;3026}
+State (Depth:13) {250;1849;2901}
+State (Depth:12) {500;1599;2901}
+State (Depth:11) {1000;1099;2901}
+State (Depth:10) {1000;1802;2198}
+State (Depth:9) {396;1000;3604}
+State (Depth:8) {792;1000;3208}
+State (Depth:7) {208;1584;3208}
+State (Depth:6) {416;1376;3208}
+State (Depth:5) {832;960;3208}
+State (Depth:4) {128;1664;3208}
+State (Depth:3) {256;1536;3208}
+State (Depth:2) {512;1536;2952}
+State (Depth:1) {1024;1024;2952}
+State (Depth:0) {0;2048;2952}
 
 --------------
 
-State (Iter:14) {125;1724;3151}
-State (Iter:13) {125;1427;3448}
-State (Iter:12) {250;1302;3448}
-State (Iter:11) {500;1052;3448}
-State (Iter:10) {500;2104;2396}
-State (Iter:9) {1000;1604;2396}
-State (Iter:8) {792;1000;3208}
-State (Iter:7) {208;1584;3208}
-State (Iter:6) {416;1376;3208}
-State (Iter:5) {832;960;3208}
-State (Iter:4) {128;1664;3208}
-State (Iter:3) {256;1536;3208}
-State (Iter:2) {512;1536;2952}
-State (Iter:1) {1024;1024;2952}
-State (Iter:0) {0;2048;2952}
+State (Depth:14) {125;1724;3151}
+State (Depth:13) {125;1427;3448}
+State (Depth:12) {250;1302;3448}
+State (Depth:11) {500;1052;3448}
+State (Depth:10) {500;2104;2396}
+State (Depth:9) {1000;1604;2396}
+State (Depth:8) {792;1000;3208}
+State (Depth:7) {208;1584;3208}
+State (Depth:6) {416;1376;3208}
+State (Depth:5) {832;960;3208}
+State (Depth:4) {128;1664;3208}
+State (Depth:3) {256;1536;3208}
+State (Depth:2) {512;1536;2952}
+State (Depth:1) {1024;1024;2952}
+State (Depth:0) {0;2048;2952}
 
 --------------
 
-State (Iter:14) {125;1901;2974}
-State (Iter:13) {125;1073;3802}
-State (Iter:12) {250;1073;3677}
-State (Iter:11) {250;2146;2604}
-State (Iter:10) {500;2146;2354}
-State (Iter:9) {208;500;4292}
-State (Iter:8) {292;416;4292}
-State (Iter:7) {292;832;3876}
-State (Iter:6) {292;1664;3044}
-State (Iter:5) {292;1380;3328}
-State (Iter:4) {292;1948;2760}
-State (Iter:3) {584;1656;2760}
-State (Iter:2) {584;1104;3312}
-State (Iter:1) {584;2208;2208}
-State (Iter:0) {0;584;4416}
+State (Depth:14) {125;1901;2974}
+State (Depth:13) {125;1073;3802}
+State (Depth:12) {250;1073;3677}
+State (Depth:11) {250;2146;2604}
+State (Depth:10) {500;2146;2354}
+State (Depth:9) {208;500;4292}
+State (Depth:8) {292;416;4292}
+State (Depth:7) {292;832;3876}
+State (Depth:6) {292;1664;3044}
+State (Depth:5) {292;1380;3328}
+State (Depth:4) {292;1948;2760}
+State (Depth:3) {584;1656;2760}
+State (Depth:2) {584;1104;3312}
+State (Depth:1) {584;2208;2208}
+State (Depth:0) {0;584;4416}
 
 --------------
 
-State (Iter:14) {125;1776;3099}
-State (Iter:13) {125;1323;3552}
-State (Iter:12) {125;2229;2646}
-State (Iter:11) {125;417;4458}
-State (Iter:10) {250;292;4458}
-State (Iter:9) {292;500;4208}
-State (Iter:8) {208;584;4208}
-State (Iter:7) {208;1168;3624}
-State (Iter:6) {416;960;3624}
-State (Iter:5) {832;960;3208}
-State (Iter:4) {128;1664;3208}
-State (Iter:3) {256;1536;3208}
-State (Iter:2) {512;1536;2952}
-State (Iter:1) {1024;1024;2952}
-State (Iter:0) {0;2048;2952}
+State (Depth:14) {125;1776;3099}
+State (Depth:13) {125;1323;3552}
+State (Depth:12) {125;2229;2646}
+State (Depth:11) {125;417;4458}
+State (Depth:10) {250;292;4458}
+State (Depth:9) {292;500;4208}
+State (Depth:8) {208;584;4208}
+State (Depth:7) {208;1168;3624}
+State (Depth:6) {416;960;3624}
+State (Depth:5) {832;960;3208}
+State (Depth:4) {128;1664;3208}
+State (Depth:3) {256;1536;3208}
+State (Depth:2) {512;1536;2952}
+State (Depth:1) {1024;1024;2952}
+State (Depth:0) {0;2048;2952}
 
 --------------
 
-State (Iter:14) {125;1658;3217}
-State (Iter:13) {250;1658;3092}
-State (Iter:12) {500;1408;3092}
-State (Iter:11) {500;1684;2816}
-State (Iter:10) {1000;1184;2816}
-State (Iter:9) {1184;1816;2000}
-State (Iter:8) {816;1816;2368}
-State (Iter:7) {552;816;3632}
-State (Iter:6) {816;1104;3080}
-State (Iter:5) {288;1632;3080}
-State (Iter:4) {576;1344;3080}
-State (Iter:3) {768;1152;3080}
-State (Iter:2) {768;1928;2304}
-State (Iter:1) {1536;1536;1928}
-State (Iter:0) {0;1928;3072}
+State (Depth:14) {125;1658;3217}
+State (Depth:13) {250;1658;3092}
+State (Depth:12) {500;1408;3092}
+State (Depth:11) {500;1684;2816}
+State (Depth:10) {1000;1184;2816}
+State (Depth:9) {1184;1816;2000}
+State (Depth:8) {816;1816;2368}
+State (Depth:7) {552;816;3632}
+State (Depth:6) {816;1104;3080}
+State (Depth:5) {288;1632;3080}
+State (Depth:4) {576;1344;3080}
+State (Depth:3) {768;1152;3080}
+State (Depth:2) {768;1928;2304}
+State (Depth:1) {1536;1536;1928}
+State (Depth:0) {0;1928;3072}
 
 --------------
 
-State (Iter:14) {125;1403;3472}
-State (Iter:13) {250;1403;3347}
-State (Iter:12) {500;1153;3347}
-State (Iter:11) {500;2194;2306}
-State (Iter:10) {112;500;4388}
-State (Iter:9) {112;1000;3888}
-State (Iter:8) {112;2000;2888}
-State (Iter:7) {224;1888;2888}
-State (Iter:6) {448;1888;2664}
-State (Iter:5) {896;1888;2216}
-State (Iter:4) {1320;1792;1888}
-State (Iter:3) {472;1888;2640}
-State (Iter:2) {944;1888;2168}
-State (Iter:1) {1224;1888;1888}
-State (Iter:0) {0;1224;3776}
+State (Depth:14) {125;1403;3472}
+State (Depth:13) {250;1403;3347}
+State (Depth:12) {500;1153;3347}
+State (Depth:11) {500;2194;2306}
+State (Depth:10) {112;500;4388}
+State (Depth:9) {112;1000;3888}
+State (Depth:8) {112;2000;2888}
+State (Depth:7) {224;1888;2888}
+State (Depth:6) {448;1888;2664}
+State (Depth:5) {896;1888;2216}
+State (Depth:4) {1320;1792;1888}
+State (Depth:3) {472;1888;2640}
+State (Depth:2) {944;1888;2168}
+State (Depth:1) {1224;1888;1888}
+State (Depth:0) {0;1224;3776}
 
 --------------
 
@@ -1797,7 +1807,7 @@ public static class Teelepartie
 
     public class State : IEquatable<State>
     {
-        public int Iterations => Parent == null ? 0 : (Parent.Iterations + 1);
+        public int Depthations => Parent == null ? 0 : (Parent.Depthations + 1);
         public State? Parent { get; }
         public IReadOnlyList<int> Buckets { get; }
         private readonly int _hashCode;
@@ -1865,7 +1875,7 @@ public static class Teelepartie
 
         public override int GetHashCode() => _hashCode;
 
-        public override string ToString() => "State (Iter:" + Iterations + ") {" + string.Join(';', Buckets) + "}";
+        public override string ToString() => "State (Depth:" + Depthations + ") {" + string.Join(';', Buckets) + "}";
 
         #endregion Overrides and Interface Implementations
     }
