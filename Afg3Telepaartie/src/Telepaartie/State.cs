@@ -55,6 +55,32 @@ namespace Telepaartie
         private int CalculateHashCode() =>
             Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
 
+        public static IEnumerable<List<int>> AllEndingStates(int numberOfCups, int numberOfItems)
+        {
+            foreach (var state in AllPossibleStates(numberOfCups - 1, numberOfItems, numberOfItems))
+            {
+                state.Add(0);
+                yield return state;
+            }
+        }
+
+        public static IEnumerable<List<int>> AllPossibleStates(int numberOfCups, int numberOfItems, int max)
+        {
+            if (numberOfCups < 1) yield break;
+            if (numberOfCups == 1) yield return new List<int> { numberOfItems };
+
+            int min = ((numberOfItems - 1) / numberOfCups) + 1;
+
+            for (int i = min; i < Math.Min(max + 1, numberOfItems); i++)
+            {
+                foreach (var state in AllPossibleStates(numberOfCups - 1, numberOfItems - i, i))
+                {
+                    state.Add(i);
+                    yield return state;
+                }
+            }
+        }
+
         #region Overrides and Interface Implementations
 
         public override bool Equals(object? obj) => obj is State state && Equals(state);

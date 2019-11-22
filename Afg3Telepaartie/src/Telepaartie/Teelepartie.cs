@@ -1,6 +1,7 @@
 ﻿namespace Telepaartie
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -36,7 +37,7 @@
             State? goal,
             Action<string>? writeLine)
         {
-            List<State> lastGen = GetEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
+            List<State> lastGen = State.AllEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
                 .Select(x => new State(x))
                 .ToList();
 
@@ -80,37 +81,5 @@
                 allStates.AddRange(nextGen);
             }
         }
-
-        private static IEnumerable<List<int>> GetEndingStates(int numberOfCups, int numberOfItems)
-        {
-            return GetStates(numberOfCups, numberOfItems).Do(s => s.Add(0));
-        }
-
-private static IEnumerable<T> Do<T>(this IEnumerable<T> enumerable, Action<T> action)
-{
-                    foreach (var s in enumerable)
-                    {
-                        action(s);
-                        yield return s;
-                    }
-}
-
-private static IEnumerable<T> Yield<T>(this T t) { yield return t; }
-
-        private static IEnumerable<List<int>> GetStates(int numberOfCups, int numberOfItems, int max = -1)
-        {
-            if (max == -1) max = numberOfItems;
-            if (numberOfCups < 1) throw new ArgumentException();
-            if (numberOfCups == 1) return (new List<int> { numberOfItems }).Yield();
-
-            int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups);
-
-            return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
-                .AsParallel()
-                .SelectMany(i => 
-                    GetStates(numberOfCups - 1, numberOfItems - i, i)
-                    .Do(s => s.Add(i)));
-        }
-
     }
 }
