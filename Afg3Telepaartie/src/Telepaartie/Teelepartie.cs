@@ -45,13 +45,13 @@
 
             for (int i = 0; ; i++)
             {
-                writeLine?.Invoke($"\rStarting iteration {i}");
+                writeLine?.Invoke($"\rStarting iteration {i + 1}");
 
                 List<State> nextGen = lastGen
                     .AsParallel()
                     .SelectMany(x => x.GetNextGen())    //Erschaffe aus jedem Element die Kinder
-                    .Distinct()                         //Töte die doppelten Kinder
-                    .Except(allStates.AsParallel())       //Töte die Kinder, die schon in den Alten vorhanden sind
+                    .Distinct()                         //Entferne die doppelten Kinder
+                    .Except(allStates.AsParallel())       //Entferne die Kinder, die schon in den Alten vorhanden sind
                     .ToList();
 
                 if (goal != null)                                   //Falls die Operationsanzahl für nur 1 Zustand festgestellt werden soll
@@ -81,36 +81,32 @@
             }
         }
 
-        private static IEnumerable<List<int>> GetEndingStates(int numberOfCups, int numberOfItems)
+        private static List<List<int>> GetEndingStates(int NumberOfCups, int NumberOfItems)
         {
-            return GetStates(numberOfCups, numberOfItems).Do(s => s.Add(0));
+            List<List<int>> states = GetStates(NumberOfCups - 1, NumberOfItems);
+
+            foreach (var state in states) state.Insert(0, 0);
+
+            return states;
         }
 
-private static IEnumerable<T> Do<T>(this IEnumerable<T> enumerable, Action<T> action)
-{
-                    foreach (var s in enumerable)
-                    {
-                        action(s);
-                        yield return s;
-                    }
-}
-
-private static IEnumerable<T> Yield<T>(this T t) { yield return t; }
-
-        private static IEnumerable<List<int>> GetStates(int numberOfCups, int numberOfItems, int max = -1)
+        private static List<List<int>> GetStates(int numberOfCups, int numberOfItems, int max = -1)
         {
             if (max == -1) max = numberOfItems;
             if (numberOfCups < 1) throw new ArgumentException();
-            if (numberOfCups == 1) return (new List<int> { numberOfItems }).Yield();
+            if (numberOfCups == 1) return new List<List<int>> { new List<int> { numberOfItems } };
 
             int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups);
-
             return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
-                .AsParallel()
-                .SelectMany(i => 
-                    GetStates(numberOfCups - 1, numberOfItems - i, i)
-                    .Do(s => s.Add(i)));
-        }
+                .SelectMany(i =>
+                {
+                    List<List<int>> states = GetStates(numberOfCups - 1, numberOfItems - i, i);
+                    foreach (var state in states) state.Add(i);
+                    return states;
+                })
+                .ToList();
 
+            throw new ArgumentException();
+        }
     }
 }
