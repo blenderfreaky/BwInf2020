@@ -8,7 +8,7 @@
 \newcommand{\Aufgabe}{Aufgabe 4: Urlaubsfahrt} % Aufgabennummer und Aufgabennamen angeben
 \newcommand{\TeamID}{00587}       % Team-ID aus dem PMS angeben
 \newcommand{\TeamName}{Doge.NET} % Team-Namen angeben
-\newcommand{\Namen}{Johannes von Stoephasius} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+\newcommand{\Namen}{Johannes von Stoephasius & Nikolas Kilian} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
 
 % Fonts
 \usepackage{lmodern}
@@ -115,16 +115,19 @@ literate=%
 
 \subsection{Definitionen}
 
-Im Folgenden wird ''Weg'' als Alias für eine Menge von zu besuchenden Tankstellen verwendet.
+\paragraph{Weg}
 
-Weiterhin wird mit ''bestem Weg'' oder ''optimalem Weg'', der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen bezeichnet. Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
+Ein ''Weg'' ist eine Menge von zu besuchenden Tankstellen .
+
+\paragraph{optimaler Weg}
+
+Der ''beste Weg'' oder ''optimale Weg'', ist der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen. Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
 
 \subsection{Kernidee}
 
-Der Algorithmus ist in 2 Teile geteilt;
-Der Nebenalgorithmus errechnet den günstigsten Preis, der benötigt ist um einen bestimmten Weg abzufahren.
+Das finden des optimalen Wegs kann in zwei Teile getrennt werden; das finden aller Wege mit minimaler Stoppzahl, und das ermitteln der billigsten dieser.
 
-Der Hauptalgorithmus errechnet, unter Verwendung des Nebenalgorithmus, den optimalen Weg von einer Tankstelle zu einer anderen.
+Der Algorithmus funktioniert, indem er nach und nach den besten Weg zu jeder Tankstellen findet, wobei er zuerst den besten Weg zu den Tankstellen am nähesten zum Startpunkt findet, bishin zu zuletzt der letzten.
 
 \subsection{Hauptalgorithmus}
 
