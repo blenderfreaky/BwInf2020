@@ -838,7 +838,7 @@ Das |struct| beinhaltet
     \item |Vector2Int Max| - Die rechte untere Ecke des Rominos.
         Verwendet für die Korrektur der Verschiebung ohne über alle Blöcke zu
         iterieren.
-    \item |BitBuffer512 \_uniqueCode| - Der eindeutige Wert, errechnet
+    \item |BitBuffer512 _uniqueCode| - Der eindeutige Wert, errechnet
         wie in \cref{uniqueCode}.
 \end{enumerate}
 
@@ -859,6 +859,33 @@ beim orientieren direkt in der Ausrechnung des eindeutigem Werts angewendet, ohn
 modifizieren. Erst wenn die eindeutige Rotation nach \cref{dupl} gefunden
 wurde, wird das Romino so modifiziert, dass es als diese Permutation
 dargestellt wird.
+
+\subsection{Vector2Int}
+
+|readonly struct Vector2Int| ist ein 2-dimensionaler Vector von
+|System.Int32|.
+
+\subsection{BitBuffer512}
+
+|struct BitBuffer512| hält 512 Bits an Daten,
+wobei die individuellen Bits mit dem Indexer\\
+|BitBuffer512[int bitIndex]| gelesen und geschrieben
+werden können. Weiterdem überlädt |BitBuffer512|
+Vergleichsoperatoren, die 2 Instanzen wie eine 512 stellige
+unsignierte Binärzahlen vergleicht.
+Das struct wird zum speichern des eindeutigem Werts aus
+\cref{uniqueCode} verwendet, da der größte vorimplementierte
+Zahlentype, |ulong| bereits mit 8er-Rominos komplett
+gefüllt wird. Im Vergleich kann |BitBuffer512|
+Rominos von bis zu 22 Blöcken speichern.
+
+\subsection{Romino}
+
+|readonly struct Romino| ist das Her(t)zstück des Codes; es speichert ein Romino ab,
+mit den in \cref{umsetzung} benannten Feldern. Dabei ist das gesamte struct
+readonly, und auch die Listen/Arrays werden, auch wenn dies nicht explizit
+versichert ist, nie modifiziert, nach dem der Konstruktor durchgelaufen ist.
+Der Konstruktor orientiert hier das Romino nach dem Verfahren aus \cref{dupl}.
 
 \section{Beispiele}
 
@@ -1845,33 +1872,6 @@ dargestellt wird.
 \end{center}
 
 \section{Quellcode}
-
-\subsection{Vector2Int}
-
-|readonly struct Vector2Int| ist ein 2-dimensionaler Vector von
-|System.Int32|.
-
-\subsection{BitBuffer512}
-
-|struct BitBuffer512| hält 512 Bits an Daten,
-wobei die individuellen Bits mit dem Indexer\\
-|BitBuffer512[int bitIndex]| gelesen und geschrieben
-werden können. Weiterdem überlädt |BitBuffer512|
-Vergleichsoperatoren, die 2 Instanzen wie eine 512 stellige
-unsignierte Binärzahlen vergleicht.
-Das struct wird zum speichern des eindeutigem Werts aus
-\cref{uniqueCode} verwendet, da der größte vorimplementierte
-Zahlentype, |ulong| bereits mit 8er-Rominos komplett
-gefüllt wird. Im Vergleich kann |BitBuffer512|
-Rominos von bis zu 22 Blöcken speichern.
-
-\subsection{Romino}
-
-|readonly struct Romino| ist das Her(t)zstück des Codes; es speichert ein Romino ab,
-mit den in \cref{umsetzung} benannten Feldern. Dabei ist das gesamte struct
-readonly, und auch die Listen/Arrays werden, auch wenn dies nicht explizit
-versichert ist, nie modifiziert, nach dem der Konstruktor durchgelaufen ist.
-Der Konstruktor orientiert hier das Romino nach dem Verfahren aus \cref{dupl}.
 
 \begin{lstcs}
 using System;
