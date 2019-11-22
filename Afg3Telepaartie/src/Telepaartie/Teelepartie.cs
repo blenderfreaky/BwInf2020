@@ -1,6 +1,7 @@
 ﻿namespace Telepaartie
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -36,7 +37,7 @@
             State? goal,
             Action<string>? writeLine)
         {
-            List<State> lastGen = GetEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
+            List<State> lastGen = State.AllEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
                 .Select(x => new State(x))
                 .ToList();
 

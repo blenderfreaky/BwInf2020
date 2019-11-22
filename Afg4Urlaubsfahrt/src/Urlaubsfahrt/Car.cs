@@ -40,6 +40,11 @@ namespace Urlaubsfahrt
             StartingFuelDistance = startingFuelAmount / FuelUsage;
         }
 
+        /// <summary>
+        /// Get the price for gas at a gas station measured in €/km for this car.
+        /// </summary>
+        /// <param name="station">The gas station to get the price for.</param>
+        /// <returns>The price in € of driving a kilometer with gas from this station.</returns>
         public readonly double GetPriceForDistanceAt(GasStation station) => station.Price * FuelUsage;
     }
 }
