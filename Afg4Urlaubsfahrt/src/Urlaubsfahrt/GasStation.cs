@@ -11,7 +11,7 @@ namespace Urlaubsfahrt
         public static readonly GasStation Home = new GasStation(0, 0);
 
         /// <summary>
-        /// The price of gas at the station in €/km. Based on the car
+        /// The price of gas at the station in €/l.
         /// </summary>
         public readonly double Price;
         public readonly double Position;
