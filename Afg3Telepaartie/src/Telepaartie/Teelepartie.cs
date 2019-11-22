@@ -36,35 +36,32 @@
             State? goal,
             Action<string>? writeLine)
         {
-            List<State> newDads = GetEndingStates(numberOfCups, numberOfItems)
+            List<State> lastGen = GetEndingStates(numberOfCups, numberOfItems)
                 .Select(x => new State(x))
                 .ToList();
 
-            List<State> allOlds = newDads
+            List<State> allStates = lastGen
                 .ToList();
 
             for (int i = 0; ; i++)
             {
                 writeLine?.Invoke($"\rStarting iteration {i}");
 
-                List<State> newChildos = newDads
+                List<State> nextGen = lastGen
                     .AsParallel()
                     .SelectMany(x => x.GetNextGen())
                     .Distinct()
-                    .Except(allOlds.AsParallel())
+                    .Except(allStates.AsParallel())
                     .ToList();
 
                 if (goal != null)
                 {
-                    if (newChildos.Contains(goal)) return i + 1;
+                    if (nextGen.Contains(goal)) return i + 1;
                 }
-                else if (newChildos.Count == 0)
+                else if (nextGen.Count == 0)
                 {
                     writeLine?.Invoke(Environment.NewLine);
-                    foreach (var oldestChild in newDads
-                        .AsParallel()
-                        .SelectMany(x => x.GetNextGen())
-                        .Distinct())
+                    foreach (var oldestChild in lastGen)
                     {
                         writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
 
@@ -79,8 +76,8 @@
                     return i + 1;
                 }
 
-                newDads = newChildos;
-                allOlds.AddRange(newChildos);
+                lastGen = nextGen;
+                allStates.AddRange(nextGen);
             }
         }
 
