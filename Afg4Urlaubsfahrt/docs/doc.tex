@@ -121,29 +121,24 @@ Weiterhin wird mit ''bestem Weg'' oder ''optimalem Weg'', der Weg mit den wenigs
 
 \subsection{Kernidee}
 
-Der Algorithmus ist in 2 Teile geteilt;
-Der Nebenalgorithmus errechnet den günstigsten Preis, der benötigt ist um einen bestimmten Weg abzufahren.
+Der Algorithmus basiert auf der Idee durch die Lösung von Teilproblemen die insgesamt beste Lösung zu finden. Das heißt, dass zur Findung des besten Weges zu einem Punkt ein neuer Weg aus dem besten Weg zu den Punkten davor gebildet wird. Zum Finden des besten Weges zu eienm Punkt wird der Weg von den Wegen zu den Punkten davor gewählt, der am wenigsten Stopps braucht und den geringsten Preis hat. Durch den iterativen Aufbau von den besten Wegen ist garantiert, dass am Ende der beste Weg zum Ziel gefunden wird.
 
-Der Hauptalgorithmus errechnet, unter Verwendung des Nebenalgorithmus, den optimalen Weg von einer Tankstelle zu einer anderen.
+\subsection{Finden des besten Weges zum Ziel}
 
-\subsection{Hauptalgorithmus}
+Zum finden des besten Weges zum Ziel wird nach und nach eine Zuordnung aufgebaut, die für jede Tankstelle den besten Weg zu ihr enthält.
 
-Der Hauptalgorithmus baut nach und nach eine Zuordnung auf, die für jede Tankstelle den besten Weg zu ihr enthält.
-
-Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird. 
+Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird. \\
 Sind die optimalen Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des optimalen Wegs zu dieser beginnen.
 Zuerst werden alle optimale Wege zu den vorherigen Tankstelle durchiteriert. Dabei wird zuerst überprüft von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann. \\
-Wenn nicht wird zur nächsten Tankstelle derr Zuordnung übergegangen. \\
+Wenn nicht wird zur nächsten Tankstelle der Zuordnung übergegangen. \\
 Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht. \\
 Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl. Danach wird der Preis aller übrigen Wege ermittelt, und von denen wird der billigste ausgewählt. Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle. Dieser wird dann in die Zuordnung eingetragen.
 
 Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Streckenende Teil der Zuordnung ist. Dieser ist dann der optimale Weg vom Start zum Streckenende.
 
-\subsection{Nebenalgorithmus}
+\subsection{Ermittlung des Preises für einen Weg}
 
-Der Nebenalgorithmus berechnet den besten Preis für einen gegebenen Weg. 
-
-Dafür werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
+Für die Ermittlung des Preises für einen Weg werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
 
 Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke. In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
 
