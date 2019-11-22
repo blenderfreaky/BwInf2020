@@ -8,9 +8,9 @@
     {
         private const string Separator = "--------------";
 
-        public static int LLL(
+        public static int L(
             IEnumerable<int> goalBuckets,
-            Action<string>? writeLine = null)
+            Action<string>? writeLine = null)   //Zum finden der minimalen Anzahl an Operationen für einen Zustand
         {
             if (goalBuckets == null) throw new ArgumentNullException(nameof(goalBuckets));
 
@@ -25,7 +25,7 @@
         public static int LLL(
             int numberOfCups = 3,
             int numberOfItems = 15,
-            Action<string>? writeLine = null)
+            Action<string>? writeLine = null)   //Zum finden der maximalen Anzahl der minimalen Anzahlen an Operationen für eine Anzahl
         {
             return LLLCore(numberOfCups, numberOfItems, null, writeLine);
         }
@@ -51,17 +51,17 @@
                     .AsParallel()
                     .SelectMany(x => x.GetNextGen())    //Erschaffe aus jedem Element die Kinder
                     .Distinct()                         //Entferne die doppelten Kinder
-                    .Except(allStates.AsParallel())       //Entferne die Kinder, die schon in den Alten vorhanden sind
+                    .Except(allStates.AsParallel())     //Entferne die Kinder, die schon in den Alten vorhanden sind
                     .ToList();
 
-                if (goal != null)                                   //Falls die Operationsanzahl für nur 1 Zustand festgestellt werden soll
+                if (goal != null)                               //Falls die Operationsanzahl für nur 1 Zustand festgestellt werden soll
                 {
-                    if (nextGen.Contains(goal)) return i + 1;    //Wenn das Element in den neuen Kindern vorhanden ist, gebe die Operationsanzahl zurück zurück
+                    if (nextGen.Contains(goal)) return i + 1;   //Wenn das Element in den neuen Kindern vorhanden ist, gebe die Operationsanzahl zurück zurück
                 }
-                else if (nextGen.Count == 0)                 //Wenn keine neuen Kinder gefunden worden sind
+                else if (nextGen.Count == 0)                    //Wenn keine neuen Kinder gefunden worden sind
                 {
                     writeLine?.Invoke(Environment.NewLine);
-                    foreach (var oldestChild in lastGen)
+                    foreach (var oldestChild in lastGen)        //Ausgabe des Logs, falls erwünscht
                     {
                         writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
 
@@ -73,11 +73,11 @@
 
                     writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
 
-                    return i + 1;                               //Gebe die Operationsanzahl zurück
+                    return i + 1;               //Gebe die Operationsanzahl zurück
                 }
 
-                lastGen = nextGen;
-                allStates.AddRange(nextGen);
+                lastGen = nextGen;               //Die aktuellen Kinder als Väter der nächsten Generation setzen
+                allStates.AddRange(nextGen);    //Die aktuellen Kinder der Liste aller Zustände hinzufügen
             }
         }
 
@@ -96,11 +96,11 @@
             if (numberOfCups < 1) throw new ArgumentException();
             if (numberOfCups == 1) return new List<List<int>> { new List<int> { numberOfItems } };
 
-            int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups);
-            return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))
+            int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups); //Die Anzahl der Elemente, die maximal dem aktuellen Behälter hinzugefügt wird
+            return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))  //Für jede Anzahl zwischen min und dm Rest
                 .SelectMany(i =>
                 {
-                    List<List<int>> states = GetStates(numberOfCups - 1, numberOfItems - i, i);
+                    List<List<int>> states = GetStates(numberOfCups - 1, numberOfItems - i, i); //Finden aller Möglichen Kombinationen für den Rest der Biber und der Behälteranzahl -1
                     foreach (var state in states) state.Add(i);
                     return states;
                 })

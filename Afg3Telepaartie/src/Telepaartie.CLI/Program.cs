@@ -84,7 +84,7 @@
 
             if (o.List != null)
             {
-                RunCore(() => Teelepartie.LLL(
+                RunCore(() => Teelepartie.L(
                     o.List,
                     o.Verbose ? Console.Write : (Action<string>?)null),
                     o.Stopwatch);

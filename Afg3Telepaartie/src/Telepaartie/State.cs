@@ -1,5 +1,6 @@
 namespace Telepaartie
 {
+    #nullable enable 
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -31,8 +32,8 @@ namespace Telepaartie
         {
             List<int> temp = new List<int>(Buckets);
 
-            temp[first] /= 2;
-            temp[second] += temp[first];
+            temp[first] /= 2;               //die Anzahl der Biber im ersten Behälter halbieren
+            temp[second] += temp[first];    //und die Biber im anderen Behälter hinzufügen
             temp.Sort();
 
             return new State(temp, this);
@@ -42,11 +43,11 @@ namespace Telepaartie
         {
             for (int i = 0; i < Buckets.Count; i++)
             {
-                for (int u = 0; u < Buckets.Count; u++)
+                for (int u = 0; u < Buckets.Count; u++) //Finden jeder Kombination
                 {
-                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0)
+                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0) //Zulässige Werte rausfiltern
                     {
-                        yield return ReverseTeelepartie(i, u);
+                        yield return ReverseTeelepartie(i, u);  //und die bearbeitete Version zurückgeben
                     }
                 }
             }
