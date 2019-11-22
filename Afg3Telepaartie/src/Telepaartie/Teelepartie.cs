@@ -37,17 +37,17 @@
             Action<string>? writeLine)
         {
             List<State> newDads = GetEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
-                .Select(x => new State(x))
+.Select(x => new State(x))
                 .ToList();
 
-            List<State> allOlds = newDads
+            List<State> allStates = lastGen
                 .ToList();
 
             for (int i = 0; ; i++)
             {
                 writeLine?.Invoke($"\rStarting iteration {i}");
 
-                List<State> newChildos = newDads
+                List<State> nextGen = lastGen
                     .AsParallel()
                     .SelectMany(x => x.GetNextGen())    //Erschaffe aus jedem Element die Kinder
                     .Distinct()                         //Töte die doppelten Kinder
@@ -61,10 +61,7 @@
                 else if (newChildos.Count == 0)                 //Wenn keine neuen Kinder gefunden worden sind
                 {
                     writeLine?.Invoke(Environment.NewLine);
-                    foreach (var oldestChild in newDads
-                        .AsParallel()
-                        .SelectMany(x => x.GetNextGen())
-                        .Distinct())
+                    foreach (var oldestChild in lastGen)
                     {
                         writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
 
@@ -79,8 +76,8 @@
                     return i + 1;                               //Gebe die Operationsanzahl zurück
                 }
 
-                newDads = newChildos;
-                allOlds.AddRange(newChildos);
+                lastGen = nextGen;
+                allStates.AddRange(nextGen);
             }
         }
 
