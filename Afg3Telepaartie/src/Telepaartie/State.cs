@@ -97,9 +97,9 @@ namespace Telepaartie
         public bool Equals(State state)
         {
             if (state == null) return false;
-            if (state.Buckets.Count != Buckets.Count) return false;
+            if (state.Buckets.Length != Buckets.Length) return false;
 
-            for (int i = 0; i < Buckets.Count; i++)
+            for (int i = 0; i < Buckets.Length; i++)
             {
                 if (state.Buckets[i] != Buckets[i]) return false;
             }
