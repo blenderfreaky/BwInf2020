@@ -153,9 +153,58 @@ Die Grundidee der Lösung basiert auf der Idee, nicht alle nicht-Endzustände zu
 Zum finden der Ursprungszustände \(origin(s)\) eines Zustands \(s \in \mathbb{S}_n\) wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist dabei bei einem Vergleich zweier Anzahlen die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
 Diese Überprüfung wird für alle Kombinationen zweier Biber-Anzahlen durchgeführt, bis am Ende alle Ursprungszustände gefunden wurden.
 
+\subsubsection{Begründung}
+
+Seien \(a_0, a_1, b_0, b_1 \in \mathbb{N}\) die zwei Biberanzahlen, wobei \(a_0\) und \(b_0\) die Anzahlen vor der Telepaartie repräsentieren, und \(a_1\) und \(b_1\) die danach. Sei weiterhin o.B.d.A. \(a_0 < b_0\).
+
+Laut der Definition der Telepaartie gilt:
+
+\begin{align*}
+    a_1 &= 2 a_0 \\
+    b_1 &= b_0 - a_0 \\
+\end{align*}
+
+Hierraus lässt sich herleiten:
+
+\begin{align*}
+    && a_1 &= 2 a_0 \\
+    \iff&& a_0 &= \frac{a_1}{2} \\
+    && b_1 &= b_0 - a_0 \\
+    \iff&& b_1 &= b_0 - \frac{a_1}{2} \\
+    \iff&& b_0 &= b_1 + \frac{a_1}{2} \\
+    && a_0 &< b_0 \\
+    \iff&& \frac{a_1}{2} &< b_1 + \frac{a_1}{2} \\
+    \iff&& 0 &< b_1 \\
+\end{align*}
+
+Wichtig hierbei ist:
+
+\begin{align*}
+    0 &< b_1 \\
+    a_0 &= \frac{a_1}{2} \\
+    b_0 &= b_1 + \frac{a_1}{2} \\
+\end{align*}
+
 \subsection{Generieren der Endzustände} \label{alg:target}
 
-TODO
+Zur effizienten Findung aller Endzustände werden nicht erst alle möglichen Endzustände mit Duplikaten generiert und am Ende die Duplikate entfernt, sondern gleich nur Zustände berechnet, die nicht wiederholt aufteten werden.
+
+Zur Simplifizierung der Rechnung werden alle Zustände mit Behälterzahl minus eins berechnet, die keine leeren Behälter besitzen. Danach wird an jedes dieser einfach eine null angehängt.
+
+Der Algoritmus funktioniert, indem zuerst für einen Behälter alle möglichen Biberanzahlen ermittelt werden, für die gilt:
+
+\begin{itemize}
+    \item Es ist möglich die restlichen Biber so aufzuteilen, dass jeder Behälter genausoviele oder weniger Biber enthält wie der vorherigen
+    \item Es ist garantiert, dass die restlichen Behälter alle nicht leer sein müssen 
+\end{itemize}
+
+Um zu garantieren, dass die Behälter absteigend befüllbar sind, müssen mindestens \(\lceil\frac{<Anzahl Biber>}{<Anzahl Behälter>}\rceil\) Biber in den ersten Becher.
+
+Um die nicht-Leerheit zu garantieren, müssen maximal \(<Anzahl Biber> - (<Anzahl Becher> + 1)\) Biber in den ersten Becher. Somit kann mindestens ein Biber in jeden restlichen Behälter platziert werden.
+
+Für den trivialen Fall, das nur ein Behälter vorhanden ist, müssen alle Biber in diesen.
+
+Nun lassen sich alle für den ersten Becher mögliche Biberanzahlen bestimmen, und für diese jeweils rekursiv alle folgenden Biberanzahlen. Hierbei ist noch zu beachten, dass noch garantiert werden muss, das die Behälter absteigend voll sind. Dies ist trivialerweise umsetzbar, indem alle Biberanzahlen die größer der Biberanzahlen eines vorherigen Behälters sind eliminiert werden.
 
 \subsection{Hauptalgorithmus}
 
