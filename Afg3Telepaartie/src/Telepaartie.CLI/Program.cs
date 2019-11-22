@@ -70,7 +70,7 @@
 
                 o.Verbose = ParseInteractive("Soll bei der Berechnung der aktuelle Zustand ausgegeben werden? ENTER für nein. (y/n) ", TryParseBool, false);
 
-                o.Stopwatch = ParseInteractive("Soll nach der Berechnung die benötigte Zeit ausgegeben werden? ENTER für ja. (y/n) ", TryParseBool, false);
+                o.Stopwatch = ParseInteractive("Soll nach der Berechnung die benötigte Zeit ausgegeben werden? ENTER für ja. (y/n) ", TryParseBool, true);
             }
 
             if (o.Cups != null && o.Elements != null)
