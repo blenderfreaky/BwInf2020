@@ -8,45 +8,53 @@ namespace Telepaartie
     {
         public int Iterations => Parent == null ? 0 : (Parent.Iterations + 1);
         public State? Parent { get; }
-        public IReadOnlyList<int> Buckets { get; }
+        public int[] Buckets { get; }
         private readonly int _hashCode;
 
         public State(IEnumerable<int> unsortedBuckets, State? parent = null)
         {
             if (unsortedBuckets.Any(x => x < 0)) throw new ArgumentException(nameof(unsortedBuckets));
 
-            Buckets = unsortedBuckets.OrderBy(x => x).ToList();
+            Buckets = unsortedBuckets.ToArray();
+            Array.Sort(Buckets);
+
             Parent = parent;
             _hashCode = CalculateHashCode();
         }
 
-        private State(List<int> sortedBuckets, State? parent = null)
+        private State(int[] sortedBuckets, State? parent = null)
         {
             Buckets = sortedBuckets;
             Parent = parent;
             _hashCode = CalculateHashCode();
         }
 
-        private State ReverseTeelepartie(int first, int second)
+        private State ReverseTeelepartie(int originalTarget, int originalSource)
         {
-            List<int> temp = new List<int>(Buckets);
+            int[] temp = new int[Buckets.Length];
+            Buckets.CopyTo(temp, 0);
 
-            temp[first] /= 2;
-            temp[second] += temp[first];
-            temp.Sort();
+            temp[originalTarget] /= 2;
+            temp[originalSource] += temp[originalTarget];
+            Array.Sort(temp);
 
             return new State(temp, this);
         }
 
         public IEnumerable<State> GetNextGen()
         {
-            for (int i = 0; i < Buckets.Count; i++)
+            for (int i = 0; i < Buckets.Length; i++)
             {
-                for (int u = 0; u < Buckets.Count; u++)
+                for (int u = 0; u <= i; u++)
                 {
                     if (Buckets[i] % 2 == 0 && Buckets[i] > 0)
                     {
                         yield return ReverseTeelepartie(i, u);
+                    }
+
+                    if (Buckets[u] % 2 == 0 && Buckets[u] > 0)
+                    {
+                        yield return ReverseTeelepartie(u, i);
                     }
                 }
             }
