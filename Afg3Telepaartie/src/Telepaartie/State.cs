@@ -1,11 +1,11 @@
 namespace Telepaartie
 {
-        using System;
-        using System.Collections.Generic;
-        using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
-        public class State : IEquatable<State>
-        {
+    public class State : IEquatable<State>
+    {
         public int Depth => Parent == null ? 0 : (Parent.Depth + 1);
 
         public State? Parent { get; }
