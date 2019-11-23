@@ -25,11 +25,8 @@
         public static NummerMerkingSolution MerkNummern(string text, int minSequenceLength, int maxSequenceLength) =>
             MerkNummern(new ArraySegment<bool>(text.ToCharArray().SelectF(x => x == '0')), minSequenceLength, maxSequenceLength);
 
-        public static NummerMerkingSolution MerkNummern(in ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength)
-        {
-            MerkedNummer merkedNummer = new MerkedNummer(zeros, minSequenceLength, maxSequenceLength);
-            return MerkNummern(merkedNummer);
-        }
+        public static NummerMerkingSolution MerkNummern(in ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
+            MerkNummern(new MerkedNummer(zeros, minSequenceLength, maxSequenceLength));
         #endregion
 
         private static NummerMerkingSolution MerkNummern(in MerkedNummer merkedNummer)
@@ -80,7 +77,7 @@
                 nextGeneration[i] = !subSolution.IsSuccessful
                     ? NummerMerkingSolution.Failure()
                     : NummerMerkingSolution.Success(
-                        subSolution.Distribution.PrecedeOne(length),
+                        subSolution.Distribution.PrependF(length),
                         subSolution.LeadingZerosHit + (merkedNummer.Zeros.ElementAtUnchecked(0) ? 1 : 0));
             }
 
@@ -96,20 +93,26 @@
                 return MerkedNummers[merkedNummer] = elements[0];
             }
 
-            NummerMerkingSolution bestSolution = elements.AggregateF((x, y) => x.LeadingZerosHit < y.LeadingZerosHit ? x : y);
+            NummerMerkingSolution bestSolution = elements[0];
+
+            for (int i = 1; i < elements.Length; i++)
+            {
+                // Find element with least leading zeros hit
+                if (elements[i].LeadingZerosHit < bestSolution.LeadingZerosHit)
+                {
+                    bestSolution = elements[i];
+                }
+            }
+
             return MerkedNummers[merkedNummer] = bestSolution;
         }
 
-        private static T[] PrecedeOne<T>(this T[] source, T newStart)
+        private static T[] PrependF<T>(this T[] source, T newStart)
         {
             int length = source.Length;
 
             var target = new T[length + 1];
 
-            //for (int i = 0; i < length; i++)
-            //{
-            //    target[i+1] = source[i];
-            //}
             source.CopyTo(target, 1);
 
             target[0] = newStart;

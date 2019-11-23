@@ -185,29 +185,31 @@ Ein Romino ist eine Ansammlung von Blöcken auf einem 2d Integer-Gitter.
 
 Ein Block ist eine Position auf dem 2d Gitter, die einem Romino angehört.
 
-\paragraph{(echte) Diagonale}
-
-Die (echte) Diagonale ist die in der Aufgabenstellung beeschriebene diagonale Verbindung zweier Blöcke mit zwei fehlenden Blöcken. %TODO
-
-\paragraph{Diagonalenblockade}
-
-Die Diagonalenblockade sind die Blöcke die für das Schützen der echten Diagonale von Blocksadditionsmöglichkeit ausgeschlossen sind.
-
 \paragraph{Blocksadditionsmöglichkeit}
 
-Eine Blocksadditionsmöglichkeit eines Rominos ist eine Position im 2d-Gitter, wo in zukünftigen Schritten ein neuer Block angrfügt werden kann.
+Eine Blocksadditionsmöglichkeit eines Rominos ist eine Position im 2d-Gitter, wo in zukünftigen Schritten ein neuer Block angefügt werden kann.
 
 In den Grafiken als grauer Kreis dargestellt.
 
+\paragraph{(echte) Diagonale}
+
+Die (echte) Diagonale ist die in der Aufgabenstellung beschriebene diagonale Verbindung zweier Blöcke mit zwei fehlenden Blöcken.
+
+\paragraph{Diagonalenblockade}
+
+Die Diagonalenblockade sind die Blöcke, die für das Schützen der echten Diagonale von Blocksadditionsmöglichkeit ausgeschlossen sind.
+
+In den Grafiken als kleine weiße/schwarze Punkte dargestellt.
+
 \subsection{Kernidee}
 
-Rominos mitt \(n\) Blöcken können gefunden werden, in dem zu Rominos mit \(n-1\) Blöcken ein Block angefügt wird. Hierbei muss beachtet werden das der Rominostein zusammenhängend bleiben muss und dass mindestens eine Diagonale bleiben muss.
+Rominos mit \(n\) Blöcken können gefunden werden, in dem zu Rominos mit \(n-1\) Blöcken ein Block angefügt wird. Hierbei muss beachtet werden, dass der Rominostein zusammenhängend bleiben muss und dass mindestens eine Diagonale bleiben muss.
 
-Um alle möglichen Rominos mit \(n\) Blöcken zu finden, muss man also alle Rominos mit \(n-1\) Blöcken finden, und für diese alle Rominos die durch hinzufügen eines weiteren Blocks enstehen können ermitteln. Dabei wird es Duplikate geben. Eliminiert man diese hat man alle möglichen n-Rominos eindeutig gefunden.
+Um alle möglichen Rominos mit \(n\) Blöcken zu finden, muss man also alle Rominos mit \(n-1\) Blöcken finden, und für diese alle Rominos die, durch hinzufügen eines weiteren Blocks enstehen können, ermitteln. Dabei wird es Duplikate geben. Eliminiert man diese, hat man alle möglichen n-Rominos eindeutig gefunden.
 
 \subsubsection{Beispiel}
 
-Nehme man beispielsweise das 2er-Romino, kann man zum finden aller \(3 (= 2 + 1)\) - Rominos wie folgt Blöcke anfügen:
+Nehme man beispielsweise das 2er-Romino, kann man zum Finden aller \(3 (= 2 + 1)\) - Rominos wie folgt Blöcke anfügen:
 
 \printmatrix{}{{
     {c,c,c,w},
@@ -304,7 +306,7 @@ Somit ergeben sich folgende 3-Rominos:
 
 \end{center}
 
-Da Rominos mindestens zwei Steine haben müssen um eine Diagonale zu besitzen, ist der Rominostein mit den wenigsten Blöcken eine 2er Diagonale.
+Da Rominos mindestens zwei Steine haben müssen, um eine Diagonale zu besitzen, ist der Rominostein mit den wenigsten Blöcken eine 2er Diagonale.
 \begin{center}
 \printmatrix{Kleinster Rominostein}{{
     {b,w},
@@ -312,11 +314,11 @@ Da Rominos mindestens zwei Steine haben müssen um eine Diagonale zu besitzen, i
 }}
 \end{center}
 
-Um alle n-Rominos für ein beliebiges \(n\) zu finden, würde man den obigen Algorithmus verwenden um aus dem 2er-Romino alle 3-Rominos zu folgern, dann aus diesen alle 4-Rominos etc.,99 bis man alle n-Rominos errechnet hat.
+Um alle \(n\)-Rominos für ein beliebiges \(n\) zu finden, würde man den obigen Algorithmus verwenden, um aus dem 2er-Romino alle 3er-Rominos zu folgern, dann aus diesen alle 4er-Rominos etc., bis man alle \(n\)-Rominos errechnet hat.
 
 \subsection{Hinzufügen von Blöcken} \label{addBlocks}
 
-Bei Rominos werden konstant die Blocksadditionsmöglichkeit verfolgt, also die Positionen, wo Blöcke angefügt werden können, sodass das Romino zusammenhängend bleibt. 
+Bei Rominos werden konstant die Blocksadditionsmöglichkeiten verfolgt, also die Positionen, wo Blöcke angefügt werden können, sodass das Romino zusammenhängend bleibt. 
 Hierfür werden die Nachbarn jedes Blocks des Rominos ermittelt, daraufhin werden Duplikate und bereits belegte Blöcke eliminiert.
 
 \subsubsection{Beispiel}
@@ -336,7 +338,7 @@ Nehme man beispielsweise wieder das 2er-Romino, würden die Nachbarn aller Blöc
     {w,c,c,c}%
 }}
 
-Entfernen bereits existierender Blöcke von den Blocksadditionsmöglichkeit
+Nach entfernen bereits existierender Blöcke von den Blocksadditionsmöglichkeit ergibt sich:
 
 \printmatrix{}{{
     {c,c,c,w},
@@ -345,7 +347,7 @@ Entfernen bereits existierender Blöcke von den Blocksadditionsmöglichkeit
     {w,c,c,c}%
 }}
 
-Es lässt sich hier erkennen, das die Existenz einer echten Diagonale nicht zwingend aufrecht erhalten wird;
+Es lässt sich hier erkennen, dass die Existenz einer echten Diagonale nicht zwingend aufrecht erhalten wird:
 
 \printmatrix{}{{
     {w,w,w,w},
@@ -355,7 +357,7 @@ Es lässt sich hier erkennen, das die Existenz einer echten Diagonale nicht zwin
 }}
 
 Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt.
-Bei den Möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Block-Additionsmöglichkeiten entfernt:
+Bei den möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Blockadditionsmöglichkeiten entfernt:
 
 \printmatrix{}{{
     {c,c,c,w},
@@ -364,7 +366,7 @@ Bei den Möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierf
     {w,c,c,c}%
 }}
 
-Diese 4 beschützten Blöcke werden auch bei Spiegelungen, Verschiebungen und Rotationen mitverfolgt, sodass diese eine Diagonale immer besteht;
+Diese 4 beschützten Blöcke werden auch bei Spiegelungen, Verschiebungen und Rotationen mitverfolgt, sodass diese eine Diagonale immer besteht:
 
 \printmatrix{}{{
     {w,c,c,c},
@@ -384,29 +386,28 @@ Die Verschiebung wird eliminiert durch Verschiebung des Rominos in die linke obe
 \subsubsection{Rotation und Spiegelung} \label{uniqueCode}
 
 Um Rotation und Spiegelung eines Rominos zu eliminieren,
-werden zuerst alle seine Permutationen
+werden zuerst all seine Permutationen
 (also alle Kombinationen von Rotation und Spiegelung)
 ermittelt, denen jeweils ein eindeutiger Wert zugewiesen wird.
 Daraufhin wird das Romino mit dem höchsten dieser eindeutigen Werte ausgewählt.
-Hierbei ist es eigentlich egal, ob der niedrigste oder höchste Wert genommen
+Hierbei ist es egal, ob der niedrigste oder höchste Wert genommen
 wird, solange das Ergebnis eindeutig ist.
 
-Die Bestimmung dieses eindeutigen Werts haben wir einen trivialen Algorithmus
+Zur Bestimmung dieses eindeutigen Werts haben wir einen trivialen Algorithmus
 verwendet wie folgt:
 
 \begin{enumerate}
-\item Nehme einen Block b aus der Permutation des Rominos
-\item Seien die Koordinaten (x, y) die Koordinaten des Blocks b, wobei die minimale x-Koordinate und die minimale y-Koordinate aus allen Blöcken der Permutation 0 ist.
-\item Man weise dem Block b den Wert \(2^{(y * <\text{Anzahl an Blöcken}>) + x}\) zu
-\item Addiere die Werte aller Blöcke der Permutation, sei dies der Wert der Permutation
+\item Nehme einen Block \(b\) aus der Permutation des Rominos
+\item Seien die Koordinaten \((x, y)\) die Koordinaten des Blocks \(b\), wobei die minimale x-Koordinate und die minimale y-Koordinate aus allen Blöcken der Permutation 0 ist.
+\item Man weise dem Block \(b\) den Wert \(2^{(y * <\text{Anzahl an Blöcken}>) + x}\) zu.
+\item Der Wert der Permutation ist nun die Summe aller Werte aller Blöcke der Permutation.
 \end{enumerate}
 
 %TODO
 
 Es wird quasi der Block als Maske für folgende Werte verwendet:
 
-\begin{figure}[ht]
-    \centering
+\begin{center}
     \begin{tikzpicture}[scale=\cellsize]
         \draw (0,0) -- (0,3);
         \draw (1,0) -- (1,3);
@@ -425,13 +426,12 @@ Es wird quasi der Block als Maske für folgende Werte verwendet:
         \draw (0.5,0.5) node {$2^6$};
         \draw (1.5,0.5) node {$2^7$};
         \draw (2.5,0.5) node {$2^8$};
-       \end{tikzpicture}
-    \caption{Faktoren}
-\end{figure}
+    \end{tikzpicture}
+\end{center}
 
 \subsubsection{Endgültige Duplikat-Eliminierung}
 
-Zum endgültigen eliminieren der Duplikate werden zuerst alle Rominos wie oben beschrieben orientiert, dann werden die eindeutigen Werte dieser Rominos verglichen, um schnell Gleichheit zu ermitteln.
+Zum endgültigen Eliminieren der Duplikate werden zuerst alle Rominos wie oben beschrieben orientiert, dann werden die eindeutigen Werte dieser Rominos verglichen, um schnell Gleichheit zu ermitteln.
 Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entfernen.
 
 \newpage
@@ -623,9 +623,8 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
 
 \end{center}
 
-\paragraph{Eliminierungg von Rotation und Spiegelung}
-
-
+\paragraph{Eliminierung von Rotation und Spiegelung}
+\\
 Ausgehend von dem Romino;
 
 \begin{center}
@@ -757,7 +756,7 @@ Analog auf alle Rominos angewendet ergibt sich:
 
 \end{center}
 
-Nun lassen sich trivialerweise die Duplikate eliminieren;
+Nun lassen sich trivialerweise die Duplikate eliminieren:
 
 \begin{center}
 
@@ -824,26 +823,26 @@ Bei den 3er-Rominos ist sie wie folgt plaziert:
 
 Zur Umsetzung haben wir den obigen Algorithmus in C\# 8.0 mit
 .NET Core 3.0 implementiert.\\
-Die Rominos werden in Form eines |readonly structs Romino| gespeichert.
+Die Rominos werden in Instanzen von |readonly struct Romino| gespeichert.
 Das |struct| beinhaltet
 
 \begin{enumerate}
     \item |Vector2Int[] Blocks| - 
-        Das Array mit allen Blöcken des Rominos.
+        das Array mit allen Blöcken des Rominos,
     \item |List<Vector2Int> PossibleExtensions| - 
-        Die Liste mit allen Block-Additionsmöglichkeiten.
-        Hierbei ist zu bemerken, dass die Größe der Liste konstant bleibt; es wird hier eine Liste statt einem Array verwendet, da bei der Erstellung die Größe unbekannt ist, und die Konvertierung zum Array unnötig Rechenzeit kosten würde.
-    \item |Vector2Int DiagonalRoot| - Die linke obere Ecke der 
-        geschützten Diagonale.
-    \item |Vector2Int Max| - Die rechte untere Ecke des Rominos.
+        die Liste mit allen Block-Additionsmöglichkeiten.
+        Hierbei ist zu bemerken, dass die Größe der Liste konstant bleibt; es wird hier eine Liste statt einem Array verwendet, da bei der Erstellung die Größe unbekannt ist, und die Konvertierung zum Array unnötig Rechenzeit kosten würde,
+    \item |Vector2Int DiagonalRoot| - die linke obere Ecke der 
+        geschützten Diagonale,
+    \item |Vector2Int Max| - die rechte untere Ecke des Rominos.
         Verwendet für die Korrektur der Verschiebung ohne über alle Blöcke zu
-        iterieren.
-    \item |BitBuffer512 _uniqueCode| - Der eindeutige Wert, errechnet
+        iterieren,
+    \item |BitBuffer512 _uniqueCode| - der eindeutige Wert, errechnet
         wie in \cref{uniqueCode}.
 \end{enumerate}
 
 Die Hauptmethode ist die statische Methode
-|IEnumerable<(int Size, List<Romino> Rominos)> Romino.GetRominosUntilSize(int size)|
+|IEnumerable<(int Size, List<Romino> Rominos)> Romino.GetRominosUntilSize(int size)|,
 welche für eine gegebene Größe alle Rominos aller Größen bis zu dieser
 Größe ausgibt. Diese ruft intern parallelisiert für alle Rominos aus einer
 Generation die Methode |IEnumerable<Romino> Romino.AddOneNotUnique()|
@@ -853,9 +852,9 @@ Rominos der nächsten Generation.
 Danach werden nach dem Verfahren aus \cref{dupl} die Duplikate entfernt.
 
 Die eindeutigen Werte aus \cref{uniqueCode} werden hierbei berechnet, ohne
-dass der Romino modifiziert wird. Alle Modifikationen die an dem Romino
+dass der Romino modifiziert wird. Alle Modifikationen, die an dem Romino
 gemacht werden müssten, um den Wert einer Permutation zu bestimmen, werden
-beim orientieren direkt in der Ausrechnung des eindeutigem Werts angewendet, ohne das Romino zu
+beim Orientieren direkt in der Ausrechnung des eindeutigem Werts angewendet, ohne das Romino zu
 modifizieren. Erst wenn die eindeutige Rotation nach \cref{dupl} gefunden
 wurde, wird das Romino so modifiziert, dass es als diese Permutation
 dargestellt wird.
@@ -873,9 +872,9 @@ wobei die individuellen Bits mit dem Indexer\\
 werden können. Weiterdem überlädt |BitBuffer512|
 Vergleichsoperatoren, die 2 Instanzen wie eine 512 stellige
 unsignierte Binärzahlen vergleicht.
-Das struct wird zum speichern des eindeutigem Werts aus
+Das struct wird zum Speichern des eindeutigem Werts aus
 \cref{uniqueCode} verwendet, da der größte vorimplementierte
-Zahlentype, |ulong| bereits mit 8er-Rominos komplett
+Zahlentypen, |ulong|, bereits mit 8er-Rominos komplett
 gefüllt wird. Im Vergleich kann |BitBuffer512|
 Rominos von bis zu 22 Blöcken speichern.
 

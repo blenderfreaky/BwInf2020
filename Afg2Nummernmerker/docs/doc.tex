@@ -153,7 +153,7 @@ Durchläufe eventuell bei folgenden Rechnungen wiederverwendet werden können.
 
 Der Algorithmus funktioniert also, indem einmal die ersten 2, 3 und dann 4
 Ziffern der Zahl abgetrennt werden, und daraufhin die übrigen Ziffern
-nocheinmal vom Algorithmus aufgeteilt werden.
+noch einmal vom Algorithmus aufgeteilt werden.
 Jetzt, wo man 3 mögliche Aufteilungen hat, muss man nur noch die beste
 hiervon auswählen.
 Sind null Zahlen aufzuteilen, so wird eine leere Aufteilung zurückgegeben.
@@ -164,7 +164,7 @@ Für die Umsetzung haben uns für eine Implementierung in C\# 8.0 mit
 .NET Core 3.0 entschieden.
 
 Der Sourcecode ähnelt stark dem Pseudocode (siehe \cref{idea});
-die Zentrale Methode die den Algorithmus ausführt hat die Signatur\\
+die zentrale Methode, die den Algorithmus ausführt, hat die Signatur\\
 |NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength = 2, int maxSequenceLength = 4)|.\\
 Hierbei sind min-/maxSequenceLength die Minimal-/Maximallängen
 der einzelnen aufgeteilten Segmente; aus der Aufgabe heraus kommen hierbei
@@ -172,7 +172,7 @@ für diese die Standardwerte 2 und 4.
 
 \subsection{Datenstruktur}
 
-Für das speicheren alter Ergebnisse wird ein struct |MerkedNummer|
+Für das Speicheren alter Ergebnisse wird ein struct |MerkedNummer|
 verwendet, welches die Eingaben für die Methode zwischenspeichert,
 und ein struct |NummerMerkingSolution|, welches die Ergebnisse
 zwischenspeichert. Diese werden in einem
@@ -186,7 +186,7 @@ Um Rechenzeit zu sparen, wird anders als im Pseudocode kein modifiziertes
 Array zurückgegeben, sondern eine Instanz des structs |System.ArraySegment`1|.
 Alle Instanzen dieses structs zeigen beim Ausführen auf das gleiche Array,
 womit unnötige Array-Allocations verhindert werden, was Kosten des
-Garbage collectors spart.
+Garbage Collectors spart.
 
 \section{Beispiele}
 
@@ -229,27 +229,46 @@ Results:
 
 \section{Quellcode}
 
-\begin{lstcs}
-private static readonly Dictionary<MerkedNummer, NummerMerkingSolution> MerkedNummers =
-    new Dictionary<MerkedNummer, NummerMerkingSolution>();
+Für ein bisschen Extraperformance verwenden wir |LinqFaster|; eine C\# Library, welche einige LINQ Methoden für Arrays und Listen neu schreibt, um direkt passende Arrays/Listen zu generieren, anstatt nur |IEnumerable|s zu verwenden.
+|LinqFaster| Erweiterungsmethoden heißen genauso wie LINQ Methoden, mit einem F am Ende (bspw. |.WhereF| statt |.Where|).
 
-public static NummerMerkingSolution MerkNummern(ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
+\begin{lstcs}
+public static NummerMerkingSolution MerkNummern(string text, int minSequenceLength, int maxSequenceLength) =>
+    MerkNummern(new ArraySegment<bool>(text.ToCharArray().SelectF(x => x == '0')), minSequenceLength, maxSequenceLength);
+
+public static NummerMerkingSolution MerkNummern(in ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
     MerkNummern(new MerkedNummer(zeros, minSequenceLength, maxSequenceLength));
 
-private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
+private static readonly Dictionary<MerkedNummer, NummerMerkingSolution> MerkedNummers =
+    new Dictionary<MerkedNummer, NummerMerkingSolution>();
+    
+private static NummerMerkingSolution MerkNummern(in MerkedNummer merkedNummer)
 {
+    // If the input has already been processed once, return previous result.
     if (MerkedNummers.TryGetValue(merkedNummer, out var optimalDistribution)) return optimalDistribution;
 
+    if (merkedNummer.Zeros.Count == 0)
+    {
+        return MerkedNummers[merkedNummer] = NummerMerkingSolution.Empty();
+    }
+
+    // Not enough digits => Fail.
     if (merkedNummer.Zeros.Count < merkedNummer.MinSequenceLength)
     {
         return MerkedNummers[merkedNummer] = NummerMerkingSolution.Failure();
     }
 
     int nextGenerationSize =
+        // Calculate the length of the longest segment possible.
         Math.Min(
+            // Either the number of digits left,
             merkedNummer.Zeros.Count,
-            merkedNummer.MaxSequenceLength + 1)
-        - merkedNummer.MinSequenceLength;
+            // or the max length of distributions.
+            merkedNummer.MaxSequenceLength)
+        // Subtract min sequence length, as distributions smaller than it are not allowed.
+        - merkedNummer.MinSequenceLength
+        // Add one, as min is inclusive.
+        + 1;
 
     if (nextGenerationSize <= 0)
     {
@@ -264,19 +283,15 @@ private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
 
         var subSolution =
             MerkNummern(
-                new ArraySegment<bool>(
-                  merkedNummer.Zeros.Array,
-                  merkedNummer.Zeros.Offset + length,
-                  merkedNummer.Zeros.Count - length),
+                new ArraySegment<bool>(merkedNummer.Zeros.Array, merkedNummer.Zeros.Offset + length, merkedNummer.Zeros.Count - length),
                 merkedNummer.MinSequenceLength,
                 merkedNummer.MaxSequenceLength);
 
         nextGeneration[i] = !subSolution.IsSuccessful
             ? NummerMerkingSolution.Failure()
             : NummerMerkingSolution.Success(
-                subSolution.Distribution.PrecedeOne(length),
-                subSolution.LeadingZerosHit
-                + (((IList<bool>)merkedNummer.Zeros)[0] ? 1 : 0));
+                subSolution.Distribution.PrependF(length),
+                subSolution.LeadingZerosHit + (merkedNummer.Zeros.ElementAtUnchecked(0) ? 1 : 0));
     }
 
     var elements = nextGeneration.WhereF(x => x.IsSuccessful);
@@ -291,7 +306,17 @@ private static NummerMerkingSolution MerkNummern(MerkedNummer merkedNummer)
         return MerkedNummers[merkedNummer] = elements[0];
     }
 
-    NummerMerkingSolution bestSolution = elements.AggregateF((x, y) => x.LeadingZerosHit < y.LeadingZerosHit ? x : y);
+    NummerMerkingSolution bestSolution = elements[0];
+
+    for (int i = 1; i < elements.Length; i++)
+    {
+        // Find element with least leading zeros hit
+        if (elements[i].LeadingZerosHit < bestSolution.LeadingZerosHit)
+        {
+            bestSolution = elements[i];
+        }
+    }
+
     return MerkedNummers[merkedNummer] = bestSolution;
 }
 \end{lstcs}
