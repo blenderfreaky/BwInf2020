@@ -18,13 +18,13 @@ namespace Urlaubsfahrt
 
         public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
 
-        public readonly double? GetCheapestPriceTo(GasStation destination, Car car) =>
+        public readonly decimal? GetCheapestPriceTo(GasStation destination, Car car) =>
             GetCheapestPriceTo(destination.Position, car);
 
-        public readonly double? GetCheapestPriceTo(double destination, Car car) =>
+        public readonly decimal? GetCheapestPriceTo(decimal destination, Car car) =>
             GetCheapestPathTo(destination, car)?.PriceFor(car);
 
-        public readonly DrivingPlan? GetCheapestPathTo(double destination, Car car)
+        public readonly DrivingPlan? GetCheapestPathTo(decimal destination, Car car)
         {
             DrivingPlan drivingPlan = DrivingPlan.Empty;
 
@@ -48,7 +48,7 @@ namespace Urlaubsfahrt
             {
                 Range newRange = new Range(station.Position, station.Position + car.TankDistance);
 
-                double distance = car.TankDistance;
+                decimal distance = car.TankDistance;
 
                 bool startHit = false, endHit = false;
 

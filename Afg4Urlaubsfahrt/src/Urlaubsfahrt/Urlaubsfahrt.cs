@@ -9,39 +9,47 @@
         /// <summary>
         /// Finds the shortest and cheapest path through a set of stations. Prioritizes shortness over cheapness.
         /// </summary>
-        /// <param name="allStations">All GasStations</param>
-        /// <param name="startFuelLength"></param>
-        /// <param name="tankLength"></param>
-        /// <returns></returns>
+        /// <param name="allStations">All the stations on the track. May be unordered.</param>
         public static Track FindBestTrack(
             IEnumerable<GasStation> allStations,
             Car car,
-            double destinationPosition)
+            decimal destinationPosition)
         {
-            List<Track> optimalSubTracks = new List<Track> { Track.Empty }; //Der erste Weg der existiert ist ein Weg ohne Stopps
+            // Der erste Weg der existiert ist ein Weg ohne Stopps
+            List<Track> optimalSubTracks = new List<Track> { Track.Empty };
 
+            // Kopiere die übergebenen Stationen in eine eigene, sortierte Liste
             var actualStations = allStations
                 .OrderBy(x => x.Position)
                 .ToList();
 
+            // Füge das Ziel als eine Tankstelle mit einem Preis von null an
             actualStations.Add(new GasStation(destinationPosition, 0));
 
-            foreach (GasStation station in actualStations) //Für jede Tankstelle wird der ideale Weg ermittelt
+            // Für jede Tankstelle wird der ideale Weg ermittelt
+            foreach (GasStation station in actualStations)
             {
                 optimalSubTracks.RemoveAll(x =>
-                    station.Position - x.LastStop.Position > car.TankDistance); //Zuerst werden alle Wege entfernt, dessen letzte Station weiter von der aktuellen Station weg ist, als das Auto Reichweite hat
+                    // Zuerst werden alle Wege entfernt, dessen letzte Station weiter von der aktuellen Station weg ist, als das Auto Reichweite hat
+                    station.Position - x.LastStop.Position > car.TankDistance);
 
                 if (optimalSubTracks.Count == 0)
                 {
-                    throw new InvalidOperationException("No solutions found");  //Wenn man zu eiem Punkt nicht kommen kann, kann man auch nicht zu den Punkten dahinter oder zum Ziel kommen
+                    // Wenn man zu eiem Punkt nicht kommen kann, kann man auch nicht zu den Punkten dahinter oder zum Ziel kommen
+                    throw new InvalidOperationException("No solutions found");
                 }
 
                 optimalSubTracks.AddRange(optimalSubTracks
-                    .Select(x => x.With(station))       //an jeden alten Weg wird die aktuelle Station angehangen
-                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, car))) //Es wird für jeden Weg der Preis gebildet
-                    .Where(x => x.Price.HasValue)   //Es werden die nicht möglichen entfernt
-                    .AllMinsBy(x => x.Track.Stops.Count)     //Es werden die Wege gewählt, die am wenigsten Stopps brauchen
-                    .AllMinsBy(x => x.Price!.Value) //Es werden die günstigsten gwählt
+                    // An jeden alten Weg wird die aktuelle Station angehangen
+                    .Select(x => x.With(station))
+                    // Es wird für jeden Weg der Preis gebildet
+                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, car)))
+                    // Es werden die nicht möglichen entfernt
+                    .Where(x => x.Price.HasValue)
+                    // Es werden die Wege gewählt, die am wenigsten Stopps brauchen
+                    .AllMinsBy(x => x.Track.Stops.Count)
+                    // Es werden die günstigsten gwählt
+                    .AllMinsBy(x => x.Price!.Value)
                     .Select(x => x.Track));
             }
 
@@ -51,7 +59,8 @@
                 .AllMinsBy(x => x.Track.Stops.Count)
                 .AllMinsBy(x => x.Price!.Value)
                 .Select(x => x.Track)
-                .Last(); //wenn es mehrere gleich-günstige gibt, wird der letzte gewählt
+                // Wenn es mehrere gleich-günstige Wege gibt wird der letzte gewählt
+                .Last();
         }
     }
 }

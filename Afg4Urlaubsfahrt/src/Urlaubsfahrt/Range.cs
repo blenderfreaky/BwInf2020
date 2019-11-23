@@ -8,35 +8,35 @@
         /// <summary>
         /// Represents not a range. This field is constant.
         /// </summary>
-        public static readonly Range NaR = new Range(double.NaN, double.NaN);
+        public static readonly Range NaR = new Range(decimal.NaN, decimal.NaN);
 
         /// <summary>
         /// The inclusive starting point.
         /// </summary>
-        public readonly double Start;
+        public readonly decimal Start;
 
         /// <summary>
         /// The inclusive ending point.
         /// </summary>
-        public readonly double End;
+        public readonly decimal End;
 
         /// <summary>
         /// Gets the length.
         /// </summary>
-        public readonly double Length => End - Start;
+        public readonly decimal Length => End - Start;
 
-        public Range(double start, double end)
+        public Range(decimal start, decimal end)
         {
             Start = start;
             End = end;
         }
 
         /// <summary>
-        /// Checks whether a given <see cref="double"/> is inside the range. <see cref="Start"/> and <see cref="End"/> are inclusive.
+        /// Checks whether a given <see cref="decimal"/> is inside the range. <see cref="Start"/> and <see cref="End"/> are inclusive.
         /// </summary>
         /// <param name="position">The position to check containment for.</param>
         /// <returns>Whether <paramref name="position"/> is contained by the range.</returns>
-        public readonly bool Contains(double position) =>
+        public readonly bool Contains(decimal position) =>
             position >= Start && position <= End;
 
         public override readonly bool Equals(object? obj) => obj is Range range && Equals(range);
@@ -44,7 +44,7 @@
         public readonly bool Equals([AllowNull] Range other) =>
             Start == other.Start && End == other.End;
 
-        public static bool IsNaR(Range range) => double.IsNaN(range.Start) && double.IsNaN(range.End);
+        public static bool IsNaR(Range range) => decimal.IsNaN(range.Start) && decimal.IsNaN(range.End);
 
         public override readonly int GetHashCode() => HashCode.Combine(Start, End);
 

@@ -23,7 +23,7 @@
         {
             string[] lines = File.ReadAllLines(o.File);
 
-            double trackLength = int.Parse(lines[3]); // km
+            decimal trackLength = int.Parse(lines[3]); // km
             var car = new Car(
                 int.Parse(lines[0]) / 100d /*l/100km to l/km*/,
                 int.Parse(lines[1]),
@@ -35,7 +35,7 @@
                 string[] values = lines[i]
                     .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                allStations.Add(new GasStation(double.Parse(values[0]), double.Parse(values[1]) / 100d /*ct to €*/));
+                allStations.Add(new GasStation(decimal.Parse(values[0]), decimal.Parse(values[1]) / 100d /*ct to €*/));
             }
 
             Track track = Urlaubsfahrt.FindBestTrack(allStations, car, trackLength);
@@ -52,7 +52,7 @@
             Console.WriteLine(drivingPlan.Value.ToString(car));
             Console.WriteLine();
             Console.WriteLine("  Stops: " + drivingPlan.Value.Stops.Count);
-            Console.WriteLine("  Price: " + drivingPlan.Value.PriceFor(car));
+            Console.WriteLine("  Price: " + drivingPlan.Value.PriceFor(car) + "EUR");
         }
     }
 }
