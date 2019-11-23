@@ -58,8 +58,6 @@
                     .Except(allStates.AsParallel())
                     .ToList();
 
-                // nextGen.ExceptWith(allStates);
-
                 // Falls die Operationsanzahl für nur einen Zustand festgestellt werden soll
                 if (goal != null)
                 {
