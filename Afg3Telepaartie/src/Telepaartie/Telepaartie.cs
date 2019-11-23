@@ -36,25 +36,29 @@
             State? goal,
             Action<string>? writeLine)
         {
-            HashSet<State> lastGen = new HashSet<State>(
+            var lastGen =
                 // Alle Endzustände bilden die nullte Generation
                 State.AllEndingStates(numberOfCups, numberOfItems)
-                .Select(x => new State(x)));
+                .Select(x => new State(x))
+                .ToList();
 
-            HashSet<State> allStates = new HashSet<State>(lastGen);
+            var allStates = lastGen.ToList();
 
             for (int i = 0; ; i++)
             {
                 writeLine?.Invoke($"\rStarting iteration {i + 1}");
 
-                HashSet<State> nextGen = new HashSet<State>(lastGen
+                var nextGen = lastGen
                     // Aktiviere Parallelisierung mit PLINQ
                     .AsParallel()
                     // Ermittle alle Ursprungzustände
-                    .SelectMany(x => x.Origins()));
+                    .SelectMany(x => x.Origins())
+                    .Distinct()
+                    // Entferne Zustände die schon in vorherigen Generationen vorhanden sind
+                    .Except(allStates.AsParallel())
+                    .ToList();
 
-                // Entferne Zustände die schon in vorherigen Generationen vorhanden sind
-                nextGen.ExceptWith(allStates);
+                // nextGen.ExceptWith(allStates);
 
                 // Falls die Operationsanzahl für nur einen Zustand festgestellt werden soll
                 if (goal != null)
@@ -86,10 +90,10 @@
                     return i + 1;
                 }
 
-                // Zur Sammlung aller bisher entdeckten Zustände die jetzige Generation hinzufügen.
-                allStates.UnionWith(nextGen);
                 // Die letzte Generation durch die jetzige ersetzen, um die nächste korrekt ausrechnen zu lassen
                 lastGen = nextGen;
+                // Zur Sammlung aller bisher entdeckten Zustände die jetzige Generation hinzufügen.
+                allStates.AddRange(nextGen);
             }
         }
     }
