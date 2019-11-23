@@ -51,8 +51,8 @@
 
             Console.WriteLine(drivingPlan.Value.ToString(car));
             Console.WriteLine();
-            Console.WriteLine("  Stops: " + drivingPlan.Value.Stops.Count);
-            Console.WriteLine("  Price: " + drivingPlan.Value.PriceFor(car) + "EUR");
+            Console.WriteLine("  Stops: " + (drivingPlan.Value.Stops.Count-1));
+            Console.WriteLine("  Price: " + Math.Round(drivingPlan.Value.PriceFor(car), 2) + "EUR");
         }
     }
 }

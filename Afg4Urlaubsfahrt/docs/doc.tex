@@ -150,60 +150,420 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 
 \section{Umsetzung}
 
-\subsection{}
 	\begin{itemize}
-		\item enthält die statische Klasse |Urlaubsfahrt|, die die statische Methode |GetTrack| enthält, die den Hauptalgorithmus ausführt
-		\item |GetTrack| erhält als Parameter:
+		\item Die |public static class| Urlaubsfahrt enthält die Hauptmethode |public static Track| FindBestTrack.
+		\item |FindBestTrack| erhält als Parameter:
 		 \begin{itemize}
-		 	\item die Strecke, die mit dem bereits im Tank vorhandenen Benzin zurückgelegt werden kann
-		 	\item die mit einer maximalen Tankfüllung zurückgelegt werden kann
-		 	\item eine Liste aller Tankstellen
+		 	\item eine Liste von allen GasStations
+		 	\item ein Car
+		 	\item die Streckenlänge
 		\end{itemize}
-    \end{itemize}
-    
-    \begin{itemize}
-        \item enthält die Position und den Benzinpreis einer Tankstelle
+    	\item Das |public readonly struct| GasStation repräsentiert die Tankstelle
+    	\item Es enthält:
+    	\begin{itemize}
+    		\item Eine Tankstelle, die das Zuhause repräsentiert
+    		\item Eine Position
+    		\item Den Preis
+    	\end{itemize}
+        \item  Das |public readonly struct| Car repräsentiert das Auto und ist nur für die Datenspeicherung zuständig
+        \item Es enthält:
+       	\begin{itemize}
+       		\item Den Verbrauch
+       		\item Die Tankkapazität
+       		\item Die Strecke, die man mit vollem Tank zurücklegen kann
+       		\item Wie viel Benzin am Anfang im Tank ist
+       		\item Die Strecke, die man mit dem Startbenzin zurücklegen kann
+       	\end{itemize}
+       	\item Das |public readonly struct| Track repräsentiert einen Wegabschnitt bis zu einer Tankstelle
+       	\item Es enthält:
+       	\begin{itemize}
+       		\item Eine Liste an Tankstellen, an denen gehalten werden kann
+       		\item die Funktion |public readonly DrivingPlan?| GetCheapestPathTo, die für die Liste an Tankstellen die günstigste Tank-Verteilung berechnet, ohne auf die Stopp-Anzahl zu achten
+       	\end{itemize}
+       	\item Das |public readonly struct| DrivingPlan ist das errechnete Resultat eines Tracks
+       	\item Es enthält:
+       	\begin{itemize}
+       		\item Eine Liste von Tupeln von einer Tankstelle und der Distanz, für die bei ihr getankt wird
+       		\item  Die Funktion |public readonly decimal| PriceFor, die den Preis für den Weg zurückgibt
+       	\end{itemize}
     \end{itemize}
 
-	\begin{itemize}
-		\item berechnet für einen Weg den besten Preis, unabhängig von den benötigten Stopps
-		\item enthält eine Liste von allen Tankstellen des Weges
-		\item ein Track kann folgendermaßen gebildet werden:
-		\begin{itemize}
-			\item aus einer Tankstelle
-			\item aus einem Track und einer Tankstelle
-			\item aus nichts; das statische Feld |EmptyTrack| repräsentiert einen komplett leeren Weg
-		\end{itemize}
-        \item die Methode |GetPriceTo| führt den Nebenalgorithmus aus, und berechnet entweder bis zu einem arbiträren Punkt, oder zu einer Tankstelle den Preis aus
-    \end{itemize}
-
-    
-
-    \begin{itemize}
-        \item enthält Methoden, die generische Klassen oder Interfaces erweitern
-        \begin{itemize}
-            \item |AllMins<TSource>| gibt von einem IEnumerable von TSource die Elemente zurück, die bei einer Funktion von TSource zu |IComparable<T>| gleichwertig zum Minimum sind
-        \end{itemize}
-    \end{itemize}
-
-\subsubsection{Implementierung}
-\begin{lstcs}
-GetTrack(float MitDemStartBenzinZurücklegbarerWeg, float MitVollemTankZurücklegbarerWeg, Liste<Tankstelle> AlleTankstellen)
-{
-	Liste<Weg> WegeZuAllenTankstellen = Weg.LeererWeg;
-	FürJede(Tankstelle Station in AlleTankstellen)
-	{
-		WegeZuAllenTankstellen.EntferneAlleFürDieGilt(der Abstand der letzten Tankstelle zu Station > MitVollemTankZurücklegbarerWeg);
-	}
-}
-\end{lstcs}
 \section{Beispiele}
 
-Genügend Beispiele einbinden! Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut – besonders wenn sie Spezialfälle abdecken. Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
+Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen. Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Urlaubsfahrt.CLI --help| aus.
+begin{lstcs}
+./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt1.txt"
+
+Stops:
+  Gas station(0m 0EUR/l)
+  Gas station(100m 1,45EUR/l)
+  Gas station(400m 1,4EUR/l)
+
+Driving Plan:
+  Drive for 275m on the starting fuel
+  Tank 48,00l at Gas station(400m 1,4EUR/l). (Cost: 67,20EUR)
+  Tank 10,00l at Gas station(100m 1,45EUR/l). (Cost: 14,50EUR)
+
+  Stops: 2
+  Price: 81,70EUR
+\end{lstcs}
+begin{lstcs}
+./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt2.txt"
+
+Stops:
+  Gas station(0m 0EUR/l)
+  Gas station(1118m 1,15EUR/l)
+  Gas station(1922m 1,17EUR/l)
+  Gas station(2762m 1,19EUR/l)
+  Gas station(3833m 1,18EUR/l)
+  Gas station(4874m 1,19EUR/l)
+  Gas station(5796m 1,17EUR/l)
+  Gas station(6912m 1,31EUR/l)
+  Gas station(7929m 1,15EUR/l)
+  Gas station(8987m 1,21EUR/l)
+
+Driving Plan:
+  Drive for 1137,5m on the starting fuel
+  Tank 269,32l at Gas station(1118m 1,15EUR/l). (Cost: 309,72EUR)
+  Tank 274,00l at Gas station(7929m 1,15EUR/l). (Cost: 315,10EUR)
+  Tank 192,96l at Gas station(1922m 1,17EUR/l). (Cost: 225,76EUR)
+  Tank 274,00l at Gas station(5796m 1,17EUR/l). (Cost: 320,58EUR)
+  Tank 274,00l at Gas station(3833m 1,18EUR/l). (Cost: 323,32EUR)
+  Tank 184,64l at Gas station(2762m 1,19EUR/l). (Cost: 219,72EUR)
+  Tank 197,12l at Gas station(4874m 1,19EUR/l). (Cost: 234,57EUR)
+  Tank 223,04l at Gas station(8987m 1,21EUR/l). (Cost: 269,88EUR)
+  Tank 237,92l at Gas station(6912m 1,31EUR/l). (Cost: 311,68EUR)
+
+  Stops: 9
+  Price: 2530,33EUR
+\end{lstcs}
+begin{lstcs}
+./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt3.txt"
+
+Stops:
+  Gas station(0m 0EUR/l)
+  Gas station(465m 1,24EUR/l)
+
+Driving Plan:
+  Drive for 533,333m on the starting fuel
+  Tank 80,00l at Gas station(465m 1,24EUR/l). (Cost: 99,20EUR)
+
+  Stops: 1
+  Price: 99,20EUR
+\end{lstcs}
+begin{lstcs}
+./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt4.txt"
+
+Stops:
+  Gas station(0m 0EUR/l)
+  Gas station(264m 1,2EUR/l)
+  Gas station(607m 1,3EUR/l)
+
+Driving Plan:
+  Drive for 370m on the starting fuel
+  Tank 88,2l at Gas station(264m 1,2EUR/l). (Cost: 105,84EUR)
+  Tank 100,8l at Gas station(607m 1,3EUR/l). (Cost: 131,04EUR)
+
+  Stops: 2
+  Price: 236,88EUR
+\end{lstcs}
+begin{lstcs}
+./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt5.txt"
+
+Stops:
+  Gas station(0m 0EUR/l)
+  Gas station(107m 1,16EUR/l)
+  Gas station(1198m 1,15EUR/l)
+  Gas station(2344m 1,17EUR/l)
+  Gas station(3454m 1,16EUR/l)
+  Gas station(4569m 1,17EUR/l)
+  Gas station(5531m 1,31EUR/l)
+  Gas station(6692m 1,34EUR/l)
+  Gas station(7798m 1,16EUR/l)
+  Gas station(8944m 1,31EUR/l)
+
+Driving Plan:
+  Drive for 200m on the starting fuel
+  Tank 244,00l at Gas station(1198m 1,15EUR/l). (Cost: 280,60EUR)
+  Tank 209,58l at Gas station(107m 1,16EUR/l). (Cost: 243,11EUR)
+  Tank 244,00l at Gas station(3454m 1,16EUR/l). (Cost: 283,04EUR)
+  Tank 244,00l at Gas station(7798m 1,16EUR/l). (Cost: 283,04EUR)
+  Tank 229,76l at Gas station(2344m 1,17EUR/l). (Cost: 268,82EUR)
+  Tank 234,15l at Gas station(4569m 1,17EUR/l). (Cost: 273,96EUR)
+  Tank 202,02l at Gas station(5531m 1,31EUR/l). (Cost: 264,65EUR)
+  Tank 218,42l at Gas station(8944m 1,31EUR/l). (Cost: 286,13EUR)
+  Tank 232,07l at Gas station(6692m 1,34EUR/l). (Cost: 310,97EUR)
+
+  Stops: 9
+  Price: 2494,32EUR
+\end{lstcs}
 
 \section{Quellcode}
-Unwichtige Teile des Programms sollen hier nicht abgedruckt werden. Dieser Teil sollte nicht mehr als 2–3 Seiten umfassen, maximal 10.
+\begin{lstcs}
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+public static class Urlaubsfahrt
+{
+    /// <summary>
+    /// Findet den kürzesten und preiswertesten Weg durch die Tankstellen. Priorität hat eine gerine Stoppzahl, nicht der Preis
+    /// </summary>
+    /// <param name="allStations">Alle Tankstellen, sie können ungeordnet sein.</param>
+    public static Track FindBestTrack(
+        IEnumerable<GasStation> allStations,
+        Car car,
+        decimal destinationPosition)
+    {
+        // Der erste Weg der existiert ist ein Weg ohne Stopps
+        List<Track> optimalSubTracks = new List<Track> { Track.Empty };
+
+        // Kopiere die übergebenen Stationen in eine eigene, sortierte Liste
+        var actualStations = allStations
+                .OrderBy(x => x.Position)
+                .ToList();
+
+        // Füge das Ziel als eine Tankstelle mit einem Preis von null an
+        actualStations.Add(new GasStation(destinationPosition, 0));
+
+        // Für jede Tankstelle wird der ideale Weg ermittelt
+        foreach (GasStation station in actualStations)
+        {
+            optimalSubTracks.RemoveAll(x =>
+                // Zuerst werden alle Wege entfernt, dessen letzte Station weiter von der aktuellen Station weg ist, als das Auto Reichweite hat
+                station.Position - x.LastStop.Position > car.TankDistance);
+
+            if (optimalSubTracks.Count == 0)
+            {
+                // Wenn man zu eiem Punkt nicht kommen kann, kann man auch nicht zu den Punkten dahinter oder zum Ziel kommen
+                throw new InvalidOperationException("No solutions found");
+            }
+
+            optimalSubTracks.AddRange(optimalSubTracks
+                // An jeden alten Weg wird die aktuelle Station angehangen
+                .Select(x => x.With(station))
+                // Es wird für jeden Weg der Preis gebildet
+                .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, car)))
+                // Es werden die nicht möglichen entfernt
+                .Where(x => x.Price.HasValue)
+                // Es werden die Wege gewählt, die am wenigsten Stopps brauchen
+                .AllMinsBy(x => x.Track.Stops.Count)
+                // Es werden die günstigsten gwählt
+                .AllMinsBy(x => x.Price!.Value)
+                .Select(x => x.Track));
+        }
+
+        return optimalSubTracks
+            .Select(x => (Track: x, Price: x.GetCheapestPriceTo(destinationPosition, car)))
+            .Where(x => x.Price.HasValue)
+            .AllMinsBy(x => x.Track.Stops.Count)
+            .AllMinsBy(x => x.Price!.Value)
+            .Select(x => x.Track)
+            // Wenn es mehrere gleich-günstige Wege gibt wird der letzte gewählt
+            .Last();
+    }
+}
+\end{lstcs}
+\begin{lstcs}
+using System;
+using System.Diagnostics.CodeAnalysis;
+public readonly struct GasStation : IEquatable<GasStation>
+{
+    /// <summary>
+    /// Der Startpunkt mit Position und Preis gleich 0.
+    /// </summary>
+    public static readonly GasStation Home = new GasStation(0, 0);
+
+    /// <summary>
+    /// Der Preis in Euro pro Liter.
+    /// </summary>
+    public readonly decimal Price;
+
+    /// <summary>
+    /// Die Position der Tankstelle
+    /// </summary>
+    public readonly decimal Position;
+
+    public GasStation(decimal position, decimal price)
+    {
+        Price = price;
+        Position = position;
+    }
+
+    public override readonly bool Equals(object? obj) => obj is GasStation station && Equals(station);
+
+    public readonly bool Equals([AllowNull] GasStation other) => Price == other.Price && Position == other.Position;
+
+    public override readonly int GetHashCode() => HashCode.Combine(Price, Position);
+
+    public static bool operator ==(GasStation left, GasStation right) => left.Equals(right);
+
+    public static bool operator !=(GasStation left, GasStation right) => !(left == right);
+
+    public override readonly string ToString() => $"Gas station({Position}m {Price}EUR/l)";
+}
+\end{lstcs}
+\begin{lstcs}
+using System;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+
+    public readonly struct Track : IEquatable<Track>
+    {
+        public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty.Add(GasStation.Home));
+
+        public readonly ImmutableList<GasStation> Stops;
+
+        public readonly GasStation LastStop => Stops[Stops.Count - 1];
+
+        private Track(ImmutableList<GasStation> stops) => Stops = stops;
+
+        public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
+
+        public readonly decimal? GetCheapestPriceTo(GasStation destination, Car car) =>
+            GetCheapestPriceTo(destination.Position, car);
+
+        public readonly decimal? GetCheapestPriceTo(decimal destination, Car car) =>
+            GetCheapestPathTo(destination, car)?.PriceFor(car);
+
+        public readonly DrivingPlan? GetCheapestPathTo(decimal destination, Car car)
+        {
+            DrivingPlan drivingPlan = DrivingPlan.Empty;
+
+            //Wenn wir mit dem vorhandenen Tank bis zum Ziel fahren können, müssen wir nicht tanken
+            if (destination < car.StartingFuelDistance)
+            {
+                drivingPlan.Add(GasStation.Home, destination);
+                return drivingPlan;
+            }
+
+            //Das gesamte Startbenzin nutzen
+            drivingPlan.Add(GasStation.Home, car.StartingFuelDistance);
+
+            HashSet<Range> coveredRanges = new HashSet<Range>
+            {
+                new Range(0, car.StartingFuelDistance),
+                new Range(destination, destination + car.TankDistance)
+            };
+
+            foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price)) //Die Tankstellen dem Preis nach überprüfen
+            {
+                Range newRange = new Range(station.Position, station.Position + car.TankDistance);
+
+                decimal distance = car.TankDistance;
+
+                bool startHit = false, endHit = false;
+
+                foreach (var coveredRange in coveredRanges.ToList())
+                {
+                    //Überprüfen ob der Start- oder Endpunkt bereits überdeckt sind                                                                                                                                                t collide with the given range.
+                    bool containsStart = coveredRange.Contains(newRange.Start);
+                    bool containsEnd = coveredRange.Contains(newRange.End);
+
+                    //Wenn der gesamte Bereich überdeckt ist muss nicht getankt werden
+                    if (containsStart && containsEnd)
+                    {
+                        newRange = Range.NaR;
+                        break;
+                    }
+
+                    if (!containsStart && !containsEnd) continue;
+
+                    coveredRanges.Remove(coveredRange);
+
+                    if (containsStart)
+                    {
+                        if (startHit) throw new InvalidOperationException();
+                        startHit = true;
+
+                        distance -= coveredRange.End - newRange.Start;
+                        newRange = new Range(coveredRange.Start, newRange.End);
+                    }
+                    else if (containsEnd)
+                    {
+                        if (endHit) throw new InvalidOperationException();
+                        endHit = true;
+
+                        distance -= newRange.End - coveredRange.Start;
+                        newRange = new Range(newRange.Start, coveredRange.End);
+                    }
+
+                    if (newRange.Length == 0 || distance == 0)
+                    {
+                        newRange = Range.NaR;
+                        break;
+                    }
+                }
+
+                if (newRange.IsNaR) continue;
+
+                coveredRanges.Add(newRange);
+                drivingPlan.Add(station, distance);
+
+                //Wenn nur eine Range existiert, die den gesamten Bereich abdeckt, dann wird an den übrigen Stationen nicht getankt
+                if (newRange.Start == 0 && newRange.End >= destination)
+                {
+                    return drivingPlan;
+                }
+            }
+
+            return null;    //Wenn der Weg nicht vollständig Abgedeckt ist, ist dieser Track nicht möglich
+        }
+
+        public override readonly bool Equals(object? obj) => obj is Track track && Equals(track);
+
+        public readonly bool Equals([AllowNull] Track other) => EqualityComparer<ImmutableList<GasStation>>.Default.Equals(Stops, other.Stops);
+
+        public override readonly int GetHashCode() => HashCode.Combine(Stops);
+
+        public static bool operator ==(Track left, Track right) => left.Equals(right);
+
+        public static bool operator !=(Track left, Track right) => !(left == right);
+
+        public override readonly string ToString() => string.Join(Environment.NewLine, Stops.Select(x => "  " + x));
+    }
+\end{lstcs}
+\begin{lstcs}
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+public readonly struct DrivingPlan : IEquatable<DrivingPlan>
+{
+    public readonly List<(GasStation Station, decimal Distance)> Stops;
+
+    public static DrivingPlan Empty => new DrivingPlan(new List<(GasStation Station, decimal Distance)>());
+
+    public DrivingPlan(List<(GasStation Station, decimal Distance)> stops) => Stops = stops;
+
+    public readonly decimal PriceFor(Car car) => Stops.Sum(x => x.Distance * car.GetPriceForDistanceAt(x.Station));
+
+    public readonly void Add(GasStation station, decimal distance) => Stops.Add((station, distance));
+
+    public readonly void Sort() => Stops.Sort((x, y) => x.Station.Position.CompareTo(y.Station.Position));
+
+    public override bool Equals(object? obj) => obj is DrivingPlan plan && Equals(plan);
+
+    public bool Equals([AllowNull] DrivingPlan other) => Stops.SequenceEqual(other.Stops);
+
+    public override int GetHashCode() => HashCode.Combine(Stops);
+
+    public static bool operator ==(DrivingPlan left, DrivingPlan right) => left.Equals(right);
+
+    public static bool operator !=(DrivingPlan left, DrivingPlan right) => !(left == right);
+
+    public override readonly string ToString() => $"Track ({Stops.Count}) {{ {string.Join(", ", Stops)} }}";
+
+    public readonly string ToString(Car car) =>
+        "  Drive for " + Stops[0].Distance + "m on the starting fuel"
+        + Environment.NewLine
+        + string.Join(Environment.NewLine, Stops
+            .Skip(1) // Skip the home "station"
+            .Select(x => $"  Tank {x.Distance * car.FuelUsage}l at {x.Station}. (Cost: {car.GetPriceForDistanceAt(x.Station) * x.Distance}EUR)"));
+}
+\end{lstcs}
 
 \end{document}
 

@@ -2,7 +2,7 @@
   "profiles": {
     "Urlaubsfahrt.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "--file \"..\\..\\..\\..\\..\\examples\\fahrt1.txt\""
+      "commandLineArgs": "-f \"..\\..\\..\\..\\..\\examples\\fahrt5.txt\""
     }
   }
 }

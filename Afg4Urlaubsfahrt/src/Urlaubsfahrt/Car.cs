@@ -3,27 +3,27 @@
     public readonly struct Car
     {
         /// <summary>
-        /// The fuel usage of the car. measured in Litres / Kilometres.
+        /// Der Verbrauch in Litern pro Kilomerter.
         /// </summary>
         public readonly decimal FuelUsage;
 
         /// <summary>
-        /// The capacity of the cars tank, measured in Litres.
+        /// Die Tankkapazität in Litern.
         /// </summary>
         public readonly decimal TankCapacity;
 
         /// <summary>
-        /// The distance the car can travel on one tank without refueling, measured in Metres.
+        /// Die Distanz die das Auto mit vollem Tank fahren kann.
         /// </summary>
         public readonly decimal TankDistance;
 
         /// <summary>
-        /// The amount of fuel the car starts off with, measured in Litres.
+        /// Das Benzin, dass am Anfang im Auto ist.
         /// </summary>
         public readonly decimal StartingFuelAmount;
 
-        /// <summary>1
-        /// The distance the car can travel on with the fuel it starded with without refueling, measured in Metres.
+        /// <summary>
+        /// Der Weg den das Auto fahren kann, ohne ein mal zu tanken.
         /// </summary>
         public readonly decimal StartingFuelDistance;
 
@@ -37,10 +37,9 @@
         }
 
         /// <summary>
-        /// Get the price for gas at a gas station measured in €/km for this car.
+        /// Der Preis, um mit diesem Auto einen Kilometer zu fahren
         /// </summary>
-        /// <param name="station">The gas station to get the price for.</param>
-        /// <returns>The price in € of driving a kilometer with gas from this station.</returns>
+        /// <param name="station">Die Tankstelle, an der getankt wurde.</param>
         public readonly decimal GetPriceForDistanceAt(GasStation station) => station.Price * FuelUsage;
     }
 }

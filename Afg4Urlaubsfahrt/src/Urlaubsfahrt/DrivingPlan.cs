@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-namespace Urlaubsfahrt
+﻿namespace Urlaubsfahrt
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     public readonly struct DrivingPlan : IEquatable<DrivingPlan>
     {
         public readonly List<(GasStation Station, decimal Distance)> Stops;
@@ -32,10 +31,10 @@ namespace Urlaubsfahrt
         public override readonly string ToString() => $"Track ({Stops.Count}) {{ {string.Join(", ", Stops)} }}";
 
         public readonly string ToString(Car car) =>
-            "  Drive for " + Stops[0].Distance + "m on the starting fuel"
+            "  Drive for " + Math.Round(Stops[0].Distance, 3) + "m on the starting fuel"
             + Environment.NewLine
             + string.Join(Environment.NewLine, Stops
                 .Skip(1) // Skip the home "station"
-                .Select(x => $"  Tank {x.Distance * car.FuelUsage}l at {x.Station}. (Cost: {car.GetPriceForDistanceAt(x.Station) * x.Distance}EUR)"));
+                .Select(x => $"  Tank {Math.Round(x.Distance * car.FuelUsage, 2)}l at {x.Station}. (Cost: {Math.Round(car.GetPriceForDistanceAt(x.Station) * x.Distance, 2)}EUR)"));
     }
 }

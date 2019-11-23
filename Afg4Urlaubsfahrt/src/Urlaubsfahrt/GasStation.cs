@@ -1,20 +1,22 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
-
 namespace Urlaubsfahrt
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
     public readonly struct GasStation : IEquatable<GasStation>
     {
         /// <summary>
-        /// Represents the starting point, with a position of 0 and a price of 0.
+        /// Der Startpunkt mit Position und Preis gleich 0.
         /// </summary>
         public static readonly GasStation Home = new GasStation(0, 0);
 
         /// <summary>
-        /// The price of gas at the station in €/l.
+        /// Der Preis in Euro pro Liter.
         /// </summary>
         public readonly decimal Price;
 
+        /// <summary>
+        /// Die Position der Tankstelle
+        /// </summary>
         public readonly decimal Position;
 
         public GasStation(decimal position, decimal price)

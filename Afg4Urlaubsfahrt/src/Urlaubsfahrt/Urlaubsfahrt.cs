@@ -7,9 +7,9 @@
     public static class Urlaubsfahrt
     {
         /// <summary>
-        /// Finds the shortest and cheapest path through a set of stations. Prioritizes shortness over cheapness.
+        /// Findet den kürzesten und preiswertesten Weg durch die Tankstellen. Priorität hat eine gerine Stoppzahl, nicht der Preis
         /// </summary>
-        /// <param name="allStations">All the stations on the track. May be unordered.</param>
+        /// <param name="allStations">Alle Tankstellen, sie können ungeordnet sein.</param>
         public static Track FindBestTrack(
             IEnumerable<GasStation> allStations,
             Car car,
