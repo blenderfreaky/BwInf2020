@@ -15,7 +15,7 @@ namespace Urlaubsfahrt
         public readonly decimal Price;
 
         /// <summary>
-        /// Die Position der Tankstelle
+        /// Die Position der Tankstelle in km.
         /// </summary>
         public readonly decimal Position;
 
