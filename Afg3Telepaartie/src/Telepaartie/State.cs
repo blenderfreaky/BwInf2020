@@ -1,12 +1,11 @@
 namespace Telepaartie
 {
-    #nullable enable 
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+        using System;
+        using System.Collections.Generic;
+        using System.Linq;
 
-    public class State : IEquatable<State>
-    {
+        public class State : IEquatable<State>
+        {
         public int Depth => Parent == null ? 0 : (Parent.Depth + 1);
 
         public State? Parent { get; }
@@ -67,8 +66,17 @@ namespace Telepaartie
             }
         }
 
-        private int CalculateHashCode() =>
-            Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
+        private int CalculateHashCode()
+        {
+            int hashCode = 168560841;
+
+            for (int i = 0; i < Buckets.Length; i++)
+            {
+                hashCode = (_hashCode * -1521134295) + Buckets[i].GetHashCode();
+            }
+
+            return hashCode;
+        }
 
         public static IEnumerable<List<int>> AllEndingStates(int numberOfCups, int numberOfItems)
         {
@@ -107,12 +115,12 @@ namespace Telepaartie
 
         public bool Equals(State state)
         {
-            if (state == null) return false;
-            if (state.Buckets.Length != Buckets.Length) return false;
+            if (Buckets.Length != state.Buckets.Length) return false;
+            if (_hashCode != state._hashCode) return false;
 
             for (int i = 0; i < Buckets.Length; i++)
             {
-                if (state.Buckets[i] != Buckets[i]) return false;
+                if (Buckets[i] != state.Buckets[i]) return false;
             }
 
             return true;

@@ -1,10 +1,10 @@
 ﻿namespace Telepaartie
-{
+    {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public static class Telepartie
+    public static class Telepaartie
     {
         private const string _separator = "--------------";
 
@@ -54,7 +54,7 @@
                     .SelectMany(x => x.Origins()));
 
                 // Entferne Zustände die schon in vorherigen Generationen vorhanden sind
-                lastGen.ExceptWith(allStates);
+                nextGen.ExceptWith(allStates);
 
                 // Falls die Operationsanzahl für nur einen Zustand festgestellt werden soll
                 if (goal != null)

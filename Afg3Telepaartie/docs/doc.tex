@@ -1590,59 +1590,63 @@ State (Depth:1) {1024;1024;2952}
 State (Depth:0) {0;2048;2952}
 
 --------------
+\end{lstcs}
 
-State (Depth:14) {125;1724;3151}
-State (Depth:13) {125;1427;3448}
-State (Depth:12) {250;1302;3448}
-State (Depth:11) {500;1052;3448}
-State (Depth:10) {500;2104;2396}
-State (Depth:9) {1000;1604;2396}
-State (Depth:8) {792;1000;3208}
-State (Depth:7) {208;1584;3208}
-State (Depth:6) {416;1376;3208}
-State (Depth:5) {832;960;3208}
-State (Depth:4) {128;1664;3208}
-State (Depth:3) {256;1536;3208}
-State (Depth:2) {512;1536;2952}
-State (Depth:1) {1024;1024;2952}
-State (Depth:0) {0;2048;2952}
+- Einige Ergebnisse der Kürze halber ausgelassen -
 
---------------
+% State (Depth:14) {125;1724;3151}
+% State (Depth:13) {125;1427;3448}
+% State (Depth:12) {250;1302;3448}
+% State (Depth:11) {500;1052;3448}
+% State (Depth:10) {500;2104;2396}
+% State (Depth:9) {1000;1604;2396}
+% State (Depth:8) {792;1000;3208}
+% State (Depth:7) {208;1584;3208}
+% State (Depth:6) {416;1376;3208}
+% State (Depth:5) {832;960;3208}
+% State (Depth:4) {128;1664;3208}
+% State (Depth:3) {256;1536;3208}
+% State (Depth:2) {512;1536;2952}
+% State (Depth:1) {1024;1024;2952}
+% State (Depth:0) {0;2048;2952}
 
-State (Depth:14) {125;1901;2974}
-State (Depth:13) {125;1073;3802}
-State (Depth:12) {250;1073;3677}
-State (Depth:11) {250;2146;2604}
-State (Depth:10) {500;2146;2354}
-State (Depth:9) {208;500;4292}
-State (Depth:8) {292;416;4292}
-State (Depth:7) {292;832;3876}
-State (Depth:6) {292;1664;3044}
-State (Depth:5) {292;1380;3328}
-State (Depth:4) {292;1948;2760}
-State (Depth:3) {584;1656;2760}
-State (Depth:2) {584;1104;3312}
-State (Depth:1) {584;2208;2208}
-State (Depth:0) {0;584;4416}
+% --------------
 
---------------
+% State (Depth:14) {125;1901;2974}
+% State (Depth:13) {125;1073;3802}
+% State (Depth:12) {250;1073;3677}
+% State (Depth:11) {250;2146;2604}
+% State (Depth:10) {500;2146;2354}
+% State (Depth:9) {208;500;4292}
+% State (Depth:8) {292;416;4292}
+% State (Depth:7) {292;832;3876}
+% State (Depth:6) {292;1664;3044}
+% State (Depth:5) {292;1380;3328}
+% State (Depth:4) {292;1948;2760}
+% State (Depth:3) {584;1656;2760}
+% State (Depth:2) {584;1104;3312}
+% State (Depth:1) {584;2208;2208}
+% State (Depth:0) {0;584;4416}
 
-State (Depth:14) {125;1776;3099}
-State (Depth:13) {125;1323;3552}
-State (Depth:12) {125;2229;2646}
-State (Depth:11) {125;417;4458}
-State (Depth:10) {250;292;4458}
-State (Depth:9) {292;500;4208}
-State (Depth:8) {208;584;4208}
-State (Depth:7) {208;1168;3624}
-State (Depth:6) {416;960;3624}
-State (Depth:5) {832;960;3208}
-State (Depth:4) {128;1664;3208}
-State (Depth:3) {256;1536;3208}
-State (Depth:2) {512;1536;2952}
-State (Depth:1) {1024;1024;2952}
-State (Depth:0) {0;2048;2952}
+% --------------
 
+% State (Depth:14) {125;1776;3099}
+% State (Depth:13) {125;1323;3552}
+% State (Depth:12) {125;2229;2646}
+% State (Depth:11) {125;417;4458}
+% State (Depth:10) {250;292;4458}
+% State (Depth:9) {292;500;4208}
+% State (Depth:8) {208;584;4208}
+% State (Depth:7) {208;1168;3624}
+% State (Depth:6) {416;960;3624}
+% State (Depth:5) {832;960;3208}
+% State (Depth:4) {128;1664;3208}
+% State (Depth:3) {256;1536;3208}
+% State (Depth:2) {512;1536;2952}
+% State (Depth:1) {1024;1024;2952}
+% State (Depth:0) {0;2048;2952}
+
+\begin{lstcs}
 --------------
 
 State (Depth:14) {125;1658;3217}
@@ -1693,192 +1697,198 @@ Die Berechnung dauerte 0:10 Minuten.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-public static class Teelepartie
+
+public static class Telepaartie
+{
+    private const string _separator = "--------------";
+
+    public static int L(
+        IEnumerable<int> goalBuckets,
+        Action<string>? writeLine = null)   //Zum finden der minimalen Anzahl an Operationen für einen Zustand
     {
-        private const string Separator = "--------------";
+        if (goalBuckets == null) throw new ArgumentNullException(nameof(goalBuckets));
 
-        public static int L(
-            IEnumerable<int> goalBuckets,
-            Action<string>? writeLine = null)   //Zum finden der minimalen Anzahl an Operationen für einen Zustand
+        var goal = new State(goalBuckets);
+
+        var numberOfCups = goalBuckets.Count();
+        var numberOfItems = goalBuckets.Sum();
+
+        return LLLCore(numberOfCups, numberOfItems, goal, writeLine);
+    }
+
+    public static int LLL(
+        int numberOfCups = 3,
+        int numberOfItems = 15,
+        Action<string>? writeLine = null)   //Zum finden der maximalen Anzahl der minimalen Anzahlen an Operationen für eine Anzahl
+    {
+        return LLLCore(numberOfCups, numberOfItems, null, writeLine);
+    }
+
+    private static int LLLCore(
+        int numberOfCups,
+        int numberOfItems,
+        State? goal,
+        Action<string>? writeLine)
+    {
+        HashSet<State> lastGen = new HashSet<State>(
+            // Alle Endzustände bilden die nullte Generation
+            State.AllEndingStates(numberOfCups, numberOfItems)
+            .Select(x => new State(x)));
+
+        HashSet<State> allStates = new HashSet<State>(lastGen);
+
+        for (int i = 0; ; i++)
         {
-            if (goalBuckets == null) throw new ArgumentNullException(nameof(goalBuckets));
+            writeLine?.Invoke($"\rStarting iteration {i + 1}");
 
-            var goal = new State(goalBuckets);
+            HashSet<State> nextGen = new HashSet<State>(lastGen
+                // Aktiviere Parallelisierung mit PLINQ
+                .AsParallel()
+                // Ermittle alle Ursprungzustände
+                .SelectMany(x => x.Origins()));
 
-            var numberOfCups = goalBuckets.Count();
-            var numberOfItems = goalBuckets.Sum();
+            // Entferne Zustände die schon in vorherigen Generationen vorhanden sind
+            lastGen.ExceptWith(allStates);
 
-            return LLLCore(numberOfCups, numberOfItems, goal, writeLine);
-        }
-
-        public static int LLL(
-            int numberOfCups = 3,
-            int numberOfItems = 15,
-            Action<string>? writeLine = null)   //Zum finden der maximalen Anzahl der minimalen Anzahlen an Operationen für eine Anzahl
-        {
-            return LLLCore(numberOfCups, numberOfItems, null, writeLine);
-        }
-
-        private static int LLLCore(
-            int numberOfCups,
-            int numberOfItems,
-            State? goal,
-            Action<string>? writeLine)
-        {
-            List<State> lastGen = GetEndingStates(numberOfCups, numberOfItems)  //Alle Endzustände bilden die nullte Generation
-                .Select(x => new State(x))
-                .ToList();
-
-            List<State> allStates = lastGen
-                .ToList();
-
-            for (int i = 0; ; i++)
+            // Falls die Operationsanzahl für nur einen Zustand festgestellt werden soll
+            if (goal != null)
             {
-                writeLine?.Invoke($"\rStarting iteration {i + 1}");
-
-                List<State> nextGen = lastGen
-                    .AsParallel()
-                    .SelectMany(x => x.GetNextGen())    //Erschaffe aus jedem Element die Kinder
-                    .Distinct()                         //Entferne die doppelten Kinder
-                    .Except(allStates.AsParallel())     //Entferne die Kinder, die schon in den Alten vorhanden sind
-                    .ToList();
-
-                if (goal != null)                               //Falls die Operationsanzahl für nur 1 Zustand festgestellt werden soll
+                // Wenn das Element in der neuen Generation vorhanden ist, gebe den Generationsindex, also die Anzahl zum lösen benötigter Telepaartien zurück
+                if (nextGen.Contains(goal)) return i + 1;
+            }
+            // Wenn die neue Generation die leere Menge ist
+            else if (nextGen.Count == 0)
+            {
+                // Output
+                if (writeLine != null)
                 {
-                    if (nextGen.Contains(goal)) return i + 1;   //Wenn das Element in den neuen Kindern vorhanden ist, gebe die Operationsanzahl zurück zurück
-                }
-                else if (nextGen.Count == 0)                    //Wenn keine neuen Kinder gefunden worden sind
-                {
-                    writeLine?.Invoke(Environment.NewLine);
-                    foreach (var oldestChild in lastGen)        //Ausgabe des Logs, falls erwünscht
+                    writeLine(Environment.NewLine);
+                    foreach (var oldestChild in lastGen)
                     {
-                        writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
+                        writeLine(Environment.NewLine + _separator + Environment.NewLine + Environment.NewLine);
 
                         for (State? current = oldestChild; current != null; current = current.Parent)
                         {
-                            writeLine?.Invoke(current.ToString() + Environment.NewLine);
+                            writeLine(current.ToString() + Environment.NewLine);
                         }
                     }
 
-                    writeLine?.Invoke(Environment.NewLine + Separator + Environment.NewLine + Environment.NewLine);
-
-                    return i + 1;               //Gebe die Operationsanzahl zurück
+                    writeLine(Environment.NewLine + _separator + Environment.NewLine + Environment.NewLine);
                 }
 
-                lastGen = nextGen;               //Die aktuellen Kinder als Väter der nächsten Generation setzen
-                allStates.AddRange(nextGen);    //Die aktuellen Kinder der Liste aller Zustände hinzufügen
+                // Gebe den Generationsindex, also die Anzahl zum lösen benötigter Telepaartien zurück
+                return i + 1;
             }
-        }
 
-        private static List<List<int>> GetEndingStates(int NumberOfCups, int NumberOfItems)
-        {
-            List<List<int>> states = GetStates(NumberOfCups - 1, NumberOfItems);
-
-            foreach (var state in states) state.Insert(0, 0);
-
-            return states;
-        }
-
-        private static List<List<int>> GetStates(int numberOfCups, int numberOfItems, int max = -1)
-        {
-            if (max == -1) max = numberOfItems;
-            if (numberOfCups < 1) throw new ArgumentException();
-            if (numberOfCups == 1) return new List<List<int>> { new List<int> { numberOfItems } };
-
-            int min = (int)Math.Ceiling(numberOfItems / (decimal)numberOfCups); //Die Anzahl der Elemente, die maximal dem aktuellen Behälter hinzugefügt wird
-            return Enumerable.Range(min, Math.Min(max - min + 1, numberOfItems - min))  //Für jede Anzahl zwischen min und dm Rest
-                .SelectMany(i =>
-                {
-                    List<List<int>> states = GetStates(numberOfCups - 1, numberOfItems - i, i); //Finden aller Möglichen Kombinationen für den Rest der Biber und der Behälteranzahl -1
-                    foreach (var state in states) state.Add(i);
-                    return states;
-                })
-                .ToList();
-
-            throw new ArgumentException();
+            // Zur Sammlung aller bisher entdeckten Zustände die jetzige Generation hinzufügen.
+            allStates.UnionWith(nextGen);
+            // Die letzte Generation durch die jetzige ersetzen, um die nächste korrekt ausrechnen zu lassen
+            lastGen = nextGen;
         }
     }
+}
 \end{lstcs}
 \begin{lstcs}
-#nullable enable 
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-    public class State : IEquatable<State>
+public class State : IEquatable<State>
+{
+    public int Depth => Parent == null ? 0 : (Parent.Depth + 1);
+    
+    public State? Parent { get; }
+    
+    public int[] Buckets { get; }
+    
+    private readonly int _hashCode;
+    
+    public State(IEnumerable<int> unsortedBuckets, State? parent = null)
     {
-        public int Depthations => Parent == null ? 0 : (Parent.Depthations + 1);
-        public State? Parent { get; }
-        public IReadOnlyList<int> Buckets { get; }
-        private readonly int _hashCode;
-
-        public State(IEnumerable<int> unsortedBuckets, State? parent = null)
+        if (unsortedBuckets.Any(x => x < 0)) throw new ArgumentException(nameof(unsortedBuckets));
+    
+        Buckets = unsortedBuckets.ToArray();
+        Array.Sort(Buckets);
+    
+        Parent = parent;
+        _hashCode = CalculateHashCode();
+    }
+    
+    private State(int[] sortedBuckets, State? parent = null)
+    {
+        Buckets = sortedBuckets;
+        Parent = parent;
+        _hashCode = CalculateHashCode();
+    }
+    
+    private State ReverseTeelepartie(int originalTarget, int originalSource)
+    {
+        int[] temp = new int[Buckets.Length];
+        Buckets.CopyTo(temp, 0);
+    
+        temp[originalTarget] /= 2;
+        temp[originalSource] += temp[originalTarget];
+        Array.Sort(temp);
+    
+        return new State(temp, this);
+    }
+    
+    public IEnumerable<State> Origins()
+    {
+        // Finden jeder Kombination
+        for (int i = 0; i < Buckets.Length; i++)
         {
-            if (unsortedBuckets.Any(x => x < 0)) throw new ArgumentException(nameof(unsortedBuckets));
-
-            Buckets = unsortedBuckets.OrderBy(x => x).ToList();
-            Parent = parent;
-            _hashCode = CalculateHashCode();
-        }
-
-        private State(List<int> sortedBuckets, State? parent = null)
-        {
-            Buckets = sortedBuckets;
-            Parent = parent;
-            _hashCode = CalculateHashCode();
-        }
-
-        private State ReverseTeelepartie(int first, int second)
-        {
-            List<int> temp = new List<int>(Buckets);
-
-            temp[first] /= 2;               //die Anzahl der Biber im ersten Behälter halbieren
-            temp[second] += temp[first];    //und die Biber im anderen Behälter hinzufügen
-            temp.Sort();
-
-            return new State(temp, this);
-        }
-
-        public IEnumerable<State> GetNextGen()
-        {
-            for (int i = 0; i < Buckets.Count; i++)
+            for (int u = 0; u <= i; u++)
             {
-                for (int u = 0; u < Buckets.Count; u++) //Finden jeder Kombination
+                // Zulässige Werte rausfiltern
+                if (Buckets[i] % 2 == 0 && Buckets[i] > 0)
                 {
-                    if (Buckets[i] % 2 == 0 && Buckets[i] > 0) //Zulässige Werte rausfiltern
-                    {
-                        yield return ReverseTeelepartie(i, u);  //und die bearbeitete Version zurückgeben
-                    }
+                    // und die bearbeitete Version zurückgeben
+                    yield return ReverseTeelepartie(i, u);
+                }
+    
+                if (Buckets[u] % 2 == 0 && Buckets[u] > 0)
+                {
+                    yield return ReverseTeelepartie(u, i);
                 }
             }
         }
-
-        private int CalculateHashCode() =>
-            Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
-
-        #region Overrides and Interface Implementations
-
-        public override bool Equals(object? obj) => obj is State state && Equals(state);
-
-        public bool Equals(State state)
-        {
-            if (state == null) return false;
-            if (state.Buckets.Count != Buckets.Count) return false;
-
-            for (int i = 0; i < Buckets.Count; i++)
-            {
-                if (state.Buckets[i] != Buckets[i]) return false;
-            }
-
-            return true;
-        }
-
-        public override int GetHashCode() => _hashCode;
-
-        public override string ToString() => "State (Depth:" + Depthations + ") {" + string.Join(';', Buckets) + "}";
-
-        #endregion Overrides and Interface Implementations
     }
+    
+    private int CalculateHashCode() =>
+        Buckets.Aggregate(168560841, (x, y) => (x * -1521134295) + y);
+    
+    public static IEnumerable<List<int>> AllEndingStates(int numberOfCups, int numberOfItems)
+    {
+        foreach (var state in AllPossibleStates(numberOfCups - 1, numberOfItems, numberOfItems))
+        {
+            state.Add(0);
+            yield return state;
+        }
+    }
+    
+    public static IEnumerable<List<int>> AllPossibleStates(int numberOfCups, int numberOfItems, int previousMax)
+    {
+        if (numberOfCups < 1) yield break;
+        if (numberOfCups == 1) yield return new List<int> { numberOfItems };
+    
+        // Die Elementanzahl die mindestens dem aktuellen Behälter hinzugefügt werden muss
+        int min = ((numberOfItems - 1) / numberOfCups) + 1;
+    
+        // Die Elementanzahl die maximal dem aktuellen Behälter hinzugefügt werden kann
+        int max = Math.Min(previousMax + 1, numberOfItems);
+    
+        for (int i = min; i < max; i++)
+        {
+            // Finden aller Möglichen Kombinationen für den Rest der Biber und der Behälteranzahl -1
+            foreach (var state in AllPossibleStates(numberOfCups - 1, numberOfItems - i, i))
+            {
+                state.Add(i);
+                yield return state;
+            }
+        }
+    }
+}
 \end{lstcs}
 \end{document}
 
