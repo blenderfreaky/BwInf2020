@@ -158,54 +158,64 @@ Dieser ist dann der optimale Weg vom Start zum Streckenende.
 \subsection{Ermittlung des Preises für einen Weg}
 
 Für die Ermittlung des Preises für einen Weg werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet.
- Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
+Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
 
 Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke.
 In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
 
 Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, die den gesamten Weg abdeckt.
- Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird.
+Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird.
  
 
 \section{Umsetzung}
 
-\subsection{}
-	\begin{itemize}
-		\item Die |public static class| Urlaubsfahrt enthält die Hauptmethode |public static Track| FindBestTrack.
-		\item |FindBestTrack| erhält als Parameter:
-		 \begin{itemize}
-		 	\item eine Liste von allen GasStations
-		 	\item ein Car
-		 	\item die Streckenlänge
-		\end{itemize}
-    	\item Das |public readonly struct| GasStation repräsentiert die Tankstelle
-    	\item Es enthält:
-    	\begin{itemize}
-    		\item Eine Tankstelle, die das Zuhause repräsentiert
-    		\item Eine Position
-    		\item Den Preis
-    	\end{itemize}
-        \item  Das |public readonly struct| Car repräsentiert das Auto und ist nur für die Datenspeicherung zuständig
-        \item Es enthält:
-       	\begin{itemize}
-       		\item Den Verbrauch
-       		\item Die Tankkapazität
-       		\item Die Strecke, die man mit vollem Tank zurücklegen kann
-       		\item Wie viel Benzin am Anfang im Tank ist
-       		\item Die Strecke, die man mit dem Startbenzin zurücklegen kann
-       	\end{itemize}
-       	\item Das |public readonly struct| Track repräsentiert einen Wegabschnitt bis zu einer Tankstelle
-       	\item Es enthält:
-       	\begin{itemize}
-       		\item Eine Liste an Tankstellen, an denen gehalten werden kann
-       		\item die Funktion |public readonly DrivingPlan?| GetCheapestPathTo, die für die Liste an Tankstellen die günstigste Tank-Verteilung berechnet, ohne auf die Stopp-Anzahl zu achten
-       	\end{itemize}
-       	\item Das |public readonly struct| DrivingPlan ist das errechnete Resultat eines Tracks
-       	\item Es enthält:
-       	\begin{itemize}
-       		\item Eine Liste von Tupeln von einer Tankstelle und der Distanz, für die bei ihr getankt wird
-       		\item  Die Funktion |public readonly decimal| PriceFor, die den Preis für den Weg zurückgibt
-       	\end{itemize}
+\subsection{Urlaubsfahrt}
+    Die |public static class Urlaubsfahrt| enthält die Hauptmethode |public static Track FindBestTrack|.
+    
+    |FindBestTrack| erhält als Parameter
+        \begin{itemize}
+        \item eine Liste von allen GasStations,
+        \item ein Car,
+        \item die Streckenlänge.
+    \end{itemize}
+   
+\subsection{GasStation}
+    Das |public readonly struct GasStation| repräsentiert eine Tankstelle.
+
+    Es enthält
+    \begin{itemize}
+    	\item die Position, also Distanz vom Ursprung in Kilometer,
+    	\item den Preis.
+    \end{itemize}
+    
+\subsection{Car}
+    Das |public readonly struct Car| repräsentiert die Fahrdaten des Autos und ist nur für die Datenspeicherung zuständig.
+
+    Es enthält
+    \begin{itemize}
+        \item den Verbrauch,
+        \item die Tankkapazität,
+        \item die Strecke, die man mit vollem Tank zurücklegen kann,
+        \item wie viel Benzin am Anfang im Tank ist,
+        \item die Strecke, die man mit dem Startbenzin zurücklegen kann.
+    \end{itemize}
+    
+\subsection{Track}
+    Das |public readonly struct Track| repräsentiert einen Wegabschnitt bis zu einer Tankstelle.
+
+    Es enthält
+    \begin{itemize}
+        \item eine Liste an Tankstellen, an denen gehalten werden kann,
+        \item die Funktion |public readonly DrivingPlan? GetCheapestPathTo|, die für die Liste an Tankstellen die günstigste Tank-Verteilung berechnet, ohne auf die Stopp-Anzahl zu achten.
+    \end{itemize}
+    
+\subsection{DrivingPlan}
+    Das |public readonly struct DrivingPlan| stellt wie |Track| einen Fahrplan dar, jedoch speichert es anders als |Track| auch, wieviel bei jeder Tankstelle getankt werden soll.
+
+    Es enthält:
+    \begin{itemize}
+        \item eine Liste von Tupeln von einer Tankstelle und der Distanz, für die bei ihr getankt wird,
+        \item die Funktion |public readonly decimal PriceFor|, die den Preis für den Weg für ein gegebenes |Car| zurückgibt.
     \end{itemize}
 
 \section{Beispiele}
@@ -229,7 +239,7 @@ Driving Plan:
   Stops: 2
   Price: 81,70EUR
 \end{lstcs}
-begin{lstcs}
+\begin{lstcs}
 ./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt2.txt"
 
 Stops:
@@ -259,7 +269,7 @@ Driving Plan:
   Stops: 9
   Price: 2530,33EUR
 \end{lstcs}
-begin{lstcs}
+\begin{lstcs}
 ./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt3.txt"
 
 Stops:
@@ -273,7 +283,7 @@ Driving Plan:
   Stops: 1
   Price: 99,20EUR
 \end{lstcs}
-begin{lstcs}
+\begin{lstcs}
 ./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt4.txt"
 
 Stops:
@@ -289,7 +299,7 @@ Driving Plan:
   Stops: 2
   Price: 236,88EUR
 \end{lstcs}
-begin{lstcs}
+\begin{lstcs}
 ./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt5.txt"
 
 Stops:
