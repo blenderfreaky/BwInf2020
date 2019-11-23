@@ -14,6 +14,7 @@ namespace Urlaubsfahrt
         /// The price of gas at the station in €/l.
         /// </summary>
         public readonly double Price;
+
         public readonly double Position;
 
         public GasStation(double position, double price)
@@ -32,6 +33,6 @@ namespace Urlaubsfahrt
 
         public static bool operator !=(GasStation left, GasStation right) => !(left == right);
 
-        public override readonly string ToString() => $"Position: {Position} Price: {Price}";
+        public override readonly string ToString() => $"Gas station({Position}m {Price}€/l)";
     }
 }

@@ -40,13 +40,19 @@
 
             Track track = Urlaubsfahrt.FindBestTrack(allStations, car, trackLength);
 
+            Console.WriteLine("Stops:");
+
             Console.WriteLine(track);
 
             var drivingPlan = track.GetCheapestPathTo(trackLength, car);
 
-            Console.WriteLine(string.Join(' ', drivingPlan.Value.Stops));
-            Console.WriteLine("Stops: " + drivingPlan.Value.Stops.Count);
-            Console.WriteLine("Price: " + drivingPlan.Value.PriceFor(car));
+            Console.WriteLine();
+            Console.WriteLine("Driving Plan:");
+
+            Console.WriteLine(drivingPlan.Value.ToString(car));
+            Console.WriteLine();
+            Console.WriteLine("  Stops: " + drivingPlan.Value.Stops.Count);
+            Console.WriteLine("  Price: " + drivingPlan.Value.PriceFor(car));
         }
     }
 }
