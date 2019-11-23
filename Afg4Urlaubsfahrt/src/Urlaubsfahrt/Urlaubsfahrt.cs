@@ -31,7 +31,7 @@
 
             actualStations.Add(new GasStation(destinationPosition, 0));
 
-            foreach (GasStation station in allStations)
+            foreach (GasStation station in actualStations)
             {
                 optimalSubTracks.RemoveAll(x =>
                     station.Position - x.LastStop.Position > car.TankDistance);
@@ -47,27 +47,13 @@
                     .Where(x => x.Price.HasValue)
                     .AllMinsBy(x => x.Track.Stops.Count)
                     .AllMinsBy(x => x.Price!.Value)
-                    .Select(x => x.Track)
-                    .ToList());
+                    .Select(x => x.Track));
             }
 
-            //Debug.Assert(optimalSubTracks
-            //        .AllMinsBy(x => x.Stops.Count)
-            //        .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), car)))
-            //        .Where(x => x.Price.HasValue)
-            //        .AllMinsBy(x => x.Price!.Value)
-            //        .Select(x => x.Track)
-            //        .Last()
-            //        == optimalSubTracks.Last(),
-            //        "Misordered paths");
-
-            //return optimalSubTracks
-            //        .Last();
-
             return optimalSubTracks
-                .AllMinsBy(x => x.Stops.Count)
-                .Select(x => (Track: x, Price: x.GetCheapestPriceTo(allStations.Last(), car)))
+                .Select(x => (Track: x, Price: x.GetCheapestPriceTo(destinationPosition, car)))
                 .Where(x => x.Price.HasValue)
+                .AllMinsBy(x => x.Track.Stops.Count)
                 .AllMinsBy(x => x.Price!.Value)
                 .Select(x => x.Track)
                 .Last();

@@ -117,5 +117,7 @@ namespace Urlaubsfahrt
         public static bool operator ==(Track left, Track right) => left.Equals(right);
 
         public static bool operator !=(Track left, Track right) => !(left == right);
+
+        public override readonly string ToString() => $"Track ({Stops.Count}) {{ {string.Join(", ", Stops)} }}";
     }
 }
