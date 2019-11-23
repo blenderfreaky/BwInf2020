@@ -93,7 +93,7 @@ namespace Urlaubsfahrt
                     }
                 }
 
-                if (Range.IsNaR(newRange)) continue;
+                if (newRange.IsNaR) continue;
 
                 coveredRanges.Add(newRange);
                 drivingPlan.Add(station, distance);

@@ -8,7 +8,12 @@
         /// <summary>
         /// Represents not a range. This field is constant.
         /// </summary>
-        public static readonly Range NaR = new Range(decimal.NaN, decimal.NaN);
+        public static readonly Range NaR = new Range(0, 0, true);
+
+        /// <summary>
+        /// Whether or not the Range is valid.
+        /// </summary>
+        public readonly bool IsNaR;
 
         /// <summary>
         /// The inclusive starting point.
@@ -25,10 +30,15 @@
         /// </summary>
         public readonly decimal Length => End - Start;
 
-        public Range(decimal start, decimal end)
+        public Range(decimal start, decimal end) : this(start, end, false)
+        {
+        }
+
+        private Range(decimal start, decimal end, bool isNaR)
         {
             Start = start;
             End = end;
+            IsNaR = isNaR;
         }
 
         /// <summary>
@@ -42,9 +52,8 @@
         public override readonly bool Equals(object? obj) => obj is Range range && Equals(range);
 
         public readonly bool Equals([AllowNull] Range other) =>
-            Start == other.Start && End == other.End;
-
-        public static bool IsNaR(Range range) => decimal.IsNaN(range.Start) && decimal.IsNaN(range.End);
+            !IsNaR && !other.IsNaR
+            && Start == other.Start && End == other.End;
 
         public override readonly int GetHashCode() => HashCode.Combine(Start, End);
 
