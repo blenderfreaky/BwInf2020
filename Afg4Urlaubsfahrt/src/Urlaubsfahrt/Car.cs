@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Urlaubsfahrt
+﻿namespace Urlaubsfahrt
 {
     public readonly struct Car
     {
         /// <summary>
-        /// The fuel usage of the car. measured in Litres / 100Kilometres.
+        /// The fuel usage of the car. measured in Litres / Kilometres.
         /// </summary>
         public readonly double FuelUsage;
 

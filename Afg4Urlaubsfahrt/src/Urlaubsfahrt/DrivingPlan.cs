@@ -28,5 +28,10 @@ namespace Urlaubsfahrt
         public static bool operator ==(DrivingPlan left, DrivingPlan right) => left.Equals(right);
 
         public static bool operator !=(DrivingPlan left, DrivingPlan right) => !(left == right);
+
+        public override readonly string ToString() => $"Track ({Stops.Count}) {{ {string.Join(", ", Stops)} }}";
+
+        public readonly string ToString(Car car) =>
+            string.Join(Environment.NewLine, Stops.Select(x => $"  Tank {x.Distance * car.FuelUsage}l at {x.Station}"));
     }
 }

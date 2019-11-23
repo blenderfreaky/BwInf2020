@@ -25,7 +25,7 @@
 
             double trackLength = int.Parse(lines[3]); // km
             var car = new Car(
-                int.Parse(lines[0]) / 100 /*l/100km to l/km*/,
+                int.Parse(lines[0]) / 100d /*l/100km to l/km*/,
                 int.Parse(lines[1]),
                 int.Parse(lines[2]));
 
@@ -35,18 +35,24 @@
                 string[] values = lines[i]
                     .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                allStations.Add(new GasStation(double.Parse(values[0]), double.Parse(values[1]) / 100 /*ct to €*/));
+                allStations.Add(new GasStation(double.Parse(values[0]), double.Parse(values[1]) / 100d /*ct to €*/));
             }
 
             Track track = Urlaubsfahrt.FindBestTrack(allStations, car, trackLength);
 
-            Console.WriteLine(string.Join(' ', track.Stops));
+            Console.WriteLine("Stops:");
+
+            Console.WriteLine(track);
 
             var drivingPlan = track.GetCheapestPathTo(trackLength, car);
 
-            Console.WriteLine(string.Join(' ', drivingPlan.Value.Stops));
-            Console.WriteLine("Stops: " + drivingPlan.Value.Stops.Count);
-            Console.WriteLine("Price: " + drivingPlan.Value.PriceFor(car));
+            Console.WriteLine();
+            Console.WriteLine("Driving Plan:");
+
+            Console.WriteLine(drivingPlan.Value.ToString(car));
+            Console.WriteLine();
+            Console.WriteLine("  Stops: " + drivingPlan.Value.Stops.Count);
+            Console.WriteLine("  Price: " + drivingPlan.Value.PriceFor(car));
         }
     }
 }

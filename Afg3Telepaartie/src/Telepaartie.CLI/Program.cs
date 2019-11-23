@@ -3,7 +3,6 @@
     using CommandLine;
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics;
     using System.Linq;
 
@@ -75,7 +74,7 @@
 
             if (o.Cups != null && o.Elements != null)
             {
-                RunCore(() => Teelepartie.LLL(
+                RunCore(() => Telepaartie.LLL(
                         o.Cups.Value,
                         o.Elements.Value,
                         o.Verbose ? Console.Write : (Action<string>?)null),
@@ -84,7 +83,7 @@
 
             if (o.List != null)
             {
-                RunCore(() => Teelepartie.L(
+                RunCore(() => Telepaartie.L(
                     o.List,
                     o.Verbose ? Console.Write : (Action<string>?)null),
                     o.Stopwatch);
@@ -99,7 +98,8 @@
 
             Console.WriteLine($"\nFERTIG!\nMan benötigt {steps} Telepaartie-Schritte");
             stopwatch.Stop();
-            if (doStopwatch) Console.WriteLine($"Die Berechnung dauerte {stopwatch.Elapsed.ToString(@"m\:ss")} Minuten.");
+            //if (doStopwatch) Console.WriteLine($"Die Berechnung dauerte {stopwatch.Elapsed.ToString(@"m\:ss")} Minuten.");
+            if (doStopwatch) Console.WriteLine($"Die Berechnung dauerte {stopwatch.ElapsedMilliseconds / 1000f}s.");
         }
 
         private delegate bool Try<T>(string text, out T result);

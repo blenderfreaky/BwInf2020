@@ -64,7 +64,7 @@ namespace Urlaubsfahrt
                         newRange = Range.NaR;
                         break;
                     }
- 
+
                     if (!containsStart && !containsEnd) continue;
 
                     coveredRanges.Remove(coveredRange);
@@ -117,5 +117,7 @@ namespace Urlaubsfahrt
         public static bool operator ==(Track left, Track right) => left.Equals(right);
 
         public static bool operator !=(Track left, Track right) => !(left == right);
+
+        public override readonly string ToString() => string.Join(Environment.NewLine, Stops.Select(x => "  " + x));
     }
 }
