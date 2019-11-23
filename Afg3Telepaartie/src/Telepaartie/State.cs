@@ -72,7 +72,7 @@ namespace Telepaartie
 
             for (int i = 0; i < Buckets.Length; i++)
             {
-                hashCode = (_hashCode * -1521134295) + Buckets[i].GetHashCode();
+                hashCode = (hashCode * -1521134295) + Buckets[i].GetHashCode();
             }
 
             return hashCode;
