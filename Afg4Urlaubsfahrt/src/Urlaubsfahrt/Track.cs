@@ -28,14 +28,14 @@ namespace Urlaubsfahrt
         {
             DrivingPlan drivingPlan = DrivingPlan.Empty;
 
-            // If we can get to the destination on our tank already, we don't need to check for other options; it's already free.
+            //Wenn wir mit dem vorhandenen Tank bis zum Ziel fahren können, müssen wir nicht tanken
             if (destination < car.StartingFuelDistance)
             {
                 drivingPlan.Add(GasStation.Home, destination);
                 return drivingPlan;
             }
 
-            // Use up the entirety of the starting fuel
+            //Das gesamte Startbenzin nutzen
             drivingPlan.Add(GasStation.Home, car.StartingFuelDistance);
 
             HashSet<Range> coveredRanges = new HashSet<Range>
@@ -44,7 +44,7 @@ namespace Urlaubsfahrt
                 new Range(destination, destination + car.TankDistance)
             };
 
-            foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price))
+            foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price)) //Die Tankstellen dem Preis nach überprüfen
             {
                 Range newRange = new Range(station.Position, station.Position + car.TankDistance);
 
@@ -54,11 +54,11 @@ namespace Urlaubsfahrt
 
                 foreach (var coveredRange in coveredRanges.ToList())
                 {
-                    // Check whether the start and end poin                                                                                                                                                  t collide with the given range.
+                    //Überprüfen ob der Start- oder Endpunkt bereits überdeckt sind                                                                                                                                                t collide with the given range.
                     bool containsStart = coveredRange.Contains(newRange.Start);
                     bool containsEnd = coveredRange.Contains(newRange.End);
 
-                    // If the new range is fully contained by a cheaper path we can stop.
+                    //Wenn der gesamte Bereich überdeckt ist muss nicht getankt werden
                     if (containsStart && containsEnd)
                     {
                         newRange = Range.NaR;
@@ -98,14 +98,14 @@ namespace Urlaubsfahrt
                 coveredRanges.Add(newRange);
                 drivingPlan.Add(station, distance);
 
-                // If range spans the entire path, then the track is covered.
+                //Wenn nur eine Range existiert, die den gesamten Bereich abdeckt, dann wird an den übrigen Stationen nicht getankt
                 if (newRange.Start == 0 && newRange.End >= destination)
                 {
                     return drivingPlan;
                 }
             }
 
-            return null;
+            return null;    //Wenn der Weg nicht vollständig Abgedeckt ist, ist dieser Track nicht möglich
         }
 
         public override readonly bool Equals(object? obj) => obj is Track track && Equals(track);

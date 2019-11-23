@@ -9,7 +9,6 @@
         {
             var enumerator = enumerable.GetEnumerator();
 
-            //if (!enumerator.MoveNext()) throw new InvalidOperationException("Sequence contains no elements.");
             if (!enumerator.MoveNext()) return Array.Empty<TElem>();
 
             TElem first = enumerator.Current;

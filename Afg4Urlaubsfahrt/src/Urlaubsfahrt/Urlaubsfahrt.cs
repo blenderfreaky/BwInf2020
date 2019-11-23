@@ -21,32 +21,30 @@
             Car car,
             double destinationPosition)
         {
-            // Start with the empty track as the only possibility
-            List<Track> optimalSubTracks = new List<Track> { Track.Empty };
+            List<Track> optimalSubTracks = new List<Track> { Track.Empty }; //Der erste Weg der existiert ist ein Weg ohne Stopps
 
             var actualStations = allStations
-                // We want to iterate from the lowest to the highest position
-                //.OrderBy(x => x.Position) // Should already be sorted
+                .OrderBy(x => x.Position)
                 .ToList();
 
             actualStations.Add(new GasStation(destinationPosition, 0));
 
-            foreach (GasStation station in allStations)
+            foreach (GasStation station in allStations) //Für jede Tankstelle wird der ideale Weg ermittelt
             {
                 optimalSubTracks.RemoveAll(x =>
-                    station.Position - x.LastStop.Position > car.TankDistance);
+                    station.Position - x.LastStop.Position > car.TankDistance); //Zuerst werden alle Wege entfernt, dessen letzte Station weiter von der aktuellen Station weg ist, als das Auto Reichweite hat
 
                 if (optimalSubTracks.Count == 0)
                 {
-                    throw new InvalidOperationException("No solutions found");
+                    throw new InvalidOperationException("No solutions found");  //Wenn man zu eiem Punkt nicht kommen kann, kann man auch nicht zu den Punkten dahinter oder zum Ziel kommen
                 }
 
                 optimalSubTracks.AddRange(optimalSubTracks
-                    .Select(x => x.With(station))
-                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, car)))
-                    .Where(x => x.Price.HasValue)
-                    .AllMinsBy(x => x.Track.Stops.Count)
-                    .AllMinsBy(x => x.Price!.Value)
+                    .Select(x => x.With(station))   //an jeden alten Weg wird die aktuelle Station angehangen
+                    .Select(x => (Track: x, Price: x.GetCheapestPriceTo(station, car))) //Es wird für jeden Weg der Preis gebildet
+                    .Where(x => x.Price.HasValue)   //Es werden die nicht möglichen entfernt
+                    .AllMinsBy(x => x.Track.Stops.Count)    //Es werden die Wege gewählt, die am wenigsten Stopps brauchen
+                    .AllMinsBy(x => x.Price!.Value)    //Es werden die günstigsten gwählt
                     .Select(x => x.Track)
                     .ToList());
             }
@@ -70,7 +68,7 @@
                 .Where(x => x.Price.HasValue)
                 .AllMinsBy(x => x.Price!.Value)
                 .Select(x => x.Track)
-                .Last();
+                .Last(); //wenn es mehrere gleich-günstige gibt, wird der letzte gewählt
         }
     }
 }
