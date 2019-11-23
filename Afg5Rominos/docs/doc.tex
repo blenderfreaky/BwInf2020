@@ -102,9 +102,9 @@ literate=%
 % Daten für die Titelseite
 \title{\textbf{\Huge\Aufgabe}}
 \author{\LARGE Team-ID: \LARGE \TeamID \\\\
-	    \LARGE Team-Name: \LARGE \TeamName \\\\
-	    \LARGE Bearbeiter dieser Aufgabe: \\ 
-	    \LARGE \Namen\\\\}
+        \LARGE Team-Name: \LARGE \TeamName \\\\
+        \LARGE Bearbeiter dieser Aufgabe: \\ 
+        \LARGE \Namen\\\\}
 \date{\LARGE\today}
 
 \newcommand{\cellsize}{0.5}
@@ -132,7 +132,7 @@ literate=%
                     \printblackcell{#2}%
                     \printwhitecircle{#2}%
                 \else%
-                	\if#1d%
+                    \if#1d%
                     \printwhitecell{#2}%
                     \printblackcircle{#2}%
                     \else%
@@ -149,15 +149,15 @@ literate=%
     \fi%
 }
 
-\newcommand{\printmatrix}[2]{
+\newcommand{\printmatrix}[1]{
     \begin{tikzpicture}
-    \foreach \line[count=\i] in #2 {
+    \foreach \line[count=\i] in #1 {
         \foreach \cell[count=\j] in \line {
             \printcell{\cell}{(\j*\cellsize,-\i*\cellsize)}
         }
         \xdef\width{\j}
     }
-    \node at ({0.5*(\width+1)*\cellsize}, {(-\i -1)*\cellsize}) {#1};
+    \node at ({0.5*(\width+1)*\cellsize}, {(-\i -1)*\cellsize});
     \end{tikzpicture}   
 }
 
@@ -207,7 +207,7 @@ Um alle möglichen Rominos mit \(n\) Blöcken zu finden, muss man also alle Romi
 
 Nehme man beispielsweise das 2er-Romino, kann man zum Finden aller \(3 (= 2 + 1)\) - Rominos wie folgt Blöcke anfügen:
 
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,b,w,c},
     {c,w,b,c},
@@ -219,7 +219,7 @@ Somit ergeben sich folgende 3-Rominos:
 \begin{center}
 
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {b,w,w,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -227,7 +227,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,b,w,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -235,7 +235,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,b,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -243,7 +243,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {b,b,w,w},
     {w,w,b,w},
@@ -251,7 +251,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,b},
     {w,w,b,w},
@@ -260,7 +260,7 @@ Somit ergeben sich folgende 3-Rominos:
 \end{minipage}
 
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {b,w,b,w},
@@ -268,7 +268,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {w,w,b,b},
@@ -276,7 +276,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -284,7 +284,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -292,7 +292,7 @@ Somit ergeben sich folgende 3-Rominos:
 }}
 \end{minipage}
 \begin{minipage}{0.18\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {w,w,b,w},
@@ -321,13 +321,13 @@ Hierfür werden die Nachbarn jedes Blocks des Rominos ermittelt, daraufhin werde
 
 Nehme man beispielsweise wieder das 2er-Romino, würden die Nachbarn aller Blöcke wie folgt ermittelt werden:
 
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,D,c,w},
     {c,c,D,w},
     {w,w,w,w}%
 }}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,D,c,c},
     {c,c,D,c},
@@ -336,7 +336,7 @@ Nehme man beispielsweise wieder das 2er-Romino, würden die Nachbarn aller Blöc
 
 Nach entfernen bereits existierender Blöcke von den Blocksadditionsmöglichkeit ergibt sich:
 
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,b,c,c},
     {c,c,b,c},
@@ -345,7 +345,7 @@ Nach entfernen bereits existierender Blöcke von den Blocksadditionsmöglichkeit
 
 Es lässt sich hier erkennen, dass die Existenz einer echten Diagonale nicht zwingend aufrecht erhalten wird:
 
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,w},
     {w,b,w,w},
     {w,b,b,w},
@@ -355,7 +355,7 @@ Es lässt sich hier erkennen, dass die Existenz einer echten Diagonale nicht zwi
 Um dafür zu sorgen, dass diese echte Diagonale immer existiert, wird eine spezifische Diagonale immer beschützt.
 Bei den möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierfür die für die Diagonale relevanten Blöcke aus den Blockadditionsmöglichkeiten entfernt:
 
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,C,d,c},
     {c,d,C,c},
@@ -364,7 +364,7 @@ Bei den möglichen Block-Additionen beim 2er-Romino beispielsweise würden hierf
 
 Diese 4 beschützten Blöcke werden auch bei Spiegelungen, Verschiebungen und Rotationen mitverfolgt, sodass diese eine Diagonale immer besteht:
 
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c},
     {c,d,C,c},
     {c,C,d,c},
@@ -436,7 +436,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
 
 \paragraph{Ausgangsromino}
 
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,C,d,c},
     {c,d,C,c},
@@ -448,7 +448,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
 \begin{center}
 
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -456,7 +456,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,b,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -464,7 +464,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,b,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -472,7 +472,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {b,b,w,w},
         {w,w,b,w},
@@ -480,7 +480,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,b},
         {w,w,b,w},
@@ -489,7 +489,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     \end{minipage}
     
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,w},
         {b,w,b,w},
@@ -497,7 +497,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,w},
         {w,w,b,b},
@@ -505,7 +505,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -513,7 +513,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -521,7 +521,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -536,7 +536,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
 \begin{center}
 
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -544,7 +544,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {b,w,w,w},
         {w,b,w,w},
@@ -552,7 +552,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,b,w,w},
         {b,w,w,w},
         {w,b,w,w},
@@ -560,7 +560,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {b,b,w,w},
         {w,w,b,w},
@@ -568,7 +568,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,w,w,w},
         {b,w,b,w},
         {w,b,w,w},
@@ -577,7 +577,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     \end{minipage}
     
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {w,b,w,w},
         {b,w,b,w},
         {w,w,w,w},
@@ -585,7 +585,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,b,w},
         {w,w,w,w},
@@ -593,7 +593,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,w,w},
         {b,w,w,w},
@@ -601,7 +601,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,w,w},
         {w,b,w,w},
@@ -609,7 +609,7 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
     }}
     \end{minipage}
     \begin{minipage}{0.18\textwidth}
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w,w},
         {w,b,w,w},
         {w,w,b,w},
@@ -620,12 +620,12 @@ Durch Verwendung dieser Vergleichsmethode lassen sich schnell Duplikate entferne
 \end{center}
 
 \paragraph{Eliminierung von Rotation und Spiegelung}
-\\
-Ausgehend von dem Romino;
+
+Ausgehend von dem Romino
 
 \begin{center}
 
-    \printmatrix{}{{
+    \printmatrix{{
         {b,w,w},
         {w,b,w},
         {w,w,b}%
@@ -913,7 +913,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 
 \begin{center}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w},
     {c,C,d,c},
     {c,d,C,c},
@@ -926,7 +926,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 
 \begin{center}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,c,C,d,c},
     {c,b,d,C,c},
@@ -934,7 +934,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w},
     {c,b,c,c,w},
     {c,c,C,d,c},
@@ -943,7 +943,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w},
     {c,C,d,c,c},
     {c,d,C,b,c},
@@ -956,7 +956,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 
 \begin{center}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,d,C,c,c,c},
     {c,C,d,b,b,c},
@@ -964,7 +964,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,w,w},
     {c,d,C,c,c,c},
@@ -973,7 +973,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,c,w},
     {c,b,c,C,d,c},
@@ -982,7 +982,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,b,c,c,w,w},
     {c,c,b,c,c,w},
@@ -993,7 +993,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,c},
     {c,d,C,b,b,c},
@@ -1001,7 +1001,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,c,C,d,c},
     {c,b,d,C,c},
@@ -1010,7 +1010,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,w},
     {c,d,C,b,c,c},
@@ -1019,7 +1019,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,c,b,c,w},
     {c,b,C,d,c},
@@ -1029,7 +1029,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w},
     {c,b,C,d,c},
     {c,c,d,C,c},
@@ -1038,7 +1038,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,d,C,c,c},
     {c,C,d,b,c},
@@ -1047,7 +1047,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c},
     {c,c,c,b,c},
     {c,b,C,d,c},
@@ -1056,7 +1056,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c},
     {w,c,c,b,c},
     {c,d,C,c,c},
@@ -1066,7 +1066,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c},
     {c,C,d,b,c},
     {c,d,C,b,c},
@@ -1074,7 +1074,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w},
     {c,d,C,b,c,c},
     {c,C,d,c,b,c},
@@ -1082,7 +1082,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w},
     {c,C,d,c,c},
     {c,d,C,b,c},
@@ -1091,7 +1091,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,b,c,C,d,c},
     {c,c,b,d,C,c},
@@ -1100,7 +1100,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w},
     {c,b,C,d,c,c},
     {c,c,d,C,b,c},
@@ -1113,7 +1113,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 
 \begin{center}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w,w},
     {c,d,C,c,c,c,w},
     {c,C,d,b,b,c,c},
@@ -1122,7 +1122,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,c,C,d,c},
     {c,b,b,d,C,c},
@@ -1131,7 +1131,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w,w},
     {c,b,d,C,c,c,c},
     {c,c,C,d,b,b,c},
@@ -1139,7 +1139,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,w,w,w},
     {c,d,C,c,c,c,w},
@@ -1150,7 +1150,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,c,w},
     {c,b,c,C,d,c},
@@ -1160,7 +1160,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,b,c,c,c,w},
     {c,c,b,b,c,w},
@@ -1170,7 +1170,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,d,C,c,c,w},
     {c,C,d,b,c,c},
@@ -1179,7 +1179,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c},
     {c,b,c,b,c},
     {c,d,C,c,c},
@@ -1189,7 +1189,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,c,c,c},
     {c,c,c,d,C,c},
     {c,b,c,C,d,c},
@@ -1198,7 +1198,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w,w},
     {c,c,b,c,c,c,c},
     {c,b,c,C,d,b,c},
@@ -1207,7 +1207,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w,w},
     {c,c,d,C,c,c,c},
     {c,b,C,d,b,b,c},
@@ -1215,7 +1215,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,C,d,b,c,w},
     {c,d,C,c,c,c},
@@ -1225,7 +1225,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w,w},
     {c,b,C,d,c,w,w},
     {c,c,d,C,c,c,c},
@@ -1234,7 +1234,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,C,d,b,c,w},
     {c,d,C,b,c,c},
@@ -1243,7 +1243,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {w,c,b,c,c},
     {c,d,C,b,c},
@@ -1252,7 +1252,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w},
     {c,b,C,d,c,c},
     {c,c,d,C,b,c},
@@ -1262,7 +1262,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,c,b,c,w},
     {c,b,b,C,d,c},
@@ -1271,7 +1271,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,d,C,c,c,c},
     {c,C,d,b,b,c},
@@ -1280,7 +1280,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w,w},
     {c,c,c,C,d,c,w},
     {c,b,b,d,C,c,c},
@@ -1289,7 +1289,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w,w},
     {c,c,C,d,c,w,w},
     {c,b,d,C,c,c,c},
@@ -1299,7 +1299,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,c},
     {c,d,C,c,b,c},
@@ -1309,7 +1309,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c},
     {c,c,c,b,c},
     {c,C,d,b,c},
@@ -1318,7 +1318,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,d,C,c,w},
     {c,b,C,d,c,c},
@@ -1327,7 +1327,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w},
     {c,d,C,b,c,c},
     {c,C,d,b,b,c},
@@ -1336,7 +1336,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,c,c,c},
     {w,w,c,c,b,c},
     {c,c,c,C,d,c},
@@ -1345,7 +1345,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,w,w},
     {c,d,C,c,c,c},
@@ -1354,7 +1354,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w},
     {c,b,C,d,c},
     {c,c,d,C,c},
@@ -1363,7 +1363,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,b,d,C,c,c},
     {c,c,C,d,b,c},
@@ -1373,7 +1373,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,w,w},
     {c,b,C,d,c,c},
@@ -1382,7 +1382,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,b,c,c,c,w},
     {c,c,b,C,d,c},
@@ -1392,7 +1392,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,d,C,c,c},
     {c,C,d,b,c},
@@ -1401,7 +1401,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,d,C,c,c,w},
     {c,C,d,b,c,w},
@@ -1412,7 +1412,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,c,C,d,c},
     {c,b,c,d,C,c},
@@ -1421,7 +1421,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {w,c,d,C,c,w},
     {c,c,C,d,c,c},
@@ -1430,7 +1430,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,d,C,c,c},
     {c,b,C,d,b,c},
@@ -1439,7 +1439,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,w,w},
     {c,d,C,c,c,c},
@@ -1450,7 +1450,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,c,w},
     {c,b,b,C,d,c},
@@ -1459,7 +1459,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w,w},
     {w,c,c,b,c,c,w},
     {c,c,b,c,C,d,c},
@@ -1468,7 +1468,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,c,w},
     {c,d,C,b,b,c,c},
     {c,C,d,c,c,b,c},
@@ -1476,7 +1476,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {w,c,c,b,c,w},
     {c,c,b,C,d,c},
@@ -1486,7 +1486,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,c,w},
     {c,b,c,c,C,d,c},
     {c,c,b,b,d,C,c},
@@ -1494,7 +1494,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,b,c,c,w,w,w},
     {c,c,C,d,c,w,w},
@@ -1504,7 +1504,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w,w},
     {c,c,b,c,c,w,w},
     {c,b,c,C,d,c,w},
@@ -1514,7 +1514,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w,w},
     {c,d,C,b,c,c,c},
     {c,C,d,c,b,b,c},
@@ -1523,7 +1523,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w},
     {c,C,d,c,c},
     {c,d,C,b,c},
@@ -1532,7 +1532,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {w,c,b,c,w,w},
     {c,d,C,c,c,c},
@@ -1541,7 +1541,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w,w},
     {c,c,b,b,c,c,w},
     {c,b,c,c,C,d,c},
@@ -1550,7 +1550,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,c,b,c,w},
     {c,b,b,c,c,w},
@@ -1561,7 +1561,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {w,c,c,b,c,c},
     {c,d,C,c,b,c},
@@ -1570,7 +1570,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w},
     {c,c,b,b,c,w},
     {c,b,c,C,d,c},
@@ -1579,7 +1579,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,c,c,c},
     {c,d,C,b,b,b,c},
@@ -1587,7 +1587,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,c},
     {c,C,d,c,b,c},
     {c,d,C,b,b,c},
@@ -1596,7 +1596,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {c,c,c,b,c,w},
     {c,C,d,b,c,c},
@@ -1605,7 +1605,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,w},
     {c,d,C,b,c,c},
@@ -1614,7 +1614,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,c,c,w},
     {c,d,C,c,b,c,c},
@@ -1623,7 +1623,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,c,c,w},
     {c,d,C,b,b,c,c},
@@ -1633,7 +1633,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,b,b,C,d,c},
     {c,c,c,d,C,c},
@@ -1642,7 +1642,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,w},
     {c,d,C,b,c,c},
     {c,C,d,c,b,c},
@@ -1651,7 +1651,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w},
     {c,b,b,c,c,w},
     {c,c,c,C,d,c},
@@ -1661,7 +1661,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,c,w},
     {c,b,c,C,d,c},
@@ -1671,7 +1671,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c,w},
     {w,c,c,b,c,w},
     {c,c,b,c,c,w},
@@ -1681,7 +1681,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,w,w},
     {c,C,d,c,c,c},
@@ -1690,7 +1690,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,w,w,w},
     {c,d,C,c,c,c,c},
@@ -1699,7 +1699,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,c},
     {c,d,C,c,b,c},
@@ -1709,7 +1709,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,b,c,w,w},
     {c,b,b,c,c,w},
@@ -1719,7 +1719,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,c,C,d,c,w},
     {c,b,d,C,c,c},
@@ -1729,7 +1729,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w},
     {c,C,d,c,c,c},
     {c,d,C,b,b,c},
@@ -1738,7 +1738,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,c,c,c},
     {c,c,c,d,C,c},
     {c,b,b,C,d,c},
@@ -1748,7 +1748,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,C,d,c,c,w,w},
     {c,d,C,b,c,c,c},
@@ -1757,7 +1757,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,c,w},
     {c,c,b,c,C,d,c},
     {c,b,c,b,d,C,c},
@@ -1765,7 +1765,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w},
     {c,d,C,c,c,c},
     {c,C,d,b,b,c},
@@ -1774,7 +1774,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w,w,w},
     {c,b,c,c,w,w,w},
     {c,c,b,c,c,w,w},
@@ -1786,7 +1786,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w,w},
     {c,b,C,d,c,c,c},
     {c,c,d,C,b,b,c},
@@ -1794,7 +1794,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,c},
     {c,b,C,d,b,c},
     {c,c,d,C,b,c},
@@ -1802,7 +1802,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w,w,w},
     {c,d,C,c,c,c,c},
     {c,C,d,b,b,b,c},
@@ -1810,7 +1810,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,c,c},
     {c,d,C,c,b,c},
     {c,C,d,b,b,c},
@@ -1819,7 +1819,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,c,w},
     {c,C,d,b,c,c},
     {c,d,C,b,b,c},
@@ -1827,7 +1827,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,w,c,c,c},
     {w,c,c,c,b,c},
     {c,d,C,b,c,c},
@@ -1836,7 +1836,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,w,w},
     {c,C,d,c,c},
     {c,d,C,b,c},
@@ -1845,7 +1845,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {c,c,c,c,w,w},
     {c,b,C,d,c,w},
     {c,c,d,C,c,c},
@@ -1855,7 +1855,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 \end{minipage}
 
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,c,c,c,w},
     {c,d,C,c,c},
     {c,C,d,b,c},
@@ -1864,7 +1864,7 @@ Ergebnisse für |Rominos.CLI --size 10 --stopwatch|
 }}
 \end{minipage}
 \begin{minipage}{0.23\textwidth}
-\printmatrix{}{{
+\printmatrix{{
     {w,w,c,c,c},
     {w,c,c,b,c},
     {c,d,C,b,c},

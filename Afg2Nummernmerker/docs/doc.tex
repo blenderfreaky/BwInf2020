@@ -99,9 +99,9 @@ literate=%
 % Daten für die Titelseite
 \title{\textbf{\Huge\Aufgabe}}
 \author{\LARGE Team-ID: \LARGE \TeamID \\\\
-	    \LARGE Team-Name: \LARGE \TeamName \\\\
-	    \LARGE Bearbeiter dieser Aufgabe: \\ 
-	    \LARGE \Namen\\\\}
+        \LARGE Team-Name: \LARGE \TeamName \\\\
+        \LARGE Bearbeiter dieser Aufgabe: \\ 
+        \LARGE \Namen\\\\}
 \date{\LARGE\today}
 
 \begin{document}
@@ -126,14 +126,14 @@ TeileNummerAuf(nullstellen) {
     }
 
     if ( <Zu wenig Stellen zum aufteilen> ) {
-    	return <Fehler>;
+        return <Fehler>;
     }
 
     for (int i from 2 to 4) {
         subAufteilung = TeileNummerAuf(nullstellen.Skip(i));
 
-		    if ( <subAufteilung Fehler produziert hat> ) continue;
-		
+            if ( <subAufteilung Fehler produziert hat> ) continue;
+        
         Möglichkeiten.Add([i].Concat(subAufteilung));
     }
 

@@ -99,9 +99,9 @@ literate=%
 % Daten für die Titelseite
 \title{\textbf{\Huge\Aufgabe}}
 \author{\LARGE Team-ID: \LARGE \TeamID \\\\
-	    \LARGE Team-Name: \LARGE \TeamName \\\\
-	    \LARGE Bearbeiter dieser Aufgabe: \\ 
-	    \LARGE \Namen\\\\}
+        \LARGE Team-Name: \LARGE \TeamName \\\\
+        \LARGE Bearbeiter dieser Aufgabe: \\ 
+        \LARGE \Namen\\\\}
 \date{\LARGE\today}
 
 \begin{document}
@@ -179,8 +179,8 @@ Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die
 
     Es enthält
     \begin{itemize}
-    	\item die Position, also Distanz vom Ursprung in Kilometer,
-    	\item den Preis.
+        \item die Position, also Distanz vom Ursprung in Kilometer,
+        \item den Preis.
     \end{itemize}
     
 \subsection{Car}
@@ -420,7 +420,7 @@ public readonly struct GasStation : IEquatable<GasStation>
     }
 
     public override readonly bool Equals(object? obj) => obj is GasStation station && Equals(station);
-	
+    
     public readonly bool Equals([AllowNull] GasStation other) => Price == other.Price && Position == other.Position;
 
     public override readonly int GetHashCode() => HashCode.Combine(Price, Position);
