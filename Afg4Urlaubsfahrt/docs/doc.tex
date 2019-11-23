@@ -121,35 +121,55 @@ Ein ''Weg'' ist eine Menge von zu besuchenden Tankstellen .
 
 \paragraph{optimaler Weg}
 
-Der ''beste Weg'' oder ''optimale Weg'', ist der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen. Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
+Der ''beste Weg'' oder ''optimale Weg'', ist der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen.
+Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
 
 \subsection{Kernidee}
 
-Der Algorithmus basiert auf der Idee durch die Lösung von Teilproblemen die insgesamt beste Lösung zu finden. Das heißt, dass zur Findung des besten Weges zu einem Punkt ein neuer Weg aus dem besten Weg zu den Punkten davor gebildet wird. Zum Finden des besten Weges zu eienm Punkt wird der Weg von den Wegen zu den Punkten davor gewählt, der am wenigsten Stopps braucht und den geringsten Preis hat. Durch den iterativen Aufbau von den besten Wegen ist garantiert, dass am Ende der beste Weg zum Ziel gefunden wird.
+Der Algorithmus basiert auf der Idee durch die Lösung von Teilproblemen die insgesamt beste Lösung zu finden.
+Das heißt, dass zur Findung des besten Weges zu einem Punkt ein neuer Weg aus dem besten Weg zu den Punkten davor gebildet wird.
+ 
+Zum Finden des besten Weges zu eienm Punkt wird der Weg von den Wegen zu den Punkten davor gewählt, der am wenigsten Stopps braucht und den geringsten Preis hat.
+Durch den iterativen Aufbau von den besten Wegen ist garantiert, dass am Ende der beste Weg zum Ziel gefunden wird.
 
 \subsection{Finden des besten Weges zum Ziel}
 
 Zum finden des besten Weges zum Ziel wird nach und nach eine Zuordnung aufgebaut, die für jede Tankstelle den besten Weg zu ihr enthält.
 
-Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird. \\
-Sind die optimalen Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des optimalen Wegs zu dieser beginnen.
-Zuerst werden alle optimale Wege zu den vorherigen Tankstelle durchiteriert. Dabei wird zuerst überprüft von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann. \\
-Wenn nicht wird zur nächsten Tankstelle der Zuordnung übergegangen. \\
-Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht. \\
-Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl. Danach wird der Preis aller übrigen Wege ermittelt, und von denen wird der billigste ausgewählt. Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle. Dieser wird dann in die Zuordnung eingetragen.
+Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird.
 
-Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Streckenende Teil der Zuordnung ist. Dieser ist dann der optimale Weg vom Start zum Streckenende.
+Sind die optimalen Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des optimalen Wegs zu dieser beginnen.
+Zuerst werden alle optimale Wege zu den vorherigen Tankstelle durchiteriert.
+ 
+Dabei wird zuerst überprüft von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann.
+
+Wenn nicht wird zur nächsten Tankstelle der Zuordnung übergegangen.
+
+Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht.
+
+Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl.
+Danach wird der Preis aller übrigen Wege ermittelt, und von denen wird der billigste ausgewählt.
+Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle.
+Dieser wird dann in die Zuordnung eingetragen.
+
+Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Streckenende Teil der Zuordnung ist.
+Dieser ist dann der optimale Weg vom Start zum Streckenende.
 
 \subsection{Ermittlung des Preises für einen Weg}
 
-Für die Ermittlung des Preises für einen Weg werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet. Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
+Für die Ermittlung des Preises für einen Weg werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet.
+ Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
 
-Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke. In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
+Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke.
+In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
 
-Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, die den gesamten Weg abdeckt. Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird. 
+Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, die den gesamten Weg abdeckt.
+ Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die beste Teillösung gefunden wird.
+ 
 
 \section{Umsetzung}
 
+\subsection{}
 	\begin{itemize}
 		\item Die |public static class| Urlaubsfahrt enthält die Hauptmethode |public static Track| FindBestTrack.
 		\item |FindBestTrack| erhält als Parameter:
@@ -190,8 +210,10 @@ Dieses Verfahren wird so lange wiederholt, bis nur noch eine Strecke existiert, 
 
 \section{Beispiele}
 
-Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen. Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Urlaubsfahrt.CLI --help| aus.
-begin{lstcs}
+Im Folgenden wird das Programm immer mit Argumenten aufgerufen, um den Dialog mit dem CLI zu überspringen.
+ Für mehr Informationen über die möglichen Parameter führen sie den Befehl |Urlaubsfahrt.CLI --help| aus.
+
+\begin{lstcs}
 ./Urlaubsfahrt.CLI -f "..\..\..\..\..\examples\fahrt1.txt"
 
 Stops:
@@ -364,9 +386,11 @@ public static class Urlaubsfahrt
     }
 }
 \end{lstcs}
+
 \begin{lstcs}
 using System;
 using System.Diagnostics.CodeAnalysis;
+
 public readonly struct GasStation : IEquatable<GasStation>
 {
     /// <summary>
@@ -391,7 +415,7 @@ public readonly struct GasStation : IEquatable<GasStation>
     }
 
     public override readonly bool Equals(object? obj) => obj is GasStation station && Equals(station);
-
+	
     public readonly bool Equals([AllowNull] GasStation other) => Price == other.Price && Position == other.Position;
 
     public override readonly int GetHashCode() => HashCode.Combine(Price, Position);
@@ -405,125 +429,125 @@ public readonly struct GasStation : IEquatable<GasStation>
 \end{lstcs}
 \begin{lstcs}
 using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
-    public readonly struct Track : IEquatable<Track>
+public readonly struct Track : IEquatable<Track>
+{
+    public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty.Add(GasStation.Home));
+
+    public readonly ImmutableList<GasStation> Stops;
+
+    public readonly GasStation LastStop => Stops[Stops.Count - 1];
+
+    private Track(ImmutableList<GasStation> stops) => Stops = stops;
+
+    public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
+
+    public readonly decimal? GetCheapestPriceTo(GasStation destination, Car car) =>
+        GetCheapestPriceTo(destination.Position, car);
+
+    public readonly decimal? GetCheapestPriceTo(decimal destination, Car car) =>
+        GetCheapestPathTo(destination, car)?.PriceFor(car);
+
+    public readonly DrivingPlan? GetCheapestPathTo(decimal destination, Car car)
     {
-        public static readonly Track Empty = new Track(ImmutableList<GasStation>.Empty.Add(GasStation.Home));
+        DrivingPlan drivingPlan = DrivingPlan.Empty;
 
-        public readonly ImmutableList<GasStation> Stops;
-
-        public readonly GasStation LastStop => Stops[Stops.Count - 1];
-
-        private Track(ImmutableList<GasStation> stops) => Stops = stops;
-
-        public readonly Track With(GasStation newEnd) => new Track(Stops.Add(newEnd));
-
-        public readonly decimal? GetCheapestPriceTo(GasStation destination, Car car) =>
-            GetCheapestPriceTo(destination.Position, car);
-
-        public readonly decimal? GetCheapestPriceTo(decimal destination, Car car) =>
-            GetCheapestPathTo(destination, car)?.PriceFor(car);
-
-        public readonly DrivingPlan? GetCheapestPathTo(decimal destination, Car car)
+        //Wenn wir mit dem vorhandenen Tank bis zum Ziel fahren können, müssen wir nicht tanken
+        if (destination < car.StartingFuelDistance)
         {
-            DrivingPlan drivingPlan = DrivingPlan.Empty;
-
-            //Wenn wir mit dem vorhandenen Tank bis zum Ziel fahren können, müssen wir nicht tanken
-            if (destination < car.StartingFuelDistance)
-            {
-                drivingPlan.Add(GasStation.Home, destination);
-                return drivingPlan;
-            }
-
-            //Das gesamte Startbenzin nutzen
-            drivingPlan.Add(GasStation.Home, car.StartingFuelDistance);
-
-            HashSet<Range> coveredRanges = new HashSet<Range>
-            {
-                new Range(0, car.StartingFuelDistance),
-                new Range(destination, destination + car.TankDistance)
-            };
-
-            foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price)) //Die Tankstellen dem Preis nach überprüfen
-            {
-                Range newRange = new Range(station.Position, station.Position + car.TankDistance);
-
-                decimal distance = car.TankDistance;
-
-                bool startHit = false, endHit = false;
-
-                foreach (var coveredRange in coveredRanges.ToList())
-                {
-                    //Überprüfen ob der Start- oder Endpunkt bereits überdeckt sind                                                                                                                                                t collide with the given range.
-                    bool containsStart = coveredRange.Contains(newRange.Start);
-                    bool containsEnd = coveredRange.Contains(newRange.End);
-
-                    //Wenn der gesamte Bereich überdeckt ist muss nicht getankt werden
-                    if (containsStart && containsEnd)
-                    {
-                        newRange = Range.NaR;
-                        break;
-                    }
-
-                    if (!containsStart && !containsEnd) continue;
-
-                    coveredRanges.Remove(coveredRange);
-
-                    if (containsStart)
-                    {
-                        if (startHit) throw new InvalidOperationException();
-                        startHit = true;
-
-                        distance -= coveredRange.End - newRange.Start;
-                        newRange = new Range(coveredRange.Start, newRange.End);
-                    }
-                    else if (containsEnd)
-                    {
-                        if (endHit) throw new InvalidOperationException();
-                        endHit = true;
-
-                        distance -= newRange.End - coveredRange.Start;
-                        newRange = new Range(newRange.Start, coveredRange.End);
-                    }
-
-                    if (newRange.Length == 0 || distance == 0)
-                    {
-                        newRange = Range.NaR;
-                        break;
-                    }
-                }
-
-                if (newRange.IsNaR) continue;
-
-                coveredRanges.Add(newRange);
-                drivingPlan.Add(station, distance);
-
-                //Wenn nur eine Range existiert, die den gesamten Bereich abdeckt, dann wird an den übrigen Stationen nicht getankt
-                if (newRange.Start == 0 && newRange.End >= destination)
-                {
-                    return drivingPlan;
-                }
-            }
-
-            return null;    //Wenn der Weg nicht vollständig Abgedeckt ist, ist dieser Track nicht möglich
+            drivingPlan.Add(GasStation.Home, destination);
+            return drivingPlan;
         }
 
-        public override readonly bool Equals(object? obj) => obj is Track track && Equals(track);
+        //Das gesamte Startbenzin nutzen
+        drivingPlan.Add(GasStation.Home, car.StartingFuelDistance);
 
-        public readonly bool Equals([AllowNull] Track other) => EqualityComparer<ImmutableList<GasStation>>.Default.Equals(Stops, other.Stops);
+        HashSet<Range> coveredRanges = new HashSet<Range>
+        {
+            new Range(0, car.StartingFuelDistance),
+            new Range(destination, destination + car.TankDistance)
+        };
 
-        public override readonly int GetHashCode() => HashCode.Combine(Stops);
+        foreach (GasStation station in Stops.Where(x => x.Price > 0).OrderBy(x => x.Price)) //Die Tankstellen dem Preis nach überprüfen
+        {
+            Range newRange = new Range(station.Position, station.Position + car.TankDistance);
 
-        public static bool operator ==(Track left, Track right) => left.Equals(right);
+            decimal distance = car.TankDistance;
 
-        public static bool operator !=(Track left, Track right) => !(left == right);
+            bool startHit = false, endHit = false;
 
-        public override readonly string ToString() => string.Join(Environment.NewLine, Stops.Select(x => "  " + x));
+            foreach (var coveredRange in coveredRanges.ToList())
+            {
+                //Überprüfen ob der Start- oder Endpunkt bereits überdeckt sind                                                                                                                                                t collide with the given range.
+                bool containsStart = coveredRange.Contains(newRange.Start);
+                bool containsEnd = coveredRange.Contains(newRange.End);
+
+                //Wenn der gesamte Bereich überdeckt ist muss nicht getankt werden
+                if (containsStart && containsEnd)
+                {
+                    newRange = Range.NaR;
+                    break;
+                }
+
+                if (!containsStart && !containsEnd) continue;
+
+                coveredRanges.Remove(coveredRange);
+
+                if (containsStart)
+                {
+                    if (startHit) throw new InvalidOperationException();
+                    startHit = true;
+
+                    distance -= coveredRange.End - newRange.Start;
+                    newRange = new Range(coveredRange.Start, newRange.End);
+                }
+                else if (containsEnd)
+                {
+                    if (endHit) throw new InvalidOperationException();
+                    endHit = true;
+
+                    distance -= newRange.End - coveredRange.Start;
+                    newRange = new Range(newRange.Start, coveredRange.End);
+                }
+
+                if (newRange.Length == 0 || distance == 0)
+                {
+                    newRange = Range.NaR;
+                    break;
+                }
+            }
+
+            if (newRange.IsNaR) continue;
+
+            coveredRanges.Add(newRange);
+            drivingPlan.Add(station, distance);
+
+            //Wenn nur eine Range existiert, die den gesamten Bereich abdeckt, dann wird an den übrigen Stationen nicht getankt
+            if (newRange.Start == 0 && newRange.End >= destination)
+            {
+                return drivingPlan;
+            }
+        }
+
+        return null;    //Wenn der Weg nicht vollständig Abgedeckt ist, ist dieser Track nicht möglich
     }
+
+    public override readonly bool Equals(object? obj) => obj is Track track && Equals(track);
+
+    public readonly bool Equals([AllowNull] Track other) => EqualityComparer<ImmutableList<GasStation>>.Default.Equals(Stops, other.Stops);
+
+    public override readonly int GetHashCode() => HashCode.Combine(Stops);
+
+    public static bool operator ==(Track left, Track right) => left.Equals(right);
+
+    public static bool operator !=(Track left, Track right) => !(left == right);
+
+    public override readonly string ToString() => string.Join(Environment.NewLine, Stops.Select(x => "  " + x));
+}
 \end{lstcs}
 \begin{lstcs}
 using System;
