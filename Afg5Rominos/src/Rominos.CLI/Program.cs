@@ -10,7 +10,7 @@
 
     public class Options
     {
-        [Option('s', "size", Required = true, HelpText = "The highest number of blocks to generate rominos for.")]
+        [Option('c', "size", Required = true, HelpText = "The highest number of blocks to generate rominos for.")]
         public int Size { get; set; }
 
         [Option('t', "targetFile", Required = false, HelpText = "Path of the file to write outputs to. If not set the console is used.")]

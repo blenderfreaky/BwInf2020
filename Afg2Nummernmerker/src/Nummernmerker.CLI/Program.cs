@@ -93,7 +93,7 @@
         private static void RunWithStackSize(Action action, int stackSize)
         {
             //action();return;
-            var thread = new Thread(new ThreadStart(action),  stackSize);
+            var thread = new Thread(new ThreadStart(action), stackSize);
             thread.Start();
 
             // Synchronize

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+
     public readonly struct DrivingPlan : IEquatable<DrivingPlan>
     {
         public readonly List<(GasStation Station, decimal Distance)> Stops;

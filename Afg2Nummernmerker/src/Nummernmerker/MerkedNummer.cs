@@ -1,7 +1,6 @@
 ﻿namespace Nummernmerker
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     /// <summary>
@@ -51,6 +50,7 @@
         }
 
         #region Overrides and Interface Implementations
+
         /// <inheritdoc/>
         public readonly override bool Equals(object obj) => obj is MerkedNummer other && Equals(other);
 
@@ -68,6 +68,7 @@
 
         /// <inheritdoc/>
         public static bool operator !=(MerkedNummer left, MerkedNummer right) => !(left == right);
-        #endregion
+
+        #endregion Overrides and Interface Implementations
     }
 }

@@ -10,10 +10,14 @@
 namespace Rominos
 {
     using System;
+
 #if !DEBUG_BitBuffer512
+
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
+
 #endif
+
     using System.Runtime.InteropServices;
 
     /// <summary>
@@ -62,7 +66,7 @@ namespace Rominos
 
         #region Fields
 
-        // Fields are stored descendingly; _h is the greates digit, whereas _a is the least. 
+        // Fields are stored descendingly; _h is the greates digit, whereas _a is the least.
 
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -90,26 +94,36 @@ namespace Rominos
 
 #if _4ULong
 #if !DEBUG_BitBuffer512
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
 
-        /* [FieldOffset(24)] */ private ulong _d;
-
-#if !DEBUG_BitBuffer512
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-#endif
-        /* [FieldOffset(16)] */ private ulong _c;
-#endif
+        /* [FieldOffset(24)] */
+        private ulong _d;
 
 #if !DEBUG_BitBuffer512
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        /* [FieldOffset(8)] */ private ulong _b;
+        /* [FieldOffset(16)] */
+        private ulong _c;
+
+#endif
 
 #if !DEBUG_BitBuffer512
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 #endif
-        /* [FieldOffset(0)] */ private ulong _a;
+        /* [FieldOffset(8)] */
+        private ulong _b;
+
+#if !DEBUG_BitBuffer512
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+#endif
+        /* [FieldOffset(0)] */
+        private ulong _a;
+
 #pragma warning restore IDE0044 // Add readonly modifier
 #pragma warning restore RCS1169 // Make field read-only.
 

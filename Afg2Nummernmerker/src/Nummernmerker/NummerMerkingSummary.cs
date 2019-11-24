@@ -16,7 +16,7 @@
         /// Lists the lengths of the segments in the distribution.
         /// <code>
         /// Distribution = new int[] { 2, 4, 3 };
-        /// 
+        ///
         /// ApplyDistribution("123456789")
         /// > 12 3456 789
         /// </code>
@@ -29,10 +29,10 @@
         /// <remarks>
         /// <code>
         /// Distribution = new int[] { 2, 4, 3 };
-        /// 
+        ///
         /// ApplyDistribution("12023103")
         /// > 12 0231 03
-        /// 
+        ///
         /// LeadingZerosHit
         /// > 2
         /// </code>
@@ -61,9 +61,11 @@
         public static NummerMerkingSolution Success(int[] distribution, int leadingZerosHit) => new NummerMerkingSolution(distribution, leadingZerosHit, true);
 
         private static readonly NummerMerkingSolution _failure = new NummerMerkingSolution(default, default, false);
+
         public static NummerMerkingSolution Failure() => _failure;
 
         private static readonly NummerMerkingSolution _empty = new NummerMerkingSolution(Array.Empty<int>(), 0, true);
+
         public static NummerMerkingSolution Empty() => _empty;
 
         /// <summary>
@@ -74,7 +76,7 @@
         /// <remarks>
         /// <code>
         /// Distribution = new int[] { 2, 4, 3 };
-        /// 
+        ///
         /// ApplyDistribution("123456789").ToArray();
         /// > string[] { "12", "3456", "789" }
         /// </code>
@@ -91,6 +93,7 @@
         }
 
         #region Overrides and Interface Implementations
+
         /// <inheritdoc/>
         public readonly override bool Equals(object obj) => obj is NummerMerkingSolution other && Equals(other);
 
@@ -113,6 +116,7 @@
 
         /// <inheritdoc/>
         public static bool operator !=(NummerMerkingSolution left, NummerMerkingSolution right) => !(left == right);
-        #endregion
+
+        #endregion Overrides and Interface Implementations
     }
 }

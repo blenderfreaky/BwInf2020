@@ -19,10 +19,10 @@
         /// DiagonalRootMap represents the functor mapping the DiagonalRoot from the origin romino
         ///   to the rotated/mirrored romino.
         ///   Different from BlockMap because the DiagonalRoot is always the upper left of a square
-        ///   of 4 coords; 
+        ///   of 4 coords;
         /// </para>
         /// <para>    e.g. when mirroring along the y-Axis (x => (-x.X, x.Y)):
-        /// 
+        ///
         ///     Before  After
         ///       |       |
         ///     --D░--  -D▓--
@@ -317,7 +317,7 @@
         /// Calculates the offset by which blocks inside the romino need to be moved after applying a given function
         /// in order to still have the lowest x and y be equal to 0.
         /// </summary>
-        /// <remarks>The function <paramref name="map"/> may not apply any translations, only 
+        /// <remarks>The function <paramref name="map"/> may not apply any translations, only
         /// scaling and rotation around the origin (0, 0) is handled.</remarks>
         /// <param name="map">The function to calculate the offset for.</param>
         /// <returns>The offset that needs to be applied to set the minimum x and y coordinates after applying <paramref name="map"/> back to 0.</returns>
@@ -331,6 +331,7 @@
         }
 
         #region Visualization
+
         private readonly bool[,] GetBlock2DArray()
         {
             var blocks = new bool[Max.X + 1, Max.Y + 1];
@@ -374,7 +375,6 @@
             }
         }
 
-
         private static readonly Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char> LatexChars = new Dictionary<(bool isBlock, bool isDiagonalBlockade, bool isPossibleExtensions), char>
         {
             [(false, false, false)] = 'w',
@@ -410,16 +410,18 @@
                 }
 
                 buffer.Append('}');
-                buffer.Append(i < blocks.GetLength(0) ? "," :( "%" + Environment.NewLine + "}}"));
+                buffer.Append(i < blocks.GetLength(0) ? "," : ("%" + Environment.NewLine + "}}"));
 
                 yield return buffer.ToString();
 
                 buffer.Clear();
             }
         }
-        #endregion
+
+        #endregion Visualization
 
         #region Overrides and Interface Implementations
+
         /// <inheritdoc/>
         /// <remarks>Returns invalid results for comparisons between rominos of different sizes</remarks>
         public override readonly bool Equals(object obj) => obj is Romino romino && Equals(romino);
@@ -452,6 +454,7 @@
 
         /// <inheritdoc/>
         public static bool operator >=(Romino left, Romino right) => left.CompareTo(right) >= 0;
-        #endregion
+
+        #endregion Overrides and Interface Implementations
     }
 }

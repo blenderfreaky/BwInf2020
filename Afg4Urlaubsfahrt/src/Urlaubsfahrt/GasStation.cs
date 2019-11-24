@@ -2,6 +2,7 @@ namespace Urlaubsfahrt
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+
     public readonly struct GasStation : IEquatable<GasStation>
     {
         /// <summary>

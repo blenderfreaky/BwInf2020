@@ -12,6 +12,7 @@
         public static void ClearCache() => MerkedNummers.Clear();
 
         #region Overloads
+
         public static IEnumerable<string> MerkNummernToText(long number, int minSequenceLength, int maxSequenceLength) =>
             MerkNummernToText(number.ToString(), minSequenceLength, maxSequenceLength);
 
@@ -27,7 +28,8 @@
 
         public static NummerMerkingSolution MerkNummern(in ArraySegment<bool> zeros, int minSequenceLength, int maxSequenceLength) =>
             MerkNummern(new MerkedNummer(zeros, minSequenceLength, maxSequenceLength));
-        #endregion
+
+        #endregion Overloads
 
         private static NummerMerkingSolution MerkNummern(in MerkedNummer merkedNummer)
         {
