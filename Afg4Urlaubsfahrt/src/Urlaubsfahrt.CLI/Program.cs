@@ -7,7 +7,7 @@
 
     public class Options
     {
-        [Option('f', "file", Required = false, HelpText = "The input file to evaluate.")]
+        [Option('f', "file", Required = true, HelpText = "The input file to evaluate.")]
         public string File { get; set; }
     }
 
