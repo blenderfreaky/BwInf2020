@@ -2,16 +2,18 @@
 
 ## Dateistruktur
 
+Afg<Aufgabennummer><Aufgabenname>.pdf
+  | Doku für Aufgabe <Aufgabennummer>
 Afg<Aufgabennummer><Aufgabenname>/
   src/
     <Aufgabenname>/
-      Hauptalgorithmus Code
+      | Hauptalgorithmus Code
     <Aufgabenname>.CLI/
-      Ausführended Code / Konsoleninterface
+      | Ausführended Code / Konsoleninterface
   app/
-    Dateien die für ausführung notwendig sind
     <Aufgabenname>.CLI.exe
-      Exe des Programms
+      | Exe des Programms
+    | Dateien die für Ausführung notwendig sind
   [examples/]
     offiziele Beispielsdateien
 
