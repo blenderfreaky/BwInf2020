@@ -127,7 +127,7 @@ Man bezeichne die Menge aller Zustände mit Gesamtbiberzahl \(n\) als \(\mathbb{
 
 Ein Endzustand ist jeder Zustand, der genau einen leeren Eimer enthält.
 
-Sind weniger, also keine, leere Eimer enthalten, so ist der Zustand kein Endzustand laut der Aufgabenstellung.
+Sind weniger, also keine, leeren Eimer enthalten, so ist der Zustand kein Endzustand laut der Aufgabenstellung.
 
 Sind mehr enthalten, so ist der Zustand nur durch Operationen auf einen anderen Endzustand zu erhalten, und somit nicht relevant. Die Ermittlung aller Endzustände wird in \cref{alg:target} erläutert.
 
@@ -136,7 +136,7 @@ Dabei gilt: \(\mathbb{E}_n\subseteq\mathbb{S}_n\)
 
 \paragraph{Ursprungszustand} \label{def:origin}
 
-Ein Ursprungszustand von einem Zustand \(x\), ist jeder Zustand der mit einem einzelnen Telepaartieschritt zum Zustand \(x\) wird. Die Ermittlung aller Ursprungszustände eines Zustands wird in \cref{alg:origin} erläutert.
+Ein Ursprungszustand von einem Zustand \(x\) ist jeder Zustand, der mit einem einzelnen Telepaartieschritt zum Zustand \(x\) wird. Die Ermittlung aller Ursprungszustände eines Zustands wird in \cref{alg:origin} erläutert.
 
 Die Menge an Ursprungszuständen von \(x\) kann geschrieben werden als \(origin(x)\), mit \(origin : \mathbb{S}_n \to \mathbb{S}_n \).
 
@@ -146,11 +146,11 @@ Eine Generation ist eine Menge an unterschiedlichen Zuständen.
 
 \subsection{Kernidee}
 
-Die Grundidee der Lösung basiert nicht auf der Idee, alle nicht-Endzustände zu ermitteln und diese optimal zu lösen, sondern invers alle Endzustände zu ermitteln und diese invers auf alle ihre Ursprungszustände zurückzuführen, diese Ursprungszustände wieder auf ihre eigenen Ursprungszustände zurückzuführen usw., wobei konstant überprüft wird, ob es nicht ''Abkürzungen'' im Sinne bereits gefundener Zustände gibt.
+Die Grundidee der Lösung basiert nicht auf der Idee, alle Nicht-Endzustände zu ermitteln und diese optimal zu lösen, sonder alle Endzustände zu ermitteln und diese invers auf alle ihre Ursprungszustände zurückzuführen, diese Ursprungszustände wieder auf ihre eigenen Ursprungszustände zurückzuführen usw., wobei konstant überprüft wird, ob es nicht ''Abkürzungen'' im Sinne bereits gefundener Zustände gibt.
 
 \subsection{Ermittlung aller Ursprungszustände} \label{alg:origin}
 
-Zum ermitteln der Ursprungszustände \(origin(s)\) eines Zustands \(s \in \mathbb{S}_n\) wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist dabei bei einem Vergleich zweier Anzahlen die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
+Zum Ermitteln der Ursprungszustände \(origin(s)\) eines Zustands \(s \in \mathbb{S}_n\) wird jede Biber-Anzahl mit jeder anderen Biber-Anzahl verglichen. Ist dabei bei einem Vergleich zweier Anzahlen die erste Anzahl größer als 0 und durch 2 teilbar, dann ist es möglich, dass auf diese beiden Behälter eine Telepaartie angewendet wurde. Um diese umzukehren wird die Anzahl im ersten Behälter addiert und die Differenz zum 2. Behälter addiert.
 Diese Überprüfung wird für alle Kombinationen zweier Biber-Anzahlen durchgeführt, bis am Ende alle Ursprungszustände gefunden wurden.
 
 \subsubsection{Begründung}
@@ -159,56 +159,69 @@ Seien \(a_0, a_1, b_0, b_1 \in \mathbb{N}\) die zwei Biberanzahlen, wobei \(a_0\
 
 Laut der Definition der Telepaartie gilt:
 
-\begin{align*}
-    a_1 &= 2 a_0 \\
-    b_1 &= b_0 - a_0 \\
-\end{align*}
+\begin{align}
+    a_1 &= 2 a_0 \label{eq:a1} \\
+    b_1 &= b_0 - a_0 \label{eq:b1} \\
+\end{align}
 
-Hierraus lässt sich herleiten:
+Hieraus lässt sich herleiten:
 
-\begin{align*}
-    && a_1 &= 2 a_0 \\
-    \iff&& a_0 &= \frac{a_1}{2} \\
-    && b_1 &= b_0 - a_0 \\
-    \iff&& b_1 &= b_0 - \frac{a_1}{2} \\
-    \iff&& b_0 &= b_1 + \frac{a_1}{2} \\
-    && a_0 &< b_0 \\
-    \iff&& \frac{a_1}{2} &< b_1 + \frac{a_1}{2} \\
-    \iff&& 0 &< b_1 \\
-\end{align*}
+\begin{center}
+    \begin{minipage}{0.23\textwidth}
+        \begin{align*}
+            && a_1 &= 2 a_0 \cref{eq:a1} \\
+            \iff&& a_0 &= \frac{a_1}{2} \\
+        \end{align*}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{align*}
+            && b_1 &= b_0 - a_0 \cref{eq:b1} \\
+            \iff&& b_1 &= b_0 - \frac{a_1}{2} \\
+            \iff&& b_0 &= b_1 + \frac{a_1}{2} \\
+        \end{align*}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{align*}
+            && a_0 &< b_0 \\
+            \iff&& \frac{a_1}{2} &< b_1 + \frac{a_1}{2} \\
+            \iff&& 0 &< b_1 \\
+        \end{align*}
+    \end{minipage}
+    \begin{minipage}{0.23\textwidth}
+        \begin{align*}
+            && a_0 &&\in \mathbb{N} \\
+            \iff&& a_0 &\mid 1 \\
+            \iff&& a_0 &= 1 \cdot n \\
+            \iff&& a_1 &= 2 \cdot n \\
+            \iff&& a_1 &\mid 2 \\
+        \end{align*}
+    \end{minipage}
+\end{center}
 
-Wichtig hierbei ist:
-
-\begin{align*}
-    0 &< b_1 \\
-    a_0 &= \frac{a_1}{2} \\
-    b_0 &= b_1 + \frac{a_1}{2} \\
-\end{align*}
+Wichtig hierbei ist \(0 < b_1 \land a_0 = \frac{a_1}{2} \land b_0 = b_1 + \frac{a_1}{2} \land a_1 \mid 2\).
 
 \subsection{Generieren der Endzustände} \label{alg:target}
 
-Zur effizienten Findung aller Endzustände werden nicht erst alle möglichen Endzustände mit Duplikaten generiert und am Ende die Duplikate entfernt, sondern gleich nur Zustände berechnet, die nicht wiederholt aufteten werden.
+Zur effizienten Findung aller Endzustände werden nicht erst alle möglichen Endzustände mit Duplikaten generiert und am Ende die Duplikate entfernt, sondern gleich nur Zustände berechnet, die nicht wiederholt auftreten werden.
 
-Zur Simplifizierung der Rechnung werden alle Zustände mit Behälterzahl minus eins berechnet, die keine leeren Behälter besitzen. Danach wird an jedes dieser einfach eine null angehängt.
+Zur Simplifizierung der Rechnung werden alle Zustände mit Behälterzahl minus eins berechnet, die keine leeren Behälter besitzen. Danach wird an jedes dieser einfach eine Null angehängt.
 
 Der Algoritmus funktioniert, indem zuerst für einen Behälter alle möglichen Biberanzahlen ermittelt werden, für die gilt:
 
 \begin{itemize}
-    \item Es ist möglich die restlichen Biber so aufzuteilen, dass jeder Behälter genausoviele oder weniger Biber enthält wie der vorherigen
-    \item Es ist garantiert, dass die restlichen Behälter alle nicht leer sein müssen 
+    \item Es ist möglich die restlichen Biber so aufzuteilen, dass jeder Behälter genauso viele oder weniger Biber enthält wie der vorherigen.
+    \item Es ist garantiert, dass die restlichen Behälter alle nicht leer sein müssen.
 \end{itemize}
 
-Um zu garantieren, dass die Behälter absteigend befüllbar sind, müssen mindestens \(\left\lceil\frac{<Anzahl\ Biber>}{<Anzahl\ Behälter>}\right\rceil\) Biber in den ersten Becher.
-
-Um die nicht-Leerheit zu garantieren, müssen maximal \(<Anzahl\ Biber> - (<Anzahl\ Behälter> + 1)\) Biber in den ersten Becher. Somit kann mindestens ein Biber in jeden restlichen Behälter platziert werden.
+Um zu garantieren, dass die Behälter absteigend befüllbar sind, müssen mindestens \(\left\lceil\frac{<Anzahl\ Biber>}{<Anzahl\ Behälter>}\right\rceil\) Biber in den ersten Becher. 
+Um die Nicht-Leerheit zu garantieren, müssen maximal \(<Anzahl\ Biber> - (<Anzahl\ Behälter> + 1)\) Biber in den ersten Becher. Somit kann mindestens ein Biber in jeden restlichen Behälter platziert werden.
 
 Für den trivialen Fall, das nur ein Behälter vorhanden ist, müssen alle Biber in diesen.
-
-Nun lassen sich alle für den ersten Becher mögliche Biberanzahlen bestimmen, und für diese jeweils rekursiv alle folgenden Biberanzahlen. Hierbei ist noch zu beachten, dass noch garantiert werden muss, das die Behälter absteigend voll sind. Dies ist trivialerweise umsetzbar, indem alle Biberanzahlen die größer der Biberanzahlen eines vorherigen Behälters sind eliminiert werden.
+Nun lassen sich alle für den ersten Becher möglichen Biberanzahlen bestimmen und für diese jeweils rekursiv alle folgenden Biberanzahlen. Hierbei ist noch zu beachten, dass noch garantiert werden muss, dass die Behälter absteigend voll sind. Dies ist trivialerweise umsetzbar, indem alle Biberanzahlen, die größer der Biberanzahlen eines vorherigen Behälters sind, eliminiert werden.
 
 \subsection{Hauptalgorithmus}
 
-Sei die Generation \(Gen_{i+1}\) definiert als alle unterschiedliche Ursprungszustände aller Elemente aus \(Gen_i\), die in keiner vorherigen Generation \(Gen_k, k < i\) enthalten sind.
+Sei die Generation \(Gen_{i+1}\) definiert als die Menge aller unterschiedlichen Ursprungszustände aller Elemente aus \(Gen_i\), die in keiner vorherigen Generation \(Gen_k, k < i\) enthalten sind.
 
 Sei dabei \(Gen_0\) als Spezialfall gleich der Menge aller Endzustände für Gesamtbiberzahl \(n\).
 
@@ -224,7 +237,7 @@ Weiterdem gilt \(LLL(n) = m\).
 
 \subsubsection{Hilfssatz 1: Erreichen aller lösbaren Zustände} \label{proof:completeness}
 
-Wähle beliebig aber fest einen Zustand \(s\in\mathbb{S}_n\).
+Wähle beliebig, aber fest einen Zustand \(s\in\mathbb{S}_n\).
 Ist der Zustand lösbar, also durch wiederholte Telepaartie zu einem Endzustand überführbar, so gibt es eine Generation \(Gen_i\) aus \((Gen_i)_{i\in\mathbb{N}}\) mit \(s\in Gen_i\).
 
 \paragraph{Trivialer Fall}
@@ -240,7 +253,7 @@ Angenommen \(s \notin Gen_{i}\). Für alle \(i=1,2,...\).
     && &\iff \left(\forall_{t \in Gen_{i-1}} : s \notin origin(t)\right) \lor \left(\exists_{i_0\in\mathbb{N}, i_0 < i}: s \in Gen_{i_0}\right)
 \end{align*}
 
-Angenommen es gilt \(\exists_{i_0\in\mathbb{N}, i_0 < i}: s \in Gen_{i_0}\). Wenn dies gilt, existiert ein \(i_0\), für welches gilt: \(s \in Gen_{i_0}\). Somit existiert eine Generation aus \((Gen_i)_{i\in\mathbb{N}}\) mit \(s \in Gen_{i_0}\).
+Angenommen es gilt \(\exists_{i_0\in\mathbb{N}, i_0 < i}: s \in Gen_{i_0}\). Wenn dies gilt, existiert ein \(i_0\), für welches gilt: \(s \in Gen_{i_0}\). Dann existiert eine Generation aus \((Gen_i)_{i\in\mathbb{N}}\) mit \(s \in Gen_{i_0}\).
 
 Somit können wir das Problem durch Redefinition \(i := i_0\) reformulieren als:
 
@@ -269,7 +282,7 @@ Wenn \(s \in Gen_i\) gilt, dann ist \(s\) in \(i\) oder weniger Telepaartieschri
 
 \paragraph{Beweis}
 
-Wie aus \cref{proof:completeness} hervorgeht, kann ein Zustand \(s\in\mathbb{S}_n\) nur lösbar sein, bzw. eine Generation \(Gen_i\) mit \(s \in Gen_i\) existieren, wenn gilt:
+Wie aus \cref{proof:completeness} hervorgeht, kann ein Zustand \(s\in\mathbb{S}_n\) nur lösbar sein bzw. eine Generation \(Gen_i\) mit \(s \in Gen_i\) existieren, wenn gilt:
 
 \begin{align*}
     &&\forall_{t \in Gen_i} : s \notin origin(t) 
@@ -282,7 +295,7 @@ Da laut Definition von \(origin\) die \(i\)-fache Selbstverkettung von \(origin\
 
 \subsubsection{Hilfssatz 2: Eindeutigkeit} \label{proof:uniqueness}
 
-Für jeden lösbaren Zustand \(s \in \mathbb{S}_n\) gilt, dass \textit{genau ein} \(i\) existiert, für dass die Generation \(Gen_i\) mit \(s \in Gen_i\) existiert.
+Für jeden lösbaren Zustand \(s \in \mathbb{S}_n\) gilt, dass \textit{genau ein} \(i\) existiert, für das die Generation \(Gen_i\) mit \(s \in Gen_i\) existiert.
 
 \paragraph{Beweis}
 
@@ -294,15 +307,14 @@ Für jeden lösbaren Zustand \(s \in \mathbb{S}_n\) mit \(s \in Gen_i\) gilt, da
 
 \paragraph{Beweis}
 
-Der Fall \(LLL(s) > i\) wird vom Korollar \cref{proof:maxminsteps} wiederlegt.
-
+Der Fall \(LLL(s) > i\) wird vom Korollar \cref{proof:maxminsteps} widerlegt.
 Somit wäre nur noch zu zeigen das \(LLL(s) < i\) nicht gilt.
 
 Damit \(LLL(s) < i\) gilt, müsste es eine Schrittfolge geben, um \(s\) mit \(k<i\) Schritten in einen Endzustand zu überzuführen.
 
-Die Generationen \(Gen_j\) mit \(0 \leq j < i\) enthalten zusammen alle Elemente von allen \(j\)-fachen Selbstverkettungen von \(origin\), also jeden Zustand der in genau \(i-1\) oder weniger Schritten zu einem Endzustand überführbar ist. Mit der Eindeutigkeit der Generationen (siehe \cref{proof:uniqueness}) verbunden, ist also \(LLL(s) < i\) und \(s \in Gen_j\) äquivalent.
+Die Generationen \(Gen_j\) mit \(0 \leq j < i\) enthalten zusammen alle Elemente von allen \(j\)-fachen Selbstverkettungen von \(origin\), also jeden Zustand, der in genau \(i-1\) oder weniger Schritten zu einem Endzustand überführbar ist. Mit der Eindeutigkeit der Generationen (siehe \cref{proof:uniqueness}) ist also \(LLL(s) < i\) und \(s \in Gen_j\) äquivalent.
 
-Ist nun \(s \in Gen_i\), gilt laut \cref{proof:uniqueness}, dass \(s\) in keiner anderen Generation aus \((Gen_i)_{i\in\mathbb{N}}\), also auch keiner Generation \(Gen_j\) enthalten ist. Da \(LLL(s) < i \iff s \in Gen_j\) gilt, und da \(s \notin Gen_j\) gilt, gilt auch \(\lnot(LLL(s) < i) \iff LLL(s) \geq i\).
+Ist nun \(s \in Gen_i\), so gilt laut \cref{proof:uniqueness}, dass \(s\) in keiner anderen Generation aus \((Gen_i)_{i\in\mathbb{N}}\), also, auch keiner Generation \(Gen_j\) enthalten ist. Da \(LLL(s) < i \iff s \in Gen_j\) gilt und da \(s \notin Gen_j\) gilt, gilt auch \(\lnot(LLL(s) < i) \iff LLL(s) \geq i\).
 
 Da \(LLL(s) \geq i\) gilt, gilt \(LLL(s) < i\) nicht. \(\Box\)
 
@@ -316,28 +328,24 @@ Angenommen \(Gen_i = {}\).
 
 \begin{align*}
     Gen_{i+1} :&= \left\{ s \mid \left(\exists_{t \in Gen_i} : s \in origin(t)\right) \land \left(\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}\right) \right\} \\
-    & = \{ s \mid (\underbrace{\exists_{t \in \{\}} : s \in origin(t)}_{\substack{\text{In der leeren Menge}\\\text{existieren keine Elemente.}\\\text{Erst Recht keine, die}\\\text{die Kondition erfüllen}}}) \land (\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}) \} \\
+    & = \{ s \mid (\underbrace{\exists_{t \in \{\}} : s \in origin(t)}_{\substack{\text{In der leeren Menge}\\\text{existieren keine Elemente,}\\\text{erst Recht keine, die}\\\text{die Kondition erfüllen}}}) \land (\forall_{i_0\in\mathbb{N}, i_0 \leq i}: s \notin Gen_{i_0}) \} \\
     & = \{\} \\
 \end{align*}
 
-Somit gilt \(Gen_i = {} \implies Gen_{i+1} = {}\).
+Somit gilt \(Gen_i = {} \implies Gen_{i+1} = \{\}\).
 
-Wäre vor einem Index \(m\) eine Generation leer, müssten somit auch folgende Generationen leer sein. Somit wäre \(m\) redefinierbar als der Index wo das erste leere Element vorkommt.
+Wäre vor einem Index \(m\) eine Generation leer, müssten somit auch folgende Generationen leer sein. Somit wäre \(m\) redefinierbar als der Index ab dem das erste leere Element vorkommt.
 
-Da nur eine endliche Menge an Zuständen \(s \in \mathbb{S}_n\) existiert, und da alle lösbaren Zustände, welche Teilmenge aller Zustände sind, laut \cref{proof:uniqueness} eindeutig genau einer Generation angehören, ist auch die Menge an nicht-leeren Generationen endlich.
+Da nur eine endliche Menge an Zuständen \(s \in \mathbb{S}_n\) existiert und da alle lösbaren Zustände, welche Teilmenge aller Zustände sind, laut \cref{proof:uniqueness} eindeutig genau einer Generation angehören, ist auch die Menge an nicht-leeren Generationen endlich.
 
-Da endlich viele nicht-leeren Generationen enthalten sein müssen, und da die Serie nicht zwischendrin leere Generationen enthalten kann, muss sie alle nicht-leeren Generationen bis zu einem Index \(m\) haben, und alle leeren ab diesem. \(\Box\)
+Da endlich viele nicht-leere Generationen enthalten sein müssen und da die Serie nicht zwischendrin leere Generationen enthalten kann, muss sie alle nicht-leeren Generationen bis zu einem Index \(m\) enthalten, und alle leeren ab diesem. \(\Box\)
 
 \subsubsection{Beweis}
 
 Laut \cref{proof:termination} existiert eine letzte, nicht-leere Generation \(Gen_m\).
-
 Da die letzte nicht-leere Menge existiert, ist bekannt, dass alle nicht-leeren Generation einen Index kleiner oder gleich \(m\) haben.
-
 Laut \cref{proof:minimality} gilt für alle \(s \in Gen_i\): \(LLL(s) = i\).
-
 Da alle Generation mit mehr als null Zuständen \(Gen_i\) einen Index \(i \leq m\) haben, ist die maximale \(LLL\) der maximale Index \(m\).
-
 Da die maximale \(LLL\) gleich dem Index \(m\) ist, ist \(L(n) = m\).
 
 \section{Umsetzung}
@@ -351,7 +359,7 @@ Die |class| beinhaltet
     \item |int Depthations| - 
         Eine Property zur Errechnung der Generationsnummer des Zustands.
     \item |State? Parent| - 
-        Der ''Vater'' des Zustands; also der Zustand, von der Zustand Ursprungszustand ist.
+        Der Zustand, von dem der Zustand Ursprungszustand ist.
         Ist der Zustand ein Endzustand, so ist Parent |null|.
     \item |int[] Buckets| - Die Biberanzahlen.
 \end{enumerate}

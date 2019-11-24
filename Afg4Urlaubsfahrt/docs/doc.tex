@@ -119,42 +119,42 @@ literate=%
 
 Ein ''Weg'' ist eine Menge von zu besuchenden Tankstellen .
 
-\paragraph{optimaler Weg}
+\paragraph{Bester Weg}
 
-Der ''beste Weg'' oder ''optimale Weg'', ist der Weg mit den wenigsten Stopps, und geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen.
-Hierbei wird wie in der Aufgabenstellung eine minimal Stoppzahl priorisiert.
+Der ''beste Weg'' oder, ist der Weg mit den wenigsten Stopps und dem geringsten Preis um vom Ausganspunkt zu einer gegebenen Tankstelle zu kommen.
+Hierbei wird wie in der Aufgabenstellung eine minimale Stoppzahl priorisiert.
 
 \subsection{Kernidee}
 
-Der Algorithmus basiert auf der Idee durch die Lösung von Teilproblemen die insgesamt beste Lösung zu finden.
+Der Algorithmus basiert auf der Idee, durch die Lösung von Teilproblemen die insgesamt beste Lösung zu finden.
 Das heißt, dass zur Findung des besten Weges zu einem Punkt ein neuer Weg aus dem besten Weg zu den Punkten davor gebildet wird.
  
-Zum Finden des besten Weges zu eienm Punkt wird der Weg von den Wegen zu den Punkten davor gewählt, der am wenigsten Stopps braucht und den geringsten Preis hat.
-Durch den iterativen Aufbau von den besten Wegen ist garantiert, dass am Ende der beste Weg zum Ziel gefunden wird.
+Zum Finden des besten Weges zu einem Punkt wird der Weg von den Wegen zu den Punkten davor gewählt, der am wenigsten Stopps braucht und den geringsten Preis hat.
+Durch iterative Vorgehensweise bei der Bestimmung des besten Weges ist garantiert, dass am Ende der beste Weg zum Ziel gefunden wird.
 
 \subsection{Finden des besten Weges zum Ziel}
 
-Zum finden des besten Weges zum Ziel wird nach und nach eine Zuordnung aufgebaut, die für jede Tankstelle den besten Weg zu ihr enthält.
+Zum Finden des besten Weges zum Ziel wird nach und nach eine Zuordnung aufgebaut, die für jede Tankstelle den besten Weg zu ihr enthält.
 Diese Zuordnung wird für eine beliebige Tankstelle ermittelt, indem zuerst für alle vorherigen Tankstellen eine Zuordnung ermittelt wird.
 
-Sind die optimalen Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des optimalen Wegs zu dieser beginnen.
-Zuerst werden alle optimale Wege zu den vorherigen Tankstelle durchiteriert.
-Dabei wird zuerst überprüft von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann,
-wenn nicht wird zur nächsten Tankstelle der Zuordnung übergegangen.
+Sind die besten Wege zu allen Tankstellen vor einer gegebenen Tankstelle errechnet, kann die Ermittlung des besten Wegs zu dieser beginnen.
+Zuerst werden alle beste Wege zu den vorherigen Tankstellen durchiteriert.
+Dabei wird zuerst überprüft, von welchen dieser Tankstellen die aktuell betrachtete Tankstelle überhaupt erreicht werden kann.
+Wenn nicht, wird zur nächsten Tankstelle der Zuordnung übergegangen.
 Wenn doch, so wird ein neuer Weg gebildet, der aus dem vorherigen Weg und der betrachtete Tankstelle besteht.
 
 Von allen dieser neuen Wege werden nun die kürzesten ausgewählt, also alle Wege mit einer Stoppzahl gleich der minimalen Stoppzahl.
-Danach wird der Preis aller übrigen Wege ermittelt (siehe \cref{alg:price}), und von denen wird der billigste ausgewählt.
-Dieser Weg ist dann der optimale Weg vom Start zur aktuell betrachteten Tankstelle.
+Danach wird der Preis aller übrigen Wege ermittelt (siehe \cref{alg:price}), von denen dann der billigste ausgewählt wird.
+Dieser Weg ist dann der beste Weg vom Start zur aktuell betrachteten Tankstelle.
 Dieser wird dann in die Zuordnung eingetragen.
 
-Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt, bis der optimale Weg zum Streckenende Teil der Zuordnung ist.
-Dieser ist dann der optimale Weg vom Start zum Streckenende.
+Dieses Verfahren wird für alle Tankstellen iterativ durchgeführt bis der beste Weg zum Streckenende Teil der Zuordnung ist.
+Dieser ist dann der beste Weg vom Start zum Streckenende.
 
 \subsection{Ermittlung des Preises für einen Weg} \label{alg:price}
 
 Für die Ermittlung des Preises für einen Weg werden vorerst die Tankstellen dem Preis nach aufsteigend geordnet.
-Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximalen Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
+Zuerst wird von der preiswertesten Tankstelle aus eine Strecke definiert, die von der Tankstelle aus über die maximale Tanklänge reicht, oder wenn das Streckenende in dieser enthalten ist, bis zum Ziel geht.
 
 Danach wird für die nächst-preiswerteste Tankstelle auch eine solche Strecke definiert, es sei denn, es gibt Überschneidungen mit einer bereits eingetragenen Strecke.
 In diesem Fall wird die bereits eingetragene Strecke durch maximales Volltanken des halb-leeren Tanks an dieser Tankstelle erweitert.
@@ -201,7 +201,7 @@ Dieses Verfahren liefert das ideale Ergebnis, da preislich aufsteigend immer die
     Es enthält
     \begin{itemize}
         \item eine Liste an Tankstellen, an denen gehalten werden kann,
-        \item die Funktion |public readonly DrivingPlan? GetCheapestPathTo|, die für die Liste an Tankstellen die günstigste Tank-Verteilung berechnet, ohne auf die Stopp-Anzahl zu achten.
+        \item die Funktion |public readonly DrivingPlan? GetCheapestPathTo|, die für die Liste an Tankstellen die günstigste Tank-Verteilung berechnet ohne auf die Stopp-Anzahl zu achten.
     \end{itemize}
     
 \subsection{DrivingPlan}
