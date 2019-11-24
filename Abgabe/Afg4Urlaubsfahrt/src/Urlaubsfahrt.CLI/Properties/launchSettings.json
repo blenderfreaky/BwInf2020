@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Urlaubsfahrt.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "-f \"..\\..\\..\\..\\..\\examples\\fahrt5.txt\""
+    }
+  }
+}

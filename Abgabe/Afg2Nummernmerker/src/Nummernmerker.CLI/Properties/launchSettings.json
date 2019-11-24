@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nummernmerker.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "--benchmark"
+    }
+  }
+}

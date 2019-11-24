@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImportDirectoryBuildProps>false</ImportDirectoryBuildProps>
+    <ImportDirectoryBuildTargets>false</ImportDirectoryBuildTargets>
+    <AssemblyTitle>abae14df-c624-4dbd-8df7-ed0e870c4140</AssemblyTitle>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>abae14df-c624-4dbd-8df7-ed0e870c4140</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <OutputPath>bin\Release</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <UseSharedCompilation>false</UseSharedCompilation>
+    <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
+    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="abae14df-c624-4dbd-8df7-ed0e870c4140.notcs" Exclude="bin\**;obj\**;**\*.xproj;packages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="D:\Personal\School\Info\BwInf\BwInf2020_1\BwInf2020\Afg2Nummernmerker\src\Nummernmerker.CLI\Nummernmerker.CLI.csproj" />
+  </ItemGroup>
+  
+
+</Project>

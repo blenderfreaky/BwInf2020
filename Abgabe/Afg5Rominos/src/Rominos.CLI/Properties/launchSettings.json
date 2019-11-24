@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Rominos.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "--size 10 --highlightPossibleExtensions --highlightDiagonalBlockade --stopwatch"
+    }
+  }
+}
