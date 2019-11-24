@@ -2,20 +2,23 @@
 
 ## Dateistruktur
 
-Afg<Aufgabennummer><Aufgabenname>.pdf
-  | Doku für Aufgabe <Aufgabennummer>
-Afg<Aufgabennummer><Aufgabenname>/
-  src/
-    <Aufgabenname>/
-      | Hauptalgorithmus Code
-    <Aufgabenname>.CLI/
-      | Ausführended Code / Konsoleninterface
-  app/
-    <Aufgabenname>.CLI.exe
-      | Exe des Programms
-    | Dateien die für Ausführung notwendig sind
-  [examples/]
-    offiziele Beispielsdateien
+```
+.
+└───Afg<Aufgabennummer><Aufgabenname>.pdf
+│   └// Doku für Aufgabe <Aufgabennummer>
+└───Afg<Aufgabennummer><Aufgabenname>
+└───src
+│   └───<Aufgabenname>
+│   │   └// Hauptalgorithmus Code
+│   └───<Aufgabenname>.CLI
+│   │   └// Ausführended Code / Konsoleninterface
+│   app
+│   └───<Aufgabenname>.CLI.exe
+│   │   └// Exe des Programms
+│   └// Dateien die für Ausführung notwendig sind
+│   └───[examples]
+│       └// offiziele Beispielsdateien
+```
 
 ## Team
 
